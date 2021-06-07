@@ -13,6 +13,10 @@
         <FILE id="n4Qswg" name="FMOscillator.cpp" compile="1" resource="0"
               file="Source/FMOscillator.cpp"/>
         <FILE id="LM4N72" name="FMOscillator.h" compile="0" resource="0" file="Source/FMOscillator.h"/>
+        <FILE id="wJS7Ab" name="ParameterLayout.cpp" compile="1" resource="0"
+              file="Source/ParameterLayout.cpp"/>
+        <FILE id="TaCOCt" name="ParameterLayout.h" compile="0" resource="0"
+              file="Source/ParameterLayout.h"/>
         <FILE id="kd5mMj" name="Synthesizer.cpp" compile="1" resource="0" file="Source/Synthesizer.cpp"/>
         <FILE id="FA6luJ" name="Synthesizer.h" compile="0" resource="0" file="Source/Synthesizer.h"/>
       </GROUP>

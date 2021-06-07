@@ -11,6 +11,7 @@
 #include "FMOperator.h"
 
 FMOperator::FMOperator(int opIndex) :
+audible(false),
 index(opIndex),
 modIndex(0.0f),
 modOffset(0.0f),
