@@ -118,4 +118,9 @@ public:
     OperatorControls(int idx, apvts* tree);
     const int opIndex;
     apvts* const linkedTree;
+    void resized() override;
+private:
+    juce::Slider ratioSlider;
+    juce::Slider modIndexSlider;
+    juce::Slider panSlider;
 };

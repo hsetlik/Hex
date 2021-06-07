@@ -88,3 +88,17 @@ private:
     float cornerSize;
     int cornerFactor;
 };
+//===================================================================
+class ModulationToggle : public juce::ShapeButton
+{
+public:
+    ModulationToggle(int src, int dst);
+    const int source;
+    const int dest;
+    void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+private:
+    Color litBkgnd;
+    Color unlitBkgnd;
+    Color litText;
+    Color unlitText;
+};

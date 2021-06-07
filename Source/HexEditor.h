@@ -9,7 +9,14 @@
 */
 
 #pragma once
-#include "SymbolButton.h"
-#include "FMOperator.h"
+#include "OperatorComponent.h"
+
+class HexEditor : public juce::Component
+{
+public:
+    HexEditor(apvts* tree);
+    apvts* const linkedTree;
+};
+
 
 

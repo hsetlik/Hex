@@ -19,4 +19,6 @@ static Color highlight = Color(255, 236, 95);
 static Color darkBkgnd = juce::Colours::black.brighter(0.1f);
 static Color darkGray = Color(55, 56, 68);
 static Color lightGray = Color(125, 126, 129);
+static Color lightRed = Color(226, 76, 85);
+static Color darkRed = lightRed.darker(0.45f);
 }
