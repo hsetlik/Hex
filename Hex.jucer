@@ -21,6 +21,16 @@
         <FILE id="FA6luJ" name="Synthesizer.h" compile="0" resource="0" file="Source/Synthesizer.h"/>
       </GROUP>
       <GROUP id="{AB525786-A881-22DB-E517-1337822312B6}" name="Components">
+        <FILE id="SiTc6G" name="HexEditor.cpp" compile="1" resource="0" file="Source/HexEditor.cpp"/>
+        <FILE id="Da69PL" name="HexEditor.h" compile="0" resource="0" file="Source/HexEditor.h"/>
+        <FILE id="lZHyJi" name="ModulationGrid.cpp" compile="1" resource="0"
+              file="Source/ModulationGrid.cpp"/>
+        <FILE id="UCnXQA" name="ModulationGrid.h" compile="0" resource="0"
+              file="Source/ModulationGrid.h"/>
+        <FILE id="IodLZ2" name="OperatorComponent.cpp" compile="1" resource="0"
+              file="Source/OperatorComponent.cpp"/>
+        <FILE id="mWfxmk" name="OperatorComponent.h" compile="0" resource="0"
+              file="Source/OperatorComponent.h"/>
         <FILE id="WPmyO2" name="SymbolButton.cpp" compile="1" resource="0"
               file="Source/SymbolButton.cpp"/>
         <FILE id="BWQ79g" name="SymbolButton.h" compile="0" resource="0" file="Source/SymbolButton.h"/>
