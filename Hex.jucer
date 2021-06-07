@@ -21,6 +21,7 @@
         <FILE id="FA6luJ" name="Synthesizer.h" compile="0" resource="0" file="Source/Synthesizer.h"/>
       </GROUP>
       <GROUP id="{AB525786-A881-22DB-E517-1337822312B6}" name="Components">
+        <FILE id="vZDJYD" name="ComponentUtil.h" compile="0" resource="0" file="Source/ComponentUtil.h"/>
         <FILE id="SiTc6G" name="HexEditor.cpp" compile="1" resource="0" file="Source/HexEditor.cpp"/>
         <FILE id="Da69PL" name="HexEditor.h" compile="0" resource="0" file="Source/HexEditor.h"/>
         <FILE id="lZHyJi" name="ModulationGrid.cpp" compile="1" resource="0"
