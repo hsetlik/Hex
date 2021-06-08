@@ -10,12 +10,17 @@
 
 #pragma once
 #include "OperatorComponent.h"
+#include "ModulationGrid.h"
 
 class HexEditor : public juce::Component
 {
 public:
     HexEditor(apvts* tree);
     apvts* const linkedTree;
+    void resized() override;
+private:
+    juce::OwnedArray<OperatorComponent> opComponents;
+    ModulationGrid modGrid;
 };
 
 

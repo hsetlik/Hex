@@ -13,7 +13,7 @@ ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree)
 {
     for(int src = 0; src < NUM_OPERATORS; ++src)
     {
-        for(int dst = 0; dst < NUM_OPERATORS; ++src)
+        for(int dst = 0; dst < NUM_OPERATORS; ++dst)
         {
             addAndMakeVisible(buttons.add(new ModulationToggle(src, dst)));
             auto idx = (src * NUM_OPERATORS) + dst;

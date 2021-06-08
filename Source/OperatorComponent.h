@@ -112,15 +112,27 @@ private:
     TriButton bTri;
 };
 //===============================================================
-class OperatorControls : public juce::Component
+class OperatorComponent :
+public juce::Component,
+public juce::Button::Listener
 {
 public:
-    OperatorControls(int idx, apvts* tree);
+    OperatorComponent(int idx, apvts* tree);
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;
+    void buttonClicked(juce::Button* b) override;
 private:
+    EnvelopeComponent envComponent;
+    WaveSelector waveSelect;
+    OutputButton outButton;
     juce::Slider ratioSlider;
-    juce::Slider modIndexSlider;
+    juce::Slider modSlider;
     juce::Slider panSlider;
+    
+    pSliderAttach ratioAttach;
+    pSliderAttach modAttach;
+    pSliderAttach panAttach;
+    
+    pButtonAttach outAttach;
 };

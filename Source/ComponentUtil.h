@@ -19,4 +19,9 @@ public:
         slider.setSliderStyle(juce::Slider::LinearVertical);
         slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 1, 1);
     }
+    static void setRotaryNoBox(juce::Slider& slider)
+    {
+        slider.setSliderStyle(juce::Slider::Rotary);
+        slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 1, 1);
+    }
 };

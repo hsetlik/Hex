@@ -18,7 +18,7 @@ unlitBkgnd(UXPalette::darkRed),
 litText(UXPalette::lightGray),
 unlitText(UXPalette::darkGray)
 {
-    
+    setClickingTogglesState(true);
 }
 void ModulationToggle::paintButton(juce::Graphics &g, bool highlighted, bool down)
 {
@@ -40,4 +40,28 @@ void ModulationToggle::paintButton(juce::Graphics &g, bool highlighted, bool dow
     auto sBounds = bBounds.removeFromTop(dY);
     g.drawText(sStr, sBounds, juce::Justification::left);
     g.drawText(dStr, bBounds, juce::Justification::right);
+}
+//===================================================================
+OutputButton::OutputButton() :
+juce::ShapeButton("outputToggle", UXPalette::darkGray, UXPalette::darkGray, UXPalette::darkGray),
+litBkgnd(UXPalette::lightRed),
+unlitBkgnd(UXPalette::darkRed),
+litText(UXPalette::lightGray),
+unlitText(UXPalette::darkGray)
+{
+    setClickingTogglesState(true);
+}
+
+void OutputButton::paintButton(juce::Graphics &g, bool highlighted, bool down)
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto bColor = (getToggleState())? litBkgnd : unlitBkgnd;
+    auto tColor = (getToggleState())? litText : unlitText;
+    auto corner = fBounds.getHeight() / 6.0f;
+    g.setColour(bColor);
+    g.fillRoundedRectangle(fBounds, corner);
+    auto tBounds = fBounds.reduced(corner * 1.5f);
+    g.setColour(tColor);
+    g.drawText("Output", tBounds, juce::Justification::centred);
+    
 }

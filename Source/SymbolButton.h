@@ -11,6 +11,10 @@
 #pragma once
 #include "Color.h"
 
+using pButtonAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>;
+using buttonAttach = juce::AudioProcessorValueTreeState::ButtonAttachment;
+
+
 class SymbolButton : public juce::ShapeButton
 {//! nice utility for making shape buttons with simple symbols
 public:
@@ -95,6 +99,18 @@ public:
     ModulationToggle(int src, int dst);
     const int source;
     const int dest;
+    void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+private:
+    Color litBkgnd;
+    Color unlitBkgnd;
+    Color litText;
+    Color unlitText;
+};
+
+class OutputButton : public juce::ShapeButton
+{
+public:
+    OutputButton();
     void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
 private:
     Color litBkgnd;

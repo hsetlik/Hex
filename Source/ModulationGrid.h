@@ -12,8 +12,6 @@
 #include "SymbolButton.h"
 #include "FMOperator.h"
 
-using pButtonAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>;
-using buttonAttach = juce::AudioProcessorValueTreeState::ButtonAttachment;
 
 class ModulationGrid : public juce::Component
 {

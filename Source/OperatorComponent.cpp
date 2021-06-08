@@ -25,13 +25,6 @@ sustainVal(SUSTAIN_DEFAULT),
 releaseVal(RELEASE_DEFAULT),
 needsRepaint(false)
 {
-    pDelay->addListener(this);
-    pAttack->addListener(this);
-    pHold->addListener(this);
-    pDecay->addListener(this);
-    pSustain->addListener(this);
-    pRelease->addListener(this);
-    
     startTimerHz(REPAINT_FPS);
 }
 void EnvelopeComponent::DAHDSRGraph::timerCallback()
@@ -116,6 +109,13 @@ graph(this)
     addAndMakeVisible(&decaySlider);
     addAndMakeVisible(&sustainSlider);
     addAndMakeVisible(&releaseSlider);
+    
+    delaySlider.addListener(&graph);
+    attackSlider.addListener(&graph);
+    holdSlider.addListener(&graph);
+    decaySlider.addListener(&graph);
+    sustainSlider.addListener(&graph);
+    releaseSlider.addListener(&graph);
     
     addAndMakeVisible(&graph);
     
@@ -243,4 +243,59 @@ void WaveSelector::resized()
     bSquare.setBounds(fBounds.removeFromLeft(dX));
     bSaw.setBounds(fBounds.removeFromLeft(dX));
     bTri.setBounds(fBounds);
+}
+//=======================================================
+OperatorComponent::OperatorComponent(int idx, apvts* tree) :
+opIndex(idx),
+linkedTree(tree),
+envComponent(idx, tree),
+waveSelect(idx, tree)
+{
+    addAndMakeVisible(&envComponent);
+    addAndMakeVisible(&waveSelect);
+    
+    SliderUtil::setRotaryNoBox(ratioSlider);
+    SliderUtil::setRotaryNoBox(modSlider);
+    SliderUtil::setRotaryNoBox(panSlider);
+    
+    addAndMakeVisible(&ratioSlider);
+    addAndMakeVisible(&modSlider);
+    addAndMakeVisible(&panSlider);
+    addAndMakeVisible(&outButton);
+    
+    auto iStr = juce::String(opIndex);
+    auto ratioId = "ratioParam" + iStr;
+    auto indexId = "indexParam" + iStr;
+    auto panId = "panParam" + iStr;
+    auto outputId = "audibleParam" + iStr;
+    
+    ratioAttach.reset(new sliderAttach(*linkedTree, ratioId, ratioSlider));
+    modAttach.reset(new sliderAttach(*linkedTree, indexId, modSlider));
+    panAttach.reset(new sliderAttach(*linkedTree, panId, panSlider));
+    outAttach.reset(new buttonAttach(*linkedTree, outputId, outButton));
+    
+    outButton.addListener(this);
+}
+
+void OperatorComponent::buttonClicked(juce::Button *b)
+{
+    if(b->getToggleState())
+        panSlider.setVisible(true);
+    else
+        panSlider.setVisible(false);
+}
+
+void OperatorComponent::resized()
+{
+    auto fBounds = getLocalBounds();
+    auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2);
+    envComponent.setBounds(envBounds);
+    auto dX = fBounds.getWidth() / 25;
+    auto dY = fBounds.getHeight() / 16;
+    ratioSlider.setBounds(dX, dX, 4 * dX, 4 * dX);
+    modSlider.setBounds(5 * dX, dX, 4 * dX, 4 * dX);
+    panSlider.setBounds(10 * dX, dX, 4 * dX, 4 * dX);
+    outButton.setBounds(16 * dX, 2 * dX, 6 * dX, 2 * dX);
+    
+    waveSelect.setBounds(dX, 8 * dY, 16 * dX, 6 * dY);
 }
