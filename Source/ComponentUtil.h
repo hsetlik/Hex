@@ -25,3 +25,18 @@ public:
         slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 1, 1);
     }
 };
+
+class ComponentUtil
+{
+public:
+    static juce::Rectangle<int> boxBelow(juce::Component& parent, int heightFraction)
+    {
+        int x, y, width, height;
+        auto iBounds = parent.getBounds();
+        height = iBounds.getHeight() / heightFraction;
+        width = iBounds.getWidth();
+        x = iBounds.getX();
+        y = iBounds.getBottom();
+        return juce::Rectangle<int>(x, y, width, height);
+    }
+};

@@ -38,6 +38,8 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
 {
     for(int i = startSample; i < (startSample + numSamples); ++i)
     {
+        for(auto o : operators)
+            o->clearOffset();
         tickModulation();
         sumL = 0.0f;
         sumR = 0.0f;
@@ -59,7 +61,6 @@ void HexVoice::tickModulation()
 {
     for(int o = 0; o < NUM_OPERATORS; ++o)
     {
-        operators[o]->clearOffset();
         for(int i = 0; i < NUM_OPERATORS; ++i)
         {
             if(grid[o][i])

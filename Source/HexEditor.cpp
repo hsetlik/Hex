@@ -37,3 +37,9 @@ void HexEditor::resized()
     opComponents[4]->setBounds(bounds.removeFromLeft(dX));
     opComponents[5]->setBounds(bounds);
 }
+
+void HexEditor::paint(juce::Graphics &g)
+{
+    g.setColour(UXPalette::lightGray);
+    g.fillAll();
+}

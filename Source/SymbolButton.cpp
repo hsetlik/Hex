@@ -63,5 +63,4 @@ void OutputButton::paintButton(juce::Graphics &g, bool highlighted, bool down)
     auto tBounds = fBounds.reduced(corner * 1.5f);
     g.setColour(tColor);
     g.drawText("Output", tBounds, juce::Justification::centred);
-    
 }

@@ -233,6 +233,8 @@ linkedTree(tree)
     bSquare.setRadioGroupId(radioNum);
     bSaw.setRadioGroupId(radioNum);
     bTri.setRadioGroupId(radioNum);
+    
+    bSine.triggerClick();
 }
 
 void WaveSelector::resized()
@@ -249,7 +251,10 @@ OperatorComponent::OperatorComponent(int idx, apvts* tree) :
 opIndex(idx),
 linkedTree(tree),
 envComponent(idx, tree),
-waveSelect(idx, tree)
+waveSelect(idx, tree),
+ratioLabel(&ratioSlider),
+modLabel(&modSlider),
+panLabel(&panSlider)
 {
     addAndMakeVisible(&envComponent);
     addAndMakeVisible(&waveSelect);
@@ -262,6 +267,10 @@ waveSelect(idx, tree)
     addAndMakeVisible(&modSlider);
     addAndMakeVisible(&panSlider);
     addAndMakeVisible(&outButton);
+    
+    addAndMakeVisible(&ratioLabel);
+    addAndMakeVisible(&modLabel);
+    addAndMakeVisible(&panLabel);
     
     auto iStr = juce::String(opIndex);
     auto ratioId = "ratioParam" + iStr;
@@ -292,10 +301,14 @@ void OperatorComponent::resized()
     envComponent.setBounds(envBounds);
     auto dX = fBounds.getWidth() / 25;
     auto dY = fBounds.getHeight() / 16;
-    ratioSlider.setBounds(dX, dX, 4 * dX, 4 * dX);
-    modSlider.setBounds(5 * dX, dX, 4 * dX, 4 * dX);
-    panSlider.setBounds(10 * dX, dX, 4 * dX, 4 * dX);
+    ratioSlider.setBounds(dX, dX, 4.5 * dX, 4.5 * dX);
+    modSlider.setBounds(6 * dX, dX, 4.5 * dX, 4.5 * dX);
+    panSlider.setBounds(11 * dX, dX, 4.5 * dX, 4.5 * dX);
     outButton.setBounds(16 * dX, 2 * dX, 6 * dX, 2 * dX);
     
-    waveSelect.setBounds(dX, 8 * dY, 16 * dX, 6 * dY);
+    ratioLabel.resized();
+    modLabel.resized();
+    panLabel.resized();
+    
+    waveSelect.setBounds(dX, 8 * dY, 16 * dX, 3 * dY);
 }

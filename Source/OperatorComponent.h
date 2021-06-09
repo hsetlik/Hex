@@ -13,6 +13,7 @@
 #include "FMOperator.h"
 #include "SymbolButton.h"
 #include "ComponentUtil.h"
+#include "SliderLabel.h"
 #define REPAINT_FPS 24
 using sliderAttach = juce::AudioProcessorValueTreeState::SliderAttachment;
 using pSliderAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>;
@@ -129,6 +130,10 @@ private:
     juce::Slider ratioSlider;
     juce::Slider modSlider;
     juce::Slider panSlider;
+    
+    RotaryLabel ratioLabel;
+    RotaryLabel modLabel;
+    RotaryLabel panLabel;
     
     pSliderAttach ratioAttach;
     pSliderAttach modAttach;

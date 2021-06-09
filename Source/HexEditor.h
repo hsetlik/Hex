@@ -18,6 +18,7 @@ public:
     HexEditor(apvts* tree);
     apvts* const linkedTree;
     void resized() override;
+    void paint(juce::Graphics& g) override;
 private:
     juce::OwnedArray<OperatorComponent> opComponents;
     ModulationGrid modGrid;

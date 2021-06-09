@@ -60,11 +60,11 @@ public:
     void tickModulation();
     //! functions for setting parameters inside the operators
     void setDelay(int idx, float value) {operators[idx]->envelope.setDelay(value); }
-    void setAttack(int idx, float value) {operators[idx]->envelope.setDelay(value); }
-    void setHold(int idx, float value) {operators[idx]->envelope.setDelay(value); }
-    void setDecay(int idx, float value) {operators[idx]->envelope.setDelay(value); }
-    void setSustain(int idx, float value) {operators[idx]->envelope.setDelay(value); }
-    void setRelease(int idx, float value) {operators[idx]->envelope.setDelay(value); }
+    void setAttack(int idx, float value) {operators[idx]->envelope.setAttack(value); }
+    void setHold(int idx, float value) {operators[idx]->envelope.setHold(value); }
+    void setDecay(int idx, float value) {operators[idx]->envelope.setDecay(value); }
+    void setSustain(int idx, float value) {operators[idx]->envelope.setSustain(value); }
+    void setRelease(int idx, float value) {operators[idx]->envelope.setRelease(value); }
     //===============================================
     void setRatio(int idx, float value) {operators[idx]->setRatio(value); }
     void setModIndex(int idx, float value) {operators[idx]->setModIndex(value); }

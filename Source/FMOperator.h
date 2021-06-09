@@ -49,6 +49,9 @@ public:
     void setPan(float value) {pan = value; }
     void setAudible(bool shouldBeAudible) {audible = shouldBeAudible; }
     void clearOffset() {modOffset = 0.0f; }
+private:
+    bool audible;
+public:
     const int index;
     //! access to variables
     bool isAudible() {return audible; }
@@ -64,7 +67,7 @@ public:
     HexOsc oscillator;
     DAHDSR envelope;
 private:
-    bool audible;
+    
     //! Settable parameters stored down here
     float modIndex;
     float baseRatio;
