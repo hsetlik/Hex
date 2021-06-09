@@ -13,7 +13,7 @@
 RotaryLabel::RotaryLabel(juce::Slider* s, int decPlaces) : linkedSlider(s), decimalPlaces(decPlaces)
 {
     linkedSlider->addListener(this);
-    setEnabled(true);
+    setEditable(true);
     auto str = juce::String(linkedSlider->getValue());
     if(str.length() > decimalPlaces)
         str = str.substring(0, decimalPlaces);

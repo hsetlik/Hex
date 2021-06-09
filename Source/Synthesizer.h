@@ -70,6 +70,7 @@ public:
     void setModIndex(int idx, float value) {operators[idx]->setModIndex(value); }
     void setPan(int idx, float value) {operators[idx]->setPan(value); }
     void setAudible(int idx, bool value) {operators[idx]->setAudible(value); }
+    void setWave(int idx, float value) {operators[idx]->setWave((int)value); }
 private:
     float sumL;
     float sumR;
@@ -92,7 +93,6 @@ public:
     void updateEnvelopesForBlock();
     void updateOscillatorsForBlock();
     //! fucnitons for updating the voices based on parameter changes
-    void setWave(int idx, WaveType type);
     void setDelay(int idx, float value);
     void setAttack(int idx, float value);
     void setHold(int idx, float value);
@@ -104,6 +104,7 @@ public:
     void setModIndex(int idx, float value);
     void setPan(int idx, float value);
     void setAudible(int idx, bool value);
+    void setWave(int idx, float value);
 private:
     RoutingGrid grid;
     std::vector<HexVoice*> hexVoices;

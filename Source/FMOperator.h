@@ -64,6 +64,10 @@ public:
         modOffset += source.lastMono();
     }
     void tick(double fundamental);
+    void setWave(int type)
+    {
+        oscillator.setType((WaveType)type);
+    }
     HexOsc oscillator;
     DAHDSR envelope;
 private:

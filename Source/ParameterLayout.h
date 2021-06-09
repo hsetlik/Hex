@@ -73,6 +73,15 @@ public:
             layout.add(std::make_unique<juce::AudioParameterFloat>(decayId, decayName, decayRange, DECAY_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterFloat>(sustainId, sustainName, sustainRange, SUSTAIN_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterFloat>(releaseId, releaseName, releaseRange, RELEASE_DEFAULT));
+            //! wave selection parameter
+            juce::StringArray waves;
+            waves.add("Sine");
+            waves.add("Square");
+            waves.add("Saw");
+            waves.add("Tri");
+            auto waveId = "waveParam" + iStr;
+            auto waveName = "Operator " + iStr + " wave";
+            layout.add(std::make_unique<juce::AudioParameterChoice>(waveId, waveName, waves, 0));
             //! and onto the routing parameters
             for(int n = 0; n < NUM_OPERATORS; ++n)
             {

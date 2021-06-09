@@ -228,6 +228,14 @@ linkedTree(tree)
     addAndMakeVisible(&bSquare);
     addAndMakeVisible(&bSaw);
     addAndMakeVisible(&bTri);
+    addAndMakeVisible(hiddenBox);
+    hiddenBox.setVisible(false);
+    hiddenBox.addItem("Sine", 1);
+    hiddenBox.addItem("Square", 2);
+    hiddenBox.addItem("Saw", 3);
+    hiddenBox.addItem("Tri", 4);
+    auto waveId = "waveParam" + juce::String(opIndex);
+    hiddenBoxAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*linkedTree, waveId, hiddenBox));
     auto radioNum = 60 + opIndex;
     bSine.setRadioGroupId(radioNum);
     bSquare.setRadioGroupId(radioNum);
@@ -235,6 +243,11 @@ linkedTree(tree)
     bTri.setRadioGroupId(radioNum);
     
     bSine.triggerClick();
+    
+    bSine.addListener(this);
+    bSquare.addListener(this);
+    bSaw.addListener(this);
+    bTri.addListener(this);
 }
 
 void WaveSelector::resized()
@@ -246,6 +259,21 @@ void WaveSelector::resized()
     bSaw.setBounds(fBounds.removeFromLeft(dX));
     bTri.setBounds(fBounds);
 }
+void WaveSelector::buttonClicked(juce::Button *b)
+{
+    if(b == &bSine)
+        hiddenBox.setSelectedId(1);
+    else if(b == &bSquare)
+        hiddenBox.setSelectedId(2);
+    else if(b == &bSaw)
+        hiddenBox.setSelectedId(3);
+    else if(b == &bTri)
+        hiddenBox.setSelectedId(4);
+    auto pString = "waveParam" + juce::String(opIndex);
+    auto val = linkedTree->getRawParameterValue(pString)->load();
+    printf("Oscillator %d wave param: %f\n", opIndex, val);
+}
+
 //=======================================================
 OperatorComponent::OperatorComponent(int idx, apvts* tree) :
 opIndex(idx),

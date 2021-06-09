@@ -82,13 +82,6 @@ HexSynth::HexSynth(apvts* tree) : linkedTree(tree)
     addSound(new HexSound);
 }
 //=====================================================================================================================
-void HexSynth::setWave(int idx, WaveType type)
-{
-    for(auto voice : hexVoices)
-    {
-        voice->operators[idx]->oscillator.setType(type);
-    }
-}
 void HexSynth::setDelay(int idx, float value)
 {
     for(auto voice : hexVoices)
@@ -159,6 +152,13 @@ void HexSynth::setPan(int idx, float value)
         voice->setPan(idx, value);
     }
 }
+void HexSynth::setWave(int idx, float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->setWave(idx, value);
+    }
+}
 //===========================================================================
 void HexSynth::updateRoutingForBlock()
 {
@@ -216,13 +216,16 @@ void HexSynth::updateOscillatorsForBlock()
         auto indexId = "indexParam" + iStr;
         auto outputId = "audibleParam" + iStr;
         auto panId = "panParam" + iStr;
+        auto waveId = "waveParam" + iStr;
         float ratio = *linkedTree->getRawParameterValue(ratioId);
         float modIndex = *linkedTree->getRawParameterValue(indexId);
         bool audible = (*linkedTree->getRawParameterValue(outputId) > 0.0f);
         float pan = *linkedTree->getRawParameterValue(panId);
+        float wave = *linkedTree->getRawParameterValue(waveId);
         setRatio(i, ratio);
         setModIndex(i, modIndex);
         setAudible(i, audible);
         setPan(i, pan);
+        setWave(i, wave);
     }
 }

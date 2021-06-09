@@ -99,18 +99,23 @@ public:
     void setSymbol() override;
 };
 //===============================================================
-class WaveSelector : public juce::Component
-{//! TODO: this needs to be set up w a secret comboBox and listeners for apvts attachment
+class WaveSelector :
+public juce::Component,
+public juce::Button::Listener
+{
 public:
     WaveSelector(int idx, apvts* tree);
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;
+    void buttonClicked(juce::Button* b) override;
 private:
     SineButton bSine;
     SquareButton bSquare;
     SawButton bSaw;
     TriButton bTri;
+    juce::ComboBox hiddenBox;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> hiddenBoxAttach;
 };
 //===============================================================
 class OperatorComponent :
