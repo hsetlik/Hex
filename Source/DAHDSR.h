@@ -113,6 +113,7 @@ public:
     void setDecay(float val) {decayTime = val;}
     void setSustain(float val) {sustainLevel = val;}
     void setRelease(float val) {releaseTime = val;}
+    float getLastLevel() {return output;}
 private:
     //data
     envPhase currentPhase;

@@ -10,6 +10,7 @@
 
 #pragma once
 #include "FMOperator.h"
+typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
 class HexSound : public juce::SynthesiserSound
 {
@@ -24,11 +25,30 @@ public:
     }
 };
 
+class GraphParamSet
+{
+public:
+    GraphParamSet()
+    {
+        
+    }
+    int lastTriggeredVoice;
+    fVoiceOp levels;
+    std::array<float, NUM_OPERATORS> opRatios;
+    std::array<float, NUM_VOICES> voiceFundamentals;
+    std::array<bool, NUM_OPERATORS> opOutputs;
+    std::array<float, NUM_OPERATORS> modIndeces;
+    std::array<WaveType, NUM_OPERATORS> opWaves;
+    RoutingGrid grid;
+};
+
 class HexVoice : public juce::SynthesiserVoice
 {
 public:
-    HexVoice(apvts* tree);
+    HexVoice(apvts* tree, GraphParamSet* gParams, int idx);
     apvts* const linkedTree;
+    GraphParamSet* const linkedParams;
+    const int voiceIndex;
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
         return dynamic_cast<HexSound*>(sound) != nullptr;
@@ -107,5 +127,6 @@ public:
     void setWave(int idx, float value);
 private:
     RoutingGrid grid;
+    GraphParamSet graphParams;
     std::vector<HexVoice*> hexVoices;
 };

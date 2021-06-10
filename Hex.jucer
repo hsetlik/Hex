@@ -37,6 +37,10 @@
         <FILE id="WPmyO2" name="SymbolButton.cpp" compile="1" resource="0"
               file="Source/SymbolButton.cpp"/>
         <FILE id="BWQ79g" name="SymbolButton.h" compile="0" resource="0" file="Source/SymbolButton.h"/>
+        <FILE id="ISBsTX" name="WaveGraphComponent.cpp" compile="1" resource="0"
+              file="Source/WaveGraphComponent.cpp"/>
+        <FILE id="tC0RpU" name="WaveGraphComponent.h" compile="0" resource="0"
+              file="Source/WaveGraphComponent.h"/>
       </GROUP>
       <FILE id="ztUu3U" name="MathUtil.cpp" compile="1" resource="0" file="Source/MathUtil.cpp"/>
       <FILE id="I2xSX5" name="MathUtil.h" compile="0" resource="0" file="Source/MathUtil.h"/>

@@ -9,7 +9,13 @@
 */
 
 #include "Synthesizer.h"
-HexVoice::HexVoice(apvts* tree) : linkedTree(tree), sumL(0.0f), sumR(0.0f), fundamental(0.0f)
+HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, int idx) :
+linkedTree(tree),
+linkedParams(gParams),
+voiceIndex(idx),
+sumL(0.0f),
+sumR(0.0f),
+fundamental(0.0f)
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
@@ -20,6 +26,8 @@ HexVoice::HexVoice(apvts* tree) : linkedTree(tree), sumL(0.0f), sumR(0.0f), fund
 void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
+    linkedParams->lastTriggeredVoice = voiceIndex;
+    linkedParams->voiceFundamentals[voiceIndex] = (float)fundamental;
     for(auto op : operators)
     {
         op->trigger(true);
@@ -46,6 +54,7 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
         for(int op = 0; op < NUM_OPERATORS; ++op)
         {
             operators[op]->tick(fundamental);
+            linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
             if(operators[op]->isAudible())
             {
                 sumL += operators[op]->lastLeft();
@@ -75,7 +84,7 @@ HexSynth::HexSynth(apvts* tree) : linkedTree(tree)
 {
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new HexVoice(linkedTree));
+        addVoice(new HexVoice(linkedTree, &graphParams, i));
         auto* voice = dynamic_cast<HexVoice*>(voices.getLast());
         hexVoices.push_back(voice);
     }
@@ -175,6 +184,7 @@ void HexSynth::updateRoutingForBlock()
                 grid[o][i] = false;
         }
     }
+    graphParams.grid = grid;
     for(auto voice : hexVoices)
     {
         voice->updateGrid(grid);
@@ -218,7 +228,9 @@ void HexSynth::updateOscillatorsForBlock()
         auto panId = "panParam" + iStr;
         auto waveId = "waveParam" + iStr;
         float ratio = *linkedTree->getRawParameterValue(ratioId);
+        graphParams.opRatios[i] = ratio;
         float modIndex = *linkedTree->getRawParameterValue(indexId);
+        graphParams.modIndeces[i] = modIndex;
         bool audible = (*linkedTree->getRawParameterValue(outputId) > 0.0f);
         float pan = *linkedTree->getRawParameterValue(panId);
         float wave = *linkedTree->getRawParameterValue(waveId);
