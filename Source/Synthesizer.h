@@ -10,6 +10,7 @@
 
 #pragma once
 #include "FMOperator.h"
+#include <forward_list>
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
 class HexSound : public juce::SynthesiserSound
@@ -30,9 +31,11 @@ class GraphParamSet
 public:
     GraphParamSet()
     {
-        
+
     }
     int lastTriggeredVoice;
+    int pointFrequency;
+    int pointIdx;
     fVoiceOp levels;
     std::array<float, NUM_OPERATORS> opRatios;
     std::array<float, NUM_VOICES> voiceFundamentals;
@@ -40,6 +43,19 @@ public:
     std::array<float, NUM_OPERATORS> modIndeces;
     std::array<WaveType, NUM_OPERATORS> opWaves;
     RoutingGrid grid;
+    std::array<float, 256> dataValues;
+    void pushIn(float input)
+    {
+        dataValues[0] = input;
+        for(int i = 255; i > 0; --i)
+        {
+            dataValues[i + 1] = dataValues[i];
+        }
+        
+    }
+private:
+    int listLength;
+    
 };
 
 class HexVoice : public juce::SynthesiserVoice
@@ -125,8 +141,8 @@ public:
     void setPan(int idx, float value);
     void setAudible(int idx, bool value);
     void setWave(int idx, float value);
+    GraphParamSet graphParams;
 private:
     RoutingGrid grid;
-    GraphParamSet graphParams;
     std::vector<HexVoice*> hexVoices;
 };

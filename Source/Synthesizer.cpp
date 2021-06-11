@@ -28,6 +28,8 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice = voiceIndex;
     linkedParams->voiceFundamentals[voiceIndex] = (float)fundamental;
+    linkedParams->pointFrequency = 2500 / (int)fundamental;
+    linkedParams->pointIdx = 0;
     for(auto op : operators)
     {
         op->trigger(true);
@@ -59,6 +61,12 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
             {
                 sumL += operators[op]->lastLeft();
                 sumR += operators[op]->lastRight();
+            }
+            ++linkedParams->pointIdx;
+            if(linkedParams->lastTriggeredVoice == voiceIndex && linkedParams->pointIdx == linkedParams->pointFrequency)
+            {
+                linkedParams->pushIn(sumL + sumR);
+                linkedParams->pointIdx = 0;
             }
         }
         outputBuffer.addSample(0, i, sumL);

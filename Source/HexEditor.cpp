@@ -10,9 +10,10 @@
 
 #include "HexEditor.h"
 
-HexEditor::HexEditor(apvts* tree) : linkedTree(tree), modGrid(tree)
+HexEditor::HexEditor(apvts* tree, GraphParamSet* params) : linkedTree(tree), modGrid(tree), graph(params)
 {
     addAndMakeVisible(&modGrid);
+    addAndMakeVisible(&graph);
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
         addAndMakeVisible(opComponents.add(new OperatorComponent(i, linkedTree)));
@@ -24,8 +25,8 @@ void HexEditor::resized()
     auto gridWidth = getWidth() / 6;
     auto bounds = getLocalBounds();
     auto rightColumn = bounds.removeFromRight(gridWidth);
-    auto gridBounds = rightColumn.removeFromTop(gridWidth);
-    modGrid.setBounds(gridBounds);
+    modGrid.setBounds(rightColumn.removeFromTop(gridWidth));
+    graph.setBounds(rightColumn.removeFromTop(gridWidth));
     
     auto dX = bounds.getWidth() / 3;
     auto topBounds = bounds.removeFromTop(bounds.getHeight() / 2);

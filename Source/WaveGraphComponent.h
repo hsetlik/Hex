@@ -11,6 +11,18 @@
 #pragma once
 #include "Color.h"
 #include "Synthesizer.h"
+#define WAVE_RES 256
+
+class BasicOsc
+{
+public:
+    BasicOsc(WaveType type);
+    const WaveType oscType;
+    std::array<float, WAVE_RES> waveData;
+private:
+    float phase;
+    double baseFreq;
+};
 
 class WaveGraph :
 public juce::AsyncUpdater,
@@ -25,5 +37,8 @@ public:
     void timerCallback() override {triggerAsyncUpdate(); }
     void updateTrace();
 private:
+    double fundamental;
     juce::Path trace;
+    std::array<float, 256> wavePoints;
+    
 };
