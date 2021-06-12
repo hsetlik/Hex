@@ -17,10 +17,9 @@ fundamental(0.0f),
 readBuffer(2, RING_BUFFER_READ_SIZE)
 {
     openGLContext.setOpenGLVersionRequired(juce::OpenGLContext::OpenGLVersion::openGL3_2);
-    
     openGLContext.setRenderer(this);
     openGLContext.attachTo(*this);
-    
+    openGLContext.setContinuousRepainting(true);
 }
 
 WaveGraph::~WaveGraph()
@@ -120,7 +119,7 @@ void WaveGraph::renderOpenGL()
             
             // VBO (Vertex Buffer Object) - Bind and Write to Buffer
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
-            openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+            openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
                                                                         // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
                                                                         // Don't we want GL_DYNAMIC_DRAW since this
                                                                         // vertex data will be changing alot??
@@ -128,7 +127,7 @@ void WaveGraph::renderOpenGL()
             
             // EBO (Element Buffer Object) - Bind and Write to Buffer
             openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO);
-            openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STREAM_DRAW);
+            openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
                                                                         // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
                                                                         // Don't we want GL_DYNAMIC_DRAW since this
                                                                         // vertex data will be changing alot??
@@ -186,12 +185,12 @@ void WaveGraph::createShaders()
            "\n"
            "gl_FragColor = vec4 (r - abs (r * 0.2), r - abs (r * 0.2), r - abs (r * 0.2), 1.0);\n"
            "}\n";
-           
-           std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
             juce::String statusText;
+           std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
+            
            // Sets up pipeline of shaders and compiles the program
-           if (shaderProgramAttempt->addVertexShader(juce::OpenGLHelpers::translateVertexShaderToV3 (vertexShader))
-               && shaderProgramAttempt->addFragmentShader(juce::OpenGLHelpers::translateFragmentShaderToV3 (fragmentShader))
+           if (shaderProgramAttempt->addVertexShader(juce::OpenGLHelpers::translateVertexShaderToV3(vertexShader))
+               && shaderProgramAttempt->addFragmentShader(juce::OpenGLHelpers::translateFragmentShaderToV3(fragmentShader))
                && shaderProgramAttempt->link())
            {
                uniforms.release();

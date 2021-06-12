@@ -148,7 +148,7 @@ public:
     //===============================================
     void prepareRingBuffer(int blockSize)
     {
-        graphBuffer.setSize(1, blockSize * 10);
+        graphBuffer.setSize(2, blockSize * 10);
     }
     GraphParamSet graphParams;
     RingBuffer<GLfloat> graphBuffer;

@@ -5,6 +5,12 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="ahJN9s" name="Hex">
     <GROUP id="{C19C4B9C-C1CE-DB96-BFBC-E32B33E7CFD7}" name="Source">
+      <GROUP id="{EF6D0CBE-7098-854E-3F20-282F4C42FBA1}" name="Shaders">
+        <FILE id="n8Vn5S" name="BasicFragment.glsl" compile="0" resource="1"
+              file="Source/BasicFragment.glsl"/>
+        <FILE id="Z8Iqs3" name="BasicVertex.glsl" compile="0" resource="1"
+              file="Source/BasicVertex.glsl"/>
+      </GROUP>
       <GROUP id="{C11F5034-6BBD-1F7B-BD7D-F6B8DE3363F5}" name="Synthesis">
         <FILE id="ifdQjq" name="DAHDSR.cpp" compile="1" resource="0" file="Source/DAHDSR.cpp"/>
         <FILE id="u6at9M" name="DAHDSR.h" compile="0" resource="0" file="Source/DAHDSR.h"/>
