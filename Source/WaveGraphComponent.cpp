@@ -71,8 +71,8 @@ void WaveGraph::renderOpenGL()
     juce::OpenGLHelpers::clear(UXPalette::darkGray);
             
             // Enable Alpha Blending
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable (GL_BLEND);
+    //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             
             // Use Shader Program that's been defined
     shader->use();

@@ -270,8 +270,8 @@ void WaveSelector::buttonClicked(juce::Button *b)
     else if(b == &bTri)
         hiddenBox.setSelectedId(4);
     auto pString = "waveParam" + juce::String(opIndex);
-    auto val = linkedTree->getRawParameterValue(pString)->load();
-    printf("Oscillator %d wave param: %f\n", opIndex, val);
+    //auto val = linkedTree->getRawParameterValue(pString)->load();
+    //printf("Oscillator %d wave param: %f\n", opIndex, val);
 }
 
 //=======================================================

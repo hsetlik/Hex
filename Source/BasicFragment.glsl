@@ -12,10 +12,10 @@ void getAmplitudeForXPos (in float xPos, out float audioAmplitude)
     float perfectSamplePosition = 255.0 * xPos / resolution.x;
     int leftSampleIndex = int (floor (perfectSamplePosition));
     int rightSampleIndex = int (ceil (perfectSamplePosition));
-    audioAmplitude = mix(audioSampleData[leftSampleIndex], audioSampleData[rightSampleIndex], fract (perfectSamplePosition));
+    audioAmplitude = (audioSampleData[leftSampleIndex] + audioSampleData[rightSampleIndex]) / 2.0;
 }
 
-#define THICKNESS 0.02
+#define THICKNESS 0.006
 void main()
 {
     float y = gl_FragCoord.y / resolution.y;
@@ -25,5 +25,5 @@ void main()
     amplitude = 0.5 - amplitude / 2.5;
     float r = abs(THICKNESS / (amplitude - y));
     
-    diffuseColor = vec4(r - abs(r * 0.2), r - abs(r * 0.2), r - abs(r * 0.2), 1.0);
+    diffuseColor = vec4(r - abs(r * 0.2), r - abs(r * 0.2), r, 1.0);
 }
