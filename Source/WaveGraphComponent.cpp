@@ -189,8 +189,8 @@ void WaveGraph::createShaders()
            std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
             
            // Sets up pipeline of shaders and compiles the program
-           if (shaderProgramAttempt->addVertexShader(juce::OpenGLHelpers::translateVertexShaderToV3(vertexShader))
-               && shaderProgramAttempt->addFragmentShader(juce::OpenGLHelpers::translateFragmentShaderToV3(fragmentShader))
+    if(shaderProgramAttempt->addFragmentShader({BinaryData::BasicFragment_glsl})
+            && shaderProgramAttempt->addVertexShader({BinaryData::BasicVertex_glsl})
                && shaderProgramAttempt->link())
            {
                uniforms.release();
