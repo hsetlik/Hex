@@ -16,10 +16,9 @@ ringBuffer(rBuffer),
 fundamental(0.0f),
 readBuffer(2, RING_BUFFER_READ_SIZE * 5)
 {
-    startTimerHz(24);
     openGLContext.setOpenGLVersionRequired(juce::OpenGLContext::OpenGLVersion::openGL3_2);
     openGLContext.setRenderer(this);
-    openGLContext.attachTo(*this);
+    openGLContext.attachTo(*getTopLevelComponent());
     openGLContext.setContinuousRepainting(true);
 }
 
@@ -34,15 +33,6 @@ void WaveGraph::paint(juce::Graphics &g)
     
 }
 
-void WaveGraph::timerCallback()
-{
-    triggerAsyncUpdate();
-}
-
-void WaveGraph::handleAsyncUpdate()
-{
-    fundamental = linkedParams->voiceFundamentals[linkedParams->lastTriggeredVoice];
-}
 void WaveGraph::newOpenGLContextCreated()
 {
     // Setup Shaders
@@ -62,7 +52,7 @@ void WaveGraph::openGLContextClosing()
 void WaveGraph::renderOpenGL()
 {
     jassert(juce::OpenGLHelpers::isContextActive());
-            
+    fundamental = linkedParams->voiceFundamentals[linkedParams->lastTriggeredVoice];
     // Setup Viewport
     const float renderingScale = (float) openGLContext.getRenderingScale();
     glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));
@@ -71,10 +61,10 @@ void WaveGraph::renderOpenGL()
     juce::OpenGLHelpers::clear(UXPalette::darkGray);
             
             // Enable Alpha Blending
-    //glEnable (GL_BLEND);
-    //glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             
-            // Use Shader Program that's been defined
+    // Use Shader Program that's been defined
     shader->use();
     auto samplesPerCycle = (int)44100.0f / fundamental;
     if(fundamental < 1.0f)
@@ -189,6 +179,5 @@ void WaveGraph::createShaders()
                
            }
            printf("%s\n", statusText.toRawUTF8());
-           triggerAsyncUpdate();
 }
 

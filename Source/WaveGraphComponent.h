@@ -16,10 +16,8 @@
 #define RING_BUFFER_READ_SIZE 256
 
 class WaveGraph :
-public juce::AsyncUpdater,
 public juce::OpenGLRenderer,
-public juce::Component,
-public juce::Timer
+public juce::Component
 {
 public:
     WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer);
@@ -27,8 +25,6 @@ public:
     GraphParamSet* const linkedParams;
     RingBuffer<GLfloat>* const ringBuffer;
     void paint(juce::Graphics& g) override;
-    void handleAsyncUpdate() override;
-    void timerCallback() override;
     //! OpenGL overrides
     void newOpenGLContextCreated() override;
     void openGLContextClosing() override;
