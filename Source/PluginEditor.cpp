@@ -10,12 +10,14 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-HexAudioProcessorEditor::HexAudioProcessorEditor (HexAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p), editor(&p.tree, &p.synth.graphParams)
+HexAudioProcessorEditor::HexAudioProcessorEditor (HexAudioProcessor& p) :
+AudioProcessorEditor (&p),
+audioProcessor (p),
+mainEditor(&p.tree, &p.synth.graphParams, &p.synth.graphBuffer)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    addAndMakeVisible(&editor);
+    addAndMakeVisible(&mainEditor);
     setSize(1000, 800);
 }
 
@@ -31,5 +33,5 @@ void HexAudioProcessorEditor::paint (juce::Graphics& g)
 
 void HexAudioProcessorEditor::resized()
 {
-    editor.setBounds(0, 0, getWidth(), getHeight());
+    mainEditor.setBounds(0, 0, getWidth(), getHeight());
 }

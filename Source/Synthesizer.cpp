@@ -88,7 +88,9 @@ void HexVoice::tickModulation()
     }
 }
 //=====================================================================================================================
-HexSynth::HexSynth(apvts* tree) : linkedTree(tree)
+HexSynth::HexSynth(apvts* tree) :
+linkedTree(tree),
+graphBuffer(1, 256 * 10)
 {
     for(int i = 0; i < NUM_VOICES; ++i)
     {

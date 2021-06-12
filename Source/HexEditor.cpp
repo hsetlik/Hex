@@ -10,7 +10,10 @@
 
 #include "HexEditor.h"
 
-HexEditor::HexEditor(apvts* tree, GraphParamSet* params) : linkedTree(tree), modGrid(tree), graph(params)
+HexEditor::HexEditor(apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer) :
+linkedTree(tree),
+modGrid(tree),
+graph(params, buffer)
 {
     addAndMakeVisible(&modGrid);
     addAndMakeVisible(&graph);

@@ -11,34 +11,57 @@
 #pragma once
 #include "Color.h"
 #include "Synthesizer.h"
+#include "RingBuffer.h"
 #define WAVE_RES 256
-
-class BasicOsc
-{
-public:
-    BasicOsc(WaveType type);
-    const WaveType oscType;
-    std::array<float, WAVE_RES> waveData;
-private:
-    float phase;
-    double baseFreq;
-};
+#define RING_BUFFER_READ_SIZE 256
 
 class WaveGraph :
 public juce::AsyncUpdater,
-public juce::Timer,
+public juce::OpenGLRenderer,
 public juce::Component
 {
 public:
-    WaveGraph(GraphParamSet* params);
+    WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer);
+    ~WaveGraph();
     GraphParamSet* const linkedParams;
+    RingBuffer<GLfloat>* const ringBuffer;
     void paint(juce::Graphics& g) override;
     void handleAsyncUpdate() override;
-    void timerCallback() override {triggerAsyncUpdate(); }
     void updateTrace();
+    //! OpenGL overrides
+    void newOpenGLContextCreated() override;
+    void openGLContextClosing() override;
+    void renderOpenGL() override;
 private:
+    struct Uniforms
+        {
+            Uniforms (juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram)
+            {
+                resolution.reset (createUniform (openGLContext, shaderProgram, "resolution"));
+                audioSampleData.reset (createUniform (openGLContext, shaderProgram, "audioSampleData"));
+            }
+            std::unique_ptr<juce::OpenGLShaderProgram::Uniform> resolution;
+            std::unique_ptr<juce::OpenGLShaderProgram::Uniform> audioSampleData;
+        private:
+            static juce::OpenGLShaderProgram::Uniform* createUniform(juce::OpenGLContext& openGLContext,
+                                                                juce::OpenGLShaderProgram& shaderProgram,
+                                                                const char* uniformName)
+            {
+                if (openGLContext.extensions.glGetUniformLocation(shaderProgram.getProgramID(), uniformName) < 0)
+                    return nullptr;
+                return new juce::OpenGLShaderProgram::Uniform(shaderProgram, uniformName);
+            }
+        };
     double fundamental;
     juce::Path trace;
     std::array<float, 256> wavePoints;
-    
+    //! OpenGL stuff
+    juce::OpenGLContext openGLContext;
+    GLuint VBO, VAO, EBO;
+    std::unique_ptr<juce::OpenGLShaderProgram> shader;
+    std::unique_ptr<Uniforms> uniforms;
+    const char* vertexShader;
+    const char* fragmentShader;
+    juce::AudioBuffer<GLfloat> readBuffer;    // Stores data read from ring buffer
+    GLfloat visualizationBuffer [RING_BUFFER_READ_SIZE];    // Single channel to visualize
 };

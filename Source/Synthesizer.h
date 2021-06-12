@@ -10,7 +10,7 @@
 
 #pragma once
 #include "FMOperator.h"
-#include <forward_list>
+#include "RingBuffer.h"
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
 class HexSound : public juce::SynthesiserSound
@@ -118,6 +118,9 @@ class HexSynth : public juce::Synthesiser
 {
 public:
     HexSynth(apvts* tree);
+    ~HexSynth()
+    {
+    }
     apvts* const linkedTree;
     void setSampleRate(double newRate)
     {
@@ -141,7 +144,13 @@ public:
     void setPan(int idx, float value);
     void setAudible(int idx, bool value);
     void setWave(int idx, float value);
+    //===============================================
+    void prepareRingBuffer(int blockSize)
+    {
+        graphBuffer.setSize(1, blockSize * 10);
+    }
     GraphParamSet graphParams;
+    RingBuffer<GLfloat> graphBuffer;
 private:
     RoutingGrid grid;
     std::vector<HexVoice*> hexVoices;
