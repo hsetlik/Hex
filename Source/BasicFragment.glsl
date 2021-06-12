@@ -1,7 +1,9 @@
 
 #version 330 core
-uniform vec2  resolution;
+uniform vec3  resolution;
 uniform float audioSampleData[256];
+
+
 layout(location = 0) out vec4 diffuseColor;
 
 void getAmplitudeForXPos (in float xPos, out float audioAmplitude)

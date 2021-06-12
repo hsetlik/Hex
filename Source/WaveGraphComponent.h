@@ -18,7 +18,8 @@
 class WaveGraph :
 public juce::AsyncUpdater,
 public juce::OpenGLRenderer,
-public juce::Component
+public juce::Component,
+public juce::Timer
 {
 public:
     WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer);
@@ -27,7 +28,7 @@ public:
     RingBuffer<GLfloat>* const ringBuffer;
     void paint(juce::Graphics& g) override;
     void handleAsyncUpdate() override;
-    void updateTrace();
+    void timerCallback() override;
     //! OpenGL overrides
     void newOpenGLContextCreated() override;
     void openGLContextClosing() override;
@@ -77,5 +78,5 @@ private:
     const char* vertexShader;
     const char* fragmentShader;
     juce::AudioBuffer<GLfloat> readBuffer;    // Stores data read from ring buffer
-    GLfloat visualizationBuffer [RING_BUFFER_READ_SIZE];    // Single channel to visualize
+    GLfloat visualizationBuffer[RING_BUFFER_READ_SIZE];    // Single channel to visualize
 };

@@ -14,8 +14,9 @@ WaveGraph::WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer) :
 linkedParams(params),
 ringBuffer(rBuffer),
 fundamental(0.0f),
-readBuffer(2, RING_BUFFER_READ_SIZE)
+readBuffer(2, RING_BUFFER_READ_SIZE * 5)
 {
+    startTimerHz(24);
     openGLContext.setOpenGLVersionRequired(juce::OpenGLContext::OpenGLVersion::openGL3_2);
     openGLContext.setRenderer(this);
     openGLContext.attachTo(*this);
@@ -33,18 +34,15 @@ void WaveGraph::paint(juce::Graphics &g)
     
 }
 
+void WaveGraph::timerCallback()
+{
+    triggerAsyncUpdate();
+}
+
 void WaveGraph::handleAsyncUpdate()
 {
-    wavePoints = linkedParams->dataValues;
-    updateTrace();
-    repaint();
+    fundamental = linkedParams->voiceFundamentals[linkedParams->lastTriggeredVoice];
 }
-
-void WaveGraph::updateTrace()
-{
-    
-}
-
 void WaveGraph::newOpenGLContextCreated()
 {
     // Setup Shaders
@@ -65,40 +63,60 @@ void WaveGraph::renderOpenGL()
 {
     jassert(juce::OpenGLHelpers::isContextActive());
             
-            // Setup Viewport
-            const float renderingScale = (float) openGLContext.getRenderingScale();
-            glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));
+    // Setup Viewport
+    const float renderingScale = (float) openGLContext.getRenderingScale();
+    glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));
             
-            // Set background Color
-            juce::OpenGLHelpers::clear(UXPalette::darkGray);
+    // Set background Color
+    juce::OpenGLHelpers::clear(UXPalette::darkGray);
             
             // Enable Alpha Blending
-            glEnable (GL_BLEND);
-            glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable (GL_BLEND);
+    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             
             // Use Shader Program that's been defined
-            shader->use();
+    shader->use();
+    auto samplesPerCycle = (int)44100.0f / fundamental;
+    if(fundamental < 1.0f)
+        samplesPerCycle = (int)44100.0f / 440.0f;
+    auto sampleIncrement = (samplesPerCycle * 3) / 256;
+    
             
             // Setup the Uniforms for use in the Shader
-            
-            if (uniforms->resolution != nullptr)
-                uniforms->resolution->set ((GLfloat) renderingScale * getWidth(), (GLfloat) renderingScale * getHeight());
+    if (uniforms->resolution != nullptr)
+        uniforms->resolution->set ((GLfloat)renderingScale * getWidth(),
+                                    (GLfloat) renderingScale * getHeight(),
+                                    (GLfloat)samplesPerCycle);
             
             // Read in samples from ring buffer
-            if (uniforms->audioSampleData != nullptr)
+    if (uniforms->audioSampleData != nullptr)
+    {
+        ringBuffer->readSamples (readBuffer, RING_BUFFER_READ_SIZE * 5);
+                
+        juce::FloatVectorOperations::clear (visualizationBuffer, RING_BUFFER_READ_SIZE);
+        //fill the visualization buffer with the appropriate samples for the fundamental
+        int fallingZeroCross = 0;
+        for(int i = 1; i < RING_BUFFER_READ_SIZE * 5; ++i)
+        {
+            auto sample1 = readBuffer.getSample(0, i - 1);
+            auto sample2 = readBuffer.getSample(0, i);
+            if(sample1 > 0.0f && sample2 <= 0.0f)
             {
-                ringBuffer->readSamples (readBuffer, RING_BUFFER_READ_SIZE);
-                
-                juce::FloatVectorOperations::clear (visualizationBuffer, RING_BUFFER_READ_SIZE);
-                
-                // Sum channels together
-                for (int i = 0; i < 2; ++i)
-                {
-                    juce::FloatVectorOperations::add (visualizationBuffer, readBuffer.getReadPointer(i, 0), RING_BUFFER_READ_SIZE);
-                }
-                
-                uniforms->audioSampleData->set (visualizationBuffer, 256);
+                fallingZeroCross = i;
+                break;
             }
+        }
+        if((fallingZeroCross + (int)(sampleIncrement * 256)) < readBuffer.getNumSamples())
+        {
+            for(int i = 0; i < 256; ++i)
+            {
+                auto lSample = readBuffer.getSample(0, fallingZeroCross + (int)(sampleIncrement * i));
+                auto rSample = readBuffer.getSample(1, fallingZeroCross + (int)(sampleIncrement * i));
+                visualizationBuffer[i] = lSample + rSample;
+            }
+        }
+        uniforms->audioSampleData->set(visualizationBuffer, 256);
+    }
             
             // Define Vertices for a Square (the view plane)
             GLfloat vertices[] = {
@@ -151,42 +169,8 @@ void WaveGraph::renderOpenGL()
 
 void WaveGraph::createShaders()
 {
-    vertexShader =
-           "attribute vec3 position;\n"
-           "\n"
-           "void main()\n"
-           "{\n"
-           "    gl_Position = vec4(position, 1.0);\n"
-           "}\n";
-           
-        fragmentShader =
-           "uniform vec2  resolution;\n"
-           "uniform float audioSampleData[256];\n"
-           "\n"
-           "void getAmplitudeForXPos (in float xPos, out float audioAmplitude)\n"
-           "{\n"
-           // Buffer size - 1
-           "   float perfectSamplePosition = 255.0 * xPos / resolution.x;\n"
-           "   int leftSampleIndex = int (floor (perfectSamplePosition));\n"
-           "   int rightSampleIndex = int (ceil (perfectSamplePosition));\n"
-           "   audioAmplitude = mix (audioSampleData[leftSampleIndex], audioSampleData[rightSampleIndex], fract (perfectSamplePosition));\n"
-           "}\n"
-           "\n"
-           "#define THICKNESS 0.02\n"
-           "void main()\n"
-           "{\n"
-           "    float y = gl_FragCoord.y / resolution.y;\n"
-           "    float amplitude = 0.0;\n"
-           "    getAmplitudeForXPos (gl_FragCoord.x, amplitude);\n"
-           "\n"
-           // Centers & Reduces Wave Amplitude
-           "    amplitude = 0.5 - amplitude / 2.5;\n"
-           "    float r = abs (THICKNESS / (amplitude-y));\n"
-           "\n"
-           "gl_FragColor = vec4 (r - abs (r * 0.2), r - abs (r * 0.2), r - abs (r * 0.2), 1.0);\n"
-           "}\n";
-            juce::String statusText;
-           std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
+    juce::String statusText;
+    std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
             
            // Sets up pipeline of shaders and compiles the program
     if(shaderProgramAttempt->addFragmentShader({BinaryData::BasicFragment_glsl})
@@ -202,9 +186,9 @@ void WaveGraph::createShaders()
            else
            {
                statusText = shaderProgramAttempt->getLastError();
-               printf("%s\n", statusText.toRawUTF8());
+               
            }
-           
+           printf("%s\n", statusText.toRawUTF8());
            triggerAsyncUpdate();
 }
 

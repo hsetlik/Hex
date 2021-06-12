@@ -29,9 +29,9 @@ public:
 class GraphParamSet
 {
 public:
-    GraphParamSet()
+    GraphParamSet() : lastTriggeredVoice(0)
     {
-
+        
     }
     int lastTriggeredVoice;
     int pointFrequency;
