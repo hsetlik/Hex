@@ -35,10 +35,23 @@ public:
 private:
     struct Uniforms
         {
-            Uniforms (juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram)
+            Uniforms (juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram) :
+            resolution(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "resolution")),
+            audioSampleData(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "audioSampleData"))
             {
                 resolution.reset (createUniform (openGLContext, shaderProgram, "resolution"));
                 audioSampleData.reset (createUniform (openGLContext, shaderProgram, "audioSampleData"));
+            }
+            ~Uniforms()
+            {
+                auto* pRes = resolution.get();
+                auto* pAudio = audioSampleData.get();
+                
+                resolution.release();
+                audioSampleData.release();
+                
+                delete pRes;
+                delete pAudio;
             }
             std::unique_ptr<juce::OpenGLShaderProgram::Uniform> resolution;
             std::unique_ptr<juce::OpenGLShaderProgram::Uniform> audioSampleData;
@@ -52,6 +65,7 @@ private:
                 return new juce::OpenGLShaderProgram::Uniform(shaderProgram, uniformName);
             }
         };
+    void createShaders();
     double fundamental;
     juce::Path trace;
     std::array<float, 256> wavePoints;

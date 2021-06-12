@@ -61,9 +61,10 @@ private:
 class HexVoice : public juce::SynthesiserVoice
 {
 public:
-    HexVoice(apvts* tree, GraphParamSet* gParams, int idx);
+    HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<GLfloat>* buffer, int idx);
     apvts* const linkedTree;
     GraphParamSet* const linkedParams;
+    RingBuffer<GLfloat>* const linkedBuffer;
     const int voiceIndex;
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {

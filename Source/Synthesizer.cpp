@@ -9,9 +9,10 @@
 */
 
 #include "Synthesizer.h"
-HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, int idx) :
+HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<GLfloat>* buffer, int idx) :
 linkedTree(tree),
 linkedParams(gParams),
+linkedBuffer(buffer),
 voiceIndex(idx),
 sumL(0.0f),
 sumR(0.0f),
@@ -63,14 +64,13 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += operators[op]->lastRight();
             }
             ++linkedParams->pointIdx;
-            if(linkedParams->lastTriggeredVoice == voiceIndex && linkedParams->pointIdx == linkedParams->pointFrequency)
-            {
-                linkedParams->pushIn(sumL + sumR);
-                linkedParams->pointIdx = 0;
-            }
         }
         outputBuffer.addSample(0, i, sumL);
         outputBuffer.addSample(1, i, sumR);
+    }
+    if(linkedParams->lastTriggeredVoice == voiceIndex)
+    {
+        linkedBuffer->writeSamples(outputBuffer, startSample, numSamples);
     }
 }
 //=====================================================================================================================
@@ -94,7 +94,7 @@ graphBuffer(1, 256 * 10)
 {
     for(int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice(new HexVoice(linkedTree, &graphParams, i));
+        addVoice(new HexVoice(linkedTree, &graphParams, &graphBuffer, i));
         auto* voice = dynamic_cast<HexVoice*>(voices.getLast());
         hexVoices.push_back(voice);
     }
