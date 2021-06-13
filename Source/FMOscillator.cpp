@@ -78,6 +78,8 @@ upperIdx(0)
 
 float SineOsc::getSample(double hz)
 {
+    if(hz > nyquist)
+        hz = nyquist;
     phaseDelta = (float)(hz / sampleRate);
     phase += phaseDelta;
     if(phase > 1.0f)
@@ -197,6 +199,8 @@ Wavetable* AntiAliasOsc::tableForHz(double hz)
 
 float AntiAliasOsc::getSample(double hz)
 {
+    if(hz > nyquist)
+        hz = nyquist;
     phaseDelta = (float)(hz / sampleRate);
     phase += phaseDelta;
     if(phase > 1.0f)

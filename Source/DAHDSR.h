@@ -54,7 +54,7 @@ public:
         noteOff
     };
     //functions
-    DAHDSR(int ind=0) : factor(1.0f), sampleRate(44100), index(ind)
+    DAHDSR(int ind=0) : lastOutput(0.0f), factor(1.0f), sampleRate(44100), index(ind)
     {
         trigger = false;
         samplesIntoPhase = 0;
@@ -106,7 +106,8 @@ public:
         return !(output == 0.0f);
     }
     envPhase getPhase() {return currentPhase;}
-    double output;
+    float output;
+    float lastOutput;
     void setDelay(float val) {delayTime = val;}
     void setAttack(float val) {attackTime = val;}
     void setHold(float val) {holdTime = val;}
@@ -114,6 +115,7 @@ public:
     void setSustain(float val) {sustainLevel = val;}
     void setRelease(float val) {releaseTime = val;}
     float getLastLevel() {return output;}
+    void printDebug();
 private:
     //data
     envPhase currentPhase;

@@ -77,8 +77,16 @@ void DAHDSR::enterPhase(envPhase newPhase)
 }
 float DAHDSR::process(float input)
 {
+    lastOutput = output;
     updatePhase();
     ++samplesIntoPhase;
     output *= factor;
     return input * output;
+}
+
+void DAHDSR::printDebug()
+{
+    printf("This output: %f\n", output);
+    printf("Last output: %f\n", lastOutput);
+    //printf("Delay: %f\n", )
 }

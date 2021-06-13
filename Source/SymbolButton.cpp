@@ -47,13 +47,11 @@ void ModulationToggle::paintButton(juce::Graphics &g, bool highlighted, bool dow
     auto stroke = juce::PathStrokeType(1.0f);
     g.strokePath(slash, stroke);
     auto cushion = bBounds.getHeight() / 15.0f;
-    printf("cushion: %f\n", cushion);
     bBounds = bBounds.reduced(cushion);
     auto dY = bBounds.getHeight() / 2.0f;
     auto font = g.getCurrentFont();
     auto fontHeight = font.getHeight() * 0.8f;
     g.setFont(font.withHeight(fontHeight));
-    printf("font size: %f\n", fontHeight);
     auto sBounds = bBounds.removeFromTop(dY);
     g.drawText(sStr, sBounds, juce::Justification::topLeft);
     g.drawText(dStr, bBounds, juce::Justification::bottomRight);

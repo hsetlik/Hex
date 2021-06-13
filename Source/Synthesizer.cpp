@@ -16,7 +16,8 @@ linkedBuffer(buffer),
 voiceIndex(idx),
 sumL(0.0f),
 sumR(0.0f),
-fundamental(0.0f)
+fundamental(0.0f),
+lastMonoSum(0.0f)
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
@@ -29,8 +30,6 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice = voiceIndex;
     linkedParams->voiceFundamentals[voiceIndex] = (float)fundamental;
-    linkedParams->pointFrequency = 2500 / (int)fundamental;
-    linkedParams->pointIdx = 0;
     for(auto op : operators)
     {
         op->trigger(true);

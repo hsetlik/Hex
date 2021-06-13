@@ -71,7 +71,6 @@ public:
     HexOsc oscillator;
     DAHDSR envelope;
 private:
-    
     //! Settable parameters stored down here
     float modIndex;
     float baseRatio;
@@ -79,6 +78,7 @@ private:
     float pan;
     //!  output variables
     float lastOutMono;
+    float prevOutMono;
     float lastOutL;
     float lastOutR;
 };

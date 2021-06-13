@@ -135,6 +135,7 @@ bool HexAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
 
 void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    buffer.clear();
     synth.updateRoutingForBlock();
     synth.updateOscillatorsForBlock();
     synth.updateEnvelopesForBlock();

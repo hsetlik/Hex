@@ -10,6 +10,7 @@
 
 #pragma once
 #include "MathUtil.h"
+#include "DebugUtil.h"
 #define TABLES_PER_FRAME 10
 #define TABLESIZE 1024
 
@@ -37,15 +38,20 @@ public:
 class OscBase
 {
 public:
-    OscBase() : sampleRate(44100.0f)
+    OscBase() : sampleRate(44100.0f), nyquist(sampleRate / 2.0f)
     {
         
     }
     virtual ~OscBase() {}
-    virtual void setSampleRate(double rate) {sampleRate = rate; }
+    virtual void setSampleRate(double rate)
+    {
+        sampleRate = rate;
+        nyquist = sampleRate / 2.0f;
+    }
     virtual float getSample(double hz) {return 0.0f; }
 protected:
     double sampleRate;
+    double nyquist;
 };
 
 class SineOsc : public OscBase

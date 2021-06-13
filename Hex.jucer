@@ -5,6 +5,8 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="ahJN9s" name="Hex">
     <GROUP id="{C19C4B9C-C1CE-DB96-BFBC-E32B33E7CFD7}" name="Source">
+      <FILE id="HlX6GW" name="DebugUtil.cpp" compile="1" resource="0" file="Source/DebugUtil.cpp"/>
+      <FILE id="VkOGlC" name="DebugUtil.h" compile="0" resource="0" file="Source/DebugUtil.h"/>
       <GROUP id="{EF6D0CBE-7098-854E-3F20-282F4C42FBA1}" name="Shaders">
         <FILE id="n8Vn5S" name="BasicFragment.glsl" compile="0" resource="1"
               file="Source/BasicFragment.glsl"/>

@@ -72,6 +72,7 @@ public:
     }
     void setSampleRate(double newRate)
     {
+        setCurrentPlaybackSampleRate(newRate);
         for(auto op : operators)
             op->setSampleRate(newRate);
     }
@@ -112,6 +113,7 @@ private:
     float sumL;
     float sumR;
     double fundamental;
+    float lastMonoSum;
     RoutingGrid grid;
 };
 
@@ -126,7 +128,10 @@ public:
     void setSampleRate(double newRate)
     {
         setCurrentPlaybackSampleRate(newRate);
-        
+        for(auto voice : hexVoices)
+        {
+            voice->setSampleRate(newRate);
+        }
     }
     //===============================================
     void updateRoutingForBlock();
