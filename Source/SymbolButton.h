@@ -101,8 +101,10 @@ public:
     const int dest;
     void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
 private:
-    Color litBkgnd;
-    Color unlitBkgnd;
+    Color litBkgndUpper;
+    Color unlitBkgndUpper;
+    Color litBkgndLower;
+    Color unlitBkgndLower;
     Color litText;
     Color unlitText;
 };

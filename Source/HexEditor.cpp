@@ -25,11 +25,13 @@ graph(params, buffer)
 
 void HexEditor::resized()
 {
-    auto gridWidth = getWidth() / 6;
+    auto gridWidth = getWidth() / 4.5f;
     auto bounds = getLocalBounds();
     auto rightColumn = bounds.removeFromRight(gridWidth);
     modGrid.setBounds(rightColumn.removeFromTop(gridWidth));
-    graph.setBounds(rightColumn.removeFromTop(gridWidth));
+    auto gBounds = rightColumn.removeFromTop(gridWidth);
+    auto cushion = gBounds.getWidth() / 15;
+    graph.setBounds(gBounds.reduced(cushion));
     
     auto dX = bounds.getWidth() / 3;
     auto topBounds = bounds.removeFromTop(bounds.getHeight() / 2);

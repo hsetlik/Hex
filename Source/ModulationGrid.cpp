@@ -27,15 +27,23 @@ ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree)
 void ModulationGrid::resized()
 {
     auto fBounds = getLocalBounds().toFloat();
-    auto dX = fBounds.getWidth() / NUM_OPERATORS;
-    auto dY = fBounds.getWidth() / NUM_OPERATORS;
+    auto innerBounds = fBounds.reduced(fBounds.getWidth() / 8.0f);
+    auto x0 = innerBounds.getX();
+    auto y0 = innerBounds.getY();
+    auto dX = innerBounds.getWidth() / NUM_OPERATORS;
+    auto dY = innerBounds.getWidth() / NUM_OPERATORS;
     for(int src = 0; src < NUM_OPERATORS; ++src)
     {
         for(int dst = 0; dst < NUM_OPERATORS; ++dst)
         {
-            auto bounds = juce::Rectangle<int>(src * dX, dst * dY, dX, dY);
+            auto bounds = juce::Rectangle<int>(x0 + src * dX, y0 + dst * dY, dX, dY);
             auto idx = (src * NUM_OPERATORS) + dst;
             buttons[idx]->setBounds(bounds);
         }
     }
+}
+
+void ModulationGrid::paint(juce::Graphics &g)
+{
+    
 }
