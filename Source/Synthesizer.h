@@ -109,6 +109,26 @@ public:
     void setPan(int idx, float value) {operators[idx]->setPan(value); }
     void setAudible(int idx, bool value) {operators[idx]->setAudible(value); }
     void setWave(int idx, float value) {operators[idx]->setWave((int)value); }
+    void clickDebug(float newSum, int currentSample, int sSample, int nSamples)
+    {
+        if(fabs(lastMonoSum - newSum) > 0.18f)
+        {
+            printf("Voice #%d clicked at sample index %d\n", voiceIndex, currentSample);
+            printf("Difference: %f\n", lastMonoSum - newSum);
+            printf("Start sample: %d\n", sSample);
+            printf("Num Samples: %d\n\n", nSamples);
+        }
+        lastMonoSum = newSum;
+    }
+    bool anyEnvsActive()
+    {
+        for(auto op : operators)
+        {
+            if(op->envelope.isActive() && op->isAudible())
+                return true;
+        }
+        return false;
+    }
 private:
     float sumL;
     float sumR;

@@ -78,7 +78,6 @@ private:
     float pan;
     //!  output variables
     float lastOutMono;
-    float prevOutMono;
     float lastOutL;
     float lastOutR;
 };

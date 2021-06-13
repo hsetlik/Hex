@@ -17,7 +17,6 @@ modIndex(0.0f),
 modOffset(0.0f),
 pan(0.5f),
 lastOutMono(0.0f),
-prevOutMono(0.0f),
 lastOutL(0.0f),
 lastOutR(0.0f)
 {

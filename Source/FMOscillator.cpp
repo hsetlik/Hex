@@ -82,7 +82,7 @@ float SineOsc::getSample(double hz)
         hz = nyquist;
     phaseDelta = (float)(hz / sampleRate);
     phase += phaseDelta;
-    if(phase > 1.0f)
+    if(phase >= 1.0f)
         phase -= 1.0f;
     lowerIdx = floor(phase * TABLESIZE);
     skew = (phase * TABLESIZE) - lowerIdx;
@@ -210,7 +210,7 @@ float AntiAliasOsc::getSample(double hz)
     skew = (phase * TABLESIZE) - bottomIndex;
     bSample = table->table[bottomIndex];
     tSample = (bottomIndex == TABLESIZE - 1) ? table->table[0] : table->table[bottomIndex + 1];
-    return bSample + ((tSample - bSample) * skew);
+    return MathUtil::fLerp(bSample, tSample, skew);
 }
 //==============================================================================================
 HexOsc::HexOsc() :

@@ -71,6 +71,8 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     {
         linkedBuffer->writeSamples(outputBuffer, startSample, numSamples);
     }
+    if(!anyEnvsActive())
+        clearCurrentNote();
 }
 //=====================================================================================================================
 void HexVoice::tickModulation()
