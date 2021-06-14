@@ -15,6 +15,7 @@
 #include "ComponentUtil.h"
 #include "SliderLabel.h"
 #define REPAINT_FPS 24
+#define NOISE_SEED 2239
 using sliderAttach = juce::AudioProcessorValueTreeState::SliderAttachment;
 using pSliderAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>;
 class EnvelopeComponent : public juce::Component
@@ -116,6 +117,11 @@ class TriButton : public WaveButton
 public:
     void setSymbol() override;
 };
+class NoiseButton : public WaveButton
+{
+public:
+    void setSymbol() override;
+};
 //===============================================================
 class WaveSelector :
 public juce::Component,
@@ -132,6 +138,7 @@ private:
     SquareButton bSquare;
     SawButton bSaw;
     TriButton bTri;
+    NoiseButton bNoise;
     juce::ComboBox hiddenBox;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> hiddenBoxAttach;
 };

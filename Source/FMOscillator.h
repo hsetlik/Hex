@@ -19,7 +19,8 @@ enum WaveType
     Sine,
     Square,
     Saw,
-    Tri
+    Tri,
+    Noise
 };
 
 struct Wavetable
@@ -85,6 +86,21 @@ private:
     float bSample;
     float tSample;
     float skew;
+};
+
+class NoiseOsc : public OscBase
+{
+public:
+    NoiseOsc() : rGen(2341)
+    {
+        
+    }
+    float getSample(double hz) override
+    {
+        return (rGen.nextFloat() * 2.0f) - 1.0f;
+    }
+private:
+    juce::Random rGen;
 };
 
 class HexOsc : public juce::AsyncUpdater

@@ -259,6 +259,27 @@ void TriButton::setSymbol()
     symbol.lineTo(xCenter, yMin);
     symbol.lineTo(xMax, yMax);
 }
+void NoiseButton::setSymbol()
+{
+    auto fBounds = getLocalBounds().toFloat();
+    auto cushion = fBounds.getHeight() / 8.0f;
+    auto bounds = fBounds.reduced(cushion);
+    auto numPoints = 12;
+    auto x0 = bounds.getX();
+    auto y0 = bounds.getY() + bounds.getHeight() / 2.0f;
+    auto amplitude = bounds.getHeight() / 2.0f;
+    auto dX = bounds.getWidth() / numPoints;
+    auto rand = juce::Random(NOISE_SEED);
+    symbol.clear();
+    symbol.startNewSubPath(x0, y0);
+    for(int i = 0; i < numPoints; ++i)
+    {
+        auto val = (rand.nextFloat() - 0.5f) * 2.0f;
+        auto x = x0 + dX * i;
+        auto y = y0 + val * amplitude;
+        symbol.lineTo(x, y);
+    }
+}
 //=======================================================
 WaveSelector::WaveSelector(int index, apvts* tree) :
 opIndex(index),
@@ -268,12 +289,14 @@ linkedTree(tree)
     addAndMakeVisible(&bSquare);
     addAndMakeVisible(&bSaw);
     addAndMakeVisible(&bTri);
+    addAndMakeVisible(&bNoise);
     addAndMakeVisible(hiddenBox);
     hiddenBox.setVisible(false);
     hiddenBox.addItem("Sine", 1);
     hiddenBox.addItem("Square", 2);
     hiddenBox.addItem("Saw", 3);
     hiddenBox.addItem("Tri", 4);
+    hiddenBox.addItem("Noise", 5);
     auto waveId = "waveParam" + juce::String(opIndex);
     hiddenBoxAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*linkedTree, waveId, hiddenBox));
     auto radioNum = 60 + opIndex;
@@ -281,6 +304,7 @@ linkedTree(tree)
     bSquare.setRadioGroupId(radioNum);
     bSaw.setRadioGroupId(radioNum);
     bTri.setRadioGroupId(radioNum);
+    bNoise.setRadioGroupId(radioNum);
     
     bSine.triggerClick();
     
@@ -288,16 +312,18 @@ linkedTree(tree)
     bSquare.addListener(this);
     bSaw.addListener(this);
     bTri.addListener(this);
+    bNoise.addListener(this);
 }
 
 void WaveSelector::resized()
 {
     auto fBounds = getLocalBounds();
-    auto dX = fBounds.getWidth() / 4;
+    auto dX = fBounds.getWidth() / 5;
     bSine.setBounds(fBounds.removeFromLeft(dX));
     bSquare.setBounds(fBounds.removeFromLeft(dX));
     bSaw.setBounds(fBounds.removeFromLeft(dX));
-    bTri.setBounds(fBounds);
+    bTri.setBounds(fBounds.removeFromLeft(dX));
+    bNoise.setBounds(fBounds);
 }
 void WaveSelector::buttonClicked(juce::Button *b)
 {
@@ -309,9 +335,8 @@ void WaveSelector::buttonClicked(juce::Button *b)
         hiddenBox.setSelectedId(3);
     else if(b == &bTri)
         hiddenBox.setSelectedId(4);
-    auto pString = "waveParam" + juce::String(opIndex);
-    //auto val = linkedTree->getRawParameterValue(pString)->load();
-    //printf("Oscillator %d wave param: %f\n", opIndex, val);
+    else if(b == &bNoise)
+        hiddenBox.setSelectedId(5);
 }
 
 //=======================================================

@@ -62,8 +62,8 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += operators[op]->lastRight();
             }
         }
-        outputBuffer.addSample(0, i, sumL);
-        outputBuffer.addSample(1, i, sumR);
+        outputBuffer.addSample(0, i, sumR);
+        outputBuffer.addSample(1, i, sumL);
     }
     for(int op = 0; op < NUM_OPERATORS; ++op)
     {

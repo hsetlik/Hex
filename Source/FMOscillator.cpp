@@ -58,6 +58,15 @@ std::array<float, TABLESIZE> WTArray::makeArray(WaveType type)
             }
             break;
         }
+        case Noise:
+        {
+            auto rand = juce::Random(5);
+            for(int i = 0; i < TABLESIZE; ++i)
+            {
+                auto raw = rand.nextFloat();
+                arr[i] = (raw - 0.5f) * 2.0f;
+            }
+        }
     }
     return arr;
 }
@@ -231,5 +240,10 @@ void HexOsc::setType(WaveType type)
 
 void HexOsc::handleAsyncUpdate()
 {
-    pOsc.reset(new AntiAliasOsc(currentType));
+    if(currentType != Sine && currentType != Noise)
+        pOsc.reset(new AntiAliasOsc(currentType));
+    else if(currentType == Sine)
+        pOsc.reset(new SineOsc());
+    else
+        pOsc.reset(new NoiseOsc());
 }

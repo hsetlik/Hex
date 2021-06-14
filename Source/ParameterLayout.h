@@ -79,6 +79,7 @@ public:
             waves.add("Square");
             waves.add("Saw");
             waves.add("Tri");
+            waves.add("Noise");
             auto waveId = "waveParam" + iStr;
             auto waveName = "Operator " + iStr + " wave";
             layout.add(std::make_unique<juce::AudioParameterChoice>(waveId, waveName, waves, 0));
