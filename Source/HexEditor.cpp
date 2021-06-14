@@ -19,7 +19,7 @@ graph(params, buffer)
     addAndMakeVisible(&graph);
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
-        addAndMakeVisible(opComponents.add(new OperatorComponent(i, linkedTree)));
+        addAndMakeVisible(opComponents.add(new OperatorComponent(i, linkedTree, params)));
     }
 }
 

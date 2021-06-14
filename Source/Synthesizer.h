@@ -36,7 +36,7 @@ public:
     int lastTriggeredVoice;
     int pointFrequency;
     int pointIdx;
-    fVoiceOp levels;
+    std::atomic<float> levels[NUM_VOICES][NUM_OPERATORS];
     std::array<float, NUM_OPERATORS> opRatios;
     std::array<float, NUM_VOICES> voiceFundamentals;
     std::array<bool, NUM_OPERATORS> opOutputs;

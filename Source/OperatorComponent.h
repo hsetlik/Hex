@@ -10,7 +10,7 @@
 
 #pragma once
 #include "Color.h"
-#include "FMOperator.h"
+#include "Synthesizer.h"
 #include "SymbolButton.h"
 #include "ComponentUtil.h"
 #include "SliderLabel.h"
@@ -44,12 +44,30 @@ public:
         float releaseVal;
         bool needsRepaint;
     };
-    EnvelopeComponent(int idx, apvts* tree);
+    class LevelMeter :
+    public juce::Component,
+    public juce::AsyncUpdater,
+    public juce::Timer
+    {
+    public:
+        LevelMeter(int idx, GraphParamSet* params);
+        const int envIndex;
+        GraphParamSet* const linkedParams;
+        void timerCallback() override;
+        void handleAsyncUpdate() override;
+        void paint(juce::Graphics& g) override;
+    private:
+        float level;
+        int lastVoice;
+    };
+    EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams);
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;
     
     DAHDSRGraph graph;
+    
+    LevelMeter meter;
     
     juce::Slider delaySlider;
     juce::Slider attackSlider;
@@ -123,7 +141,7 @@ public juce::Component,
 public juce::Button::Listener
 {
 public:
-    OperatorComponent(int idx, apvts* tree);
+    OperatorComponent(int idx, apvts* tree, GraphParamSet* gParams);
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;

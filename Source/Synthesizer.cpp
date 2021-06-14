@@ -56,16 +56,18 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
         for(int op = 0; op < NUM_OPERATORS; ++op)
         {
             operators[op]->tick(fundamental);
-            linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
             if(operators[op]->isAudible())
             {
                 sumL += operators[op]->lastLeft();
                 sumR += operators[op]->lastRight();
             }
-            ++linkedParams->pointIdx;
         }
         outputBuffer.addSample(0, i, sumL);
         outputBuffer.addSample(1, i, sumR);
+    }
+    for(int op = 0; op < NUM_OPERATORS; ++op)
+    {
+        linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
     }
     if(linkedParams->lastTriggeredVoice == voiceIndex)
     {

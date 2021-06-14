@@ -91,10 +91,44 @@ void EnvelopeComponent::DAHDSRGraph::paint(juce::Graphics &g)
     g.strokePath(trace, stroke);
 }
 //==============================================================================
-EnvelopeComponent::EnvelopeComponent(int idx, apvts* tree) :
+EnvelopeComponent::LevelMeter::LevelMeter(int idx, GraphParamSet* params) :
+envIndex(idx),
+linkedParams(params),
+level(0.0f),
+lastVoice(0)
+{
+    startTimerHz(REPAINT_FPS);
+}
+
+void EnvelopeComponent::LevelMeter::timerCallback() {triggerAsyncUpdate(); }
+
+void EnvelopeComponent::LevelMeter::handleAsyncUpdate()
+{
+    lastVoice = linkedParams->lastTriggeredVoice;
+    auto newLevel = linkedParams->levels[lastVoice][envIndex].load();
+    if(level != newLevel)
+    {
+        level = newLevel;
+        repaint();
+    }
+}
+
+void EnvelopeComponent::LevelMeter::paint(juce::Graphics &g)
+{
+    auto bBounds = getLocalBounds().toFloat();
+    auto lBounds = juce::Rectangle<float>(bBounds.getX(), bBounds.getY(), bBounds.getWidth(), bBounds.getHeight() * (1.0f - level));
+    g.setColour(UXPalette::highlight);
+    g.fillRect(bBounds);
+    g.setColour(UXPalette::darkBlue);
+    g.fillRect(lBounds);
+}
+
+//==============================================================================
+EnvelopeComponent::EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams) :
 opIndex(idx),
 linkedTree(tree),
-graph(this)
+graph(this),
+meter(idx, gParams)
 {
     SliderUtil::setVerticalLinearNoBox(delaySlider);
     SliderUtil::setVerticalLinearNoBox(attackSlider);
@@ -119,6 +153,8 @@ graph(this)
     
     addAndMakeVisible(&graph);
     
+    addAndMakeVisible(&meter);
+    
     auto iStr = juce::String(opIndex);
     auto delayId = "delayParam" + iStr;
     auto attackId = "attackParam" + iStr;
@@ -139,8 +175,12 @@ void EnvelopeComponent::resized()
 {
     auto bounds = getLocalBounds();
     auto dY = bounds.getHeight() / 2;
-    graph.setBounds(bounds.removeFromTop(dY));
-    auto dX = bounds.getWidth() / 6;
+    auto upper = bounds.removeFromTop(dY);
+    auto dX = upper.getWidth() / 10;
+    auto mBounds = upper.removeFromRight(dX);
+    meter.setBounds(mBounds);
+    graph.setBounds(upper);
+    dX = bounds.getWidth() / 6;
     delaySlider.setBounds(bounds.removeFromLeft(dX));
     attackSlider.setBounds(bounds.removeFromLeft(dX));
     holdSlider.setBounds(bounds.removeFromLeft(dX));
@@ -275,10 +315,10 @@ void WaveSelector::buttonClicked(juce::Button *b)
 }
 
 //=======================================================
-OperatorComponent::OperatorComponent(int idx, apvts* tree) :
+OperatorComponent::OperatorComponent(int idx, apvts* tree, GraphParamSet* gParams) :
 opIndex(idx),
 linkedTree(tree),
-envComponent(idx, tree),
+envComponent(idx, tree, gParams),
 waveSelect(idx, tree),
 ratioLabel(&ratioSlider),
 modLabel(&modSlider),
