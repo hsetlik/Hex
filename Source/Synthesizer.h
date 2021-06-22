@@ -162,6 +162,7 @@ public:
     void updateRoutingForBlock();
     void updateEnvelopesForBlock();
     void updateOscillatorsForBlock();
+    void updateFiltersForBlock();
     //! fucnitons for updating the voices based on parameter changes
     void setDelay(int idx, float value);
     void setAttack(int idx, float value);
@@ -177,6 +178,10 @@ public:
     void setDecayF(float value);
     void setSustainF(float value);
     void setReleaseF(float value);
+    void setCutoff(float value);
+    void setResonance(float value);
+    void setWetDry(float value);
+    void setDepth(float value);
     //===============================================
     void setRatio(int idx, float value);
     void setModIndex(int idx, float value);

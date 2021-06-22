@@ -140,6 +140,7 @@ void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     synth.updateRoutingForBlock();
     synth.updateOscillatorsForBlock();
     synth.updateEnvelopesForBlock();
+    synth.updateFiltersForBlock();
 }
 
 //==============================================================================

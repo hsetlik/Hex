@@ -193,6 +193,35 @@ void HexSynth::setReleaseF(float value)
         voice->voiceFilter.envelope.setRelease(value);
     }
 }
+void HexSynth::setCutoff(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.setCutoff(value);
+    }
+}
+void HexSynth::setResonance(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.setResonance(value);
+    }
+}
+void HexSynth::setWetDry(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.setWetLevel(value);
+    }
+}
+void HexSynth::setDepth(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.setDepth(value);
+    }
+}
+//============================================================
 void HexSynth::setAudible(int idx, bool value)
 {
     for(auto voice : hexVoices)
@@ -312,4 +341,29 @@ void HexSynth::updateOscillatorsForBlock()
         setLevel(i, level);
         setWave(i, wave);
     }
+}
+
+void HexSynth::updateFiltersForBlock()
+{
+    float delay = *linkedTree->getRawParameterValue("filterDelayParam");
+    float attack = *linkedTree->getRawParameterValue("filterAttackParam");
+    float hold = *linkedTree->getRawParameterValue("filterHoldParam");
+    float decay = *linkedTree->getRawParameterValue("filterDecayParam");
+    float sustain = *linkedTree->getRawParameterValue("filterSustainParam");
+    float release = *linkedTree->getRawParameterValue("filterReleaseParam");
+    setDelayF(delay);
+    setAttackF(attack);
+    setHoldF(hold);
+    setDecayF(decay);
+    setSustainF(sustain);
+    setReleaseF(release);
+    
+    float cutoff = *linkedTree->getRawParameterValue("cutoffParam");
+    float resonance = *linkedTree->getRawParameterValue("resonanceParam");
+    float wet = *linkedTree->getRawParameterValue("wetDryParam");
+    float depth = *linkedTree->getRawParameterValue("depthParam");
+    setCutoff(cutoff);
+    setResonance(resonance);
+    setWetDry(wet);
+    setDepth(depth);
 }
