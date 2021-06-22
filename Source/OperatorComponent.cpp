@@ -172,10 +172,10 @@ meter(idx, gParams, isFilter)
     {
         delayId = "filterDelayParam";
         attackId = "filterAttackParam";
-        holdId = "filterHoldId";
-        decayId = "filterDecayId";
-        sustainId = "filterSustainId";
-        releaseId = "filterSustainId";
+        holdId = "filterHoldParam";
+        decayId = "filterDecayParam";
+        sustainId = "filterSustainParam";
+        releaseId = "filterReleaseParam";
     }
     
     delayAttach.reset(new sliderAttach(*linkedTree, delayId, delaySlider));
