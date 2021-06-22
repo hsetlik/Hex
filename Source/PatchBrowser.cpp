@@ -241,9 +241,9 @@ void PatchDialogBox::resized()
     int h = getHeight() / 12;
     
     nameField.setBounds(w, 3.5 * h, 16 * w, h);
-    savePatchButton.setBounds(9 * w, 5 * h, 5 * w, 1.5 * h);
-    cancelButton.setBounds(15 * w, 5 * h, 2 * w, 1.5 * h);
-    typeBox.setBounds(w, 5 * h, 3 * w, 1.5 * h);
+    savePatchButton.setBounds(8.5 * w, 5 * h, 4 * w, 1.5 * h);
+    cancelButton.setBounds(13 * w, 5 * h, 3 * w, 1.5 * h);
+    typeBox.setBounds(w, 5 * h, 6 * w, 1.5 * h);
     auto name = patchLoader->getCurrentPresetName();
     auto type = patchLoader->getCurrentPresetType();
     nameField.setText(name);

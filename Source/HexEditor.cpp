@@ -105,7 +105,7 @@ void HexEditor::resized()
     opComponents[4]->setBounds(bounds.removeFromLeft(dX));
     opComponents[5]->setBounds(bounds);
     
-    auto xCushion = getWidth() / 3;
+    auto xCushion = getWidth() / 3.5;
     auto yCushion = getHeight() / 3;
     auto saveBounds = getLocalBounds().reduced(xCushion, yCushion);
     saveDialog.setBounds(saveBounds);
