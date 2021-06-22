@@ -65,6 +65,11 @@ public:
         layout.add(std::make_unique<juce::AudioParameterFloat>(resId, resName, resRange, RESONANCE_DEFAULT));
         layout.add(std::make_unique<juce::AudioParameterFloat>(wetId, wetName, 0.0f, 1.0f, 1.0f));
         layout.add(std::make_unique<juce::AudioParameterFloat>(depthId, depthName, 0.0f, 1.0f, 0.5f));
+        juce::StringArray filterTypes;
+        filterTypes.add("Low Pass");
+        filterTypes.add("High Pass");
+        filterTypes.add("Band Pass");
+        layout.add(std::make_unique<juce::AudioParameterChoice>("filterTypeParam", "Filter Type", filterTypes, 0));
         for(int i = 0; i < NUM_OPERATORS; ++i)
         {
             juce::String iStr = juce::String(i);
@@ -102,17 +107,6 @@ public:
             auto sustainName = "Operator " + iStr + " sustain";
             auto releaseId = "releaseParam" + iStr;
             auto releaseName = "Operator " + iStr + " release";
-            fRange delayRange(DELAY_MIN, DELAY_MAX);
-            delayRange.setSkewForCentre(DELAY_CENTER);
-            fRange attackRange(ATTACK_MIN, ATTACK_MAX);
-            attackRange.setSkewForCentre(ATTACK_CENTER);
-            fRange holdRange(HOLD_MIN, HOLD_MAX);
-            holdRange.setSkewForCentre(HOLD_CENTER);
-            fRange decayRange(DECAY_MIN, DECAY_MAX);
-            decayRange.setSkewForCentre(DECAY_CENTER);
-            fRange sustainRange(SUSTAIN_MIN, SUSTAIN_MAX);
-            fRange releaseRange(RELEASE_MIN, RELEASE_MAX);
-            releaseRange.setSkewForCentre(RELEASE_CENTER);
             layout.add(std::make_unique<juce::AudioParameterFloat>(delayId, delayName, delayRange, DELAY_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterFloat>(attackId, attackName, attackRange, ATTACK_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterFloat>(holdId, holdName, holdRange, HOLD_DEFAULT));

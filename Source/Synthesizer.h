@@ -182,6 +182,7 @@ public:
     void setResonance(float value);
     void setWetDry(float value);
     void setDepth(float value);
+    void setFilterType(float value);
     //===============================================
     void setRatio(int idx, float value);
     void setModIndex(int idx, float value);

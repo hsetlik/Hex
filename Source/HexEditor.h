@@ -27,6 +27,9 @@ private:
     juce::Slider wetSlider;
     juce::Slider depthSlider;
     
+    juce::ComboBox typeBox;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> typeAttach;
+    
     pSliderAttach cutoffAttach;
     pSliderAttach resAttach;
     pSliderAttach wetAttach;

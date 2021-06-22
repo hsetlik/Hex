@@ -14,7 +14,7 @@
 #include "DAHDSR.h"
 #include "MathUtil.h"
 #define CUTOFF_MIN 20.0f
-#define CUTOFF_MAX 4000.0f
+#define CUTOFF_MAX 8000.0f
 #define CUTOFF_DEFAULT 2500.0f
 #define CUTOFF_CENTER 600.0f
 

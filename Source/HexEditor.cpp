@@ -18,6 +18,14 @@ envComp(0, linkedTree, graph, true)
     wetAttach.reset(new sliderAttach(*linkedTree, "wetDryParam", wetSlider));
     depthAttach.reset(new sliderAttach(*linkedTree, "depthParam", depthSlider));
     
+    typeAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*linkedTree, "filterTypeParam", typeBox));
+    typeBox.addItem("Low Pass", 1);
+    typeBox.addItem("High Pass", 2);
+    typeBox.addItem("Band Pass", 3);
+    typeBox.setSelectedId(1);
+    
+    addAndMakeVisible(&typeBox);
+    
     SliderUtil::setRotaryNoBox(cutoffSlider);
     SliderUtil::setRotaryNoBox(resSlider);
     SliderUtil::setRotaryNoBox(wetSlider);
@@ -36,6 +44,9 @@ void FilterPanel::resized()
     auto bounds = getLocalBounds();
     auto sWidth = bounds.getWidth() / 4;
     auto upperBounds = bounds.removeFromTop(sWidth);
+    auto midBounds = bounds.removeFromTop(sWidth);
+    auto cushion = midBounds.getHeight() / 5;
+    typeBox.setBounds(midBounds.reduced(cushion));
     cutoffSlider.setBounds(upperBounds.removeFromLeft(sWidth));
     resSlider.setBounds(upperBounds.removeFromLeft(sWidth));
     wetSlider.setBounds(upperBounds.removeFromLeft(sWidth));
@@ -73,7 +84,7 @@ void HexEditor::resized()
     auto gBounds = rightColumn.removeFromTop(gridWidth);
     auto cushion = gBounds.getWidth() / 15;
     graph.setBounds(gBounds.reduced(cushion));
-    fPanel.setBounds(rightColumn.removeFromTop(gridWidth));
+    fPanel.setBounds(rightColumn);
     
     auto dX = bounds.getWidth() / 3;
     auto topBounds = bounds.removeFromTop(bounds.getHeight() / 2);

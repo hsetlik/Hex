@@ -221,6 +221,14 @@ void HexSynth::setDepth(float value)
         voice->voiceFilter.setDepth(value);
     }
 }
+void HexSynth::setFilterType(float value)
+{
+    auto tVal = (int)value;
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.setType(tVal);
+    }
+}
 //============================================================
 void HexSynth::setAudible(int idx, bool value)
 {
@@ -362,8 +370,10 @@ void HexSynth::updateFiltersForBlock()
     float resonance = *linkedTree->getRawParameterValue("resonanceParam");
     float wet = *linkedTree->getRawParameterValue("wetDryParam");
     float depth = *linkedTree->getRawParameterValue("depthParam");
+    float type = *linkedTree->getRawParameterValue("filterTypeParam");
     setCutoff(cutoff);
     setResonance(resonance);
     setWetDry(wet);
     setDepth(depth);
+    setFilterType(type);
 }
