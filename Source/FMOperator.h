@@ -47,6 +47,7 @@ public:
     void setRatio(float value) {baseRatio = value; }
     void setModIndex(float value) {modIndex = value; }
     void setPan(float value) {pan = value; }
+    void setLevel(float value) {level = value; }
     void setAudible(bool shouldBeAudible) {audible = shouldBeAudible; }
     void clearOffset() {modOffset = 0.0f; }
 private:
@@ -76,6 +77,7 @@ private:
     float baseRatio;
     float modOffset;
     float pan;
+    float level;
     //!  output variables
     float lastOutMono;
     float lastOutL;

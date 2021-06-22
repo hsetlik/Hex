@@ -108,6 +108,7 @@ public:
     void setModIndex(int idx, float value) {operators[idx]->setModIndex(value); }
     void setPan(int idx, float value) {operators[idx]->setPan(value); }
     void setAudible(int idx, bool value) {operators[idx]->setAudible(value); }
+    void setLevel(int idx, float value) {operators[idx]->setLevel(value); }
     void setWave(int idx, float value) {operators[idx]->setWave((int)value); }
     void clickDebug(float newSum, int currentSample, int sSample, int nSamples)
     {
@@ -168,6 +169,7 @@ public:
     void setRatio(int idx, float value);
     void setModIndex(int idx, float value);
     void setPan(int idx, float value);
+    void setLevel(int idx, float value);
     void setAudible(int idx, bool value);
     void setWave(int idx, float value);
     //===============================================

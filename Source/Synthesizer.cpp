@@ -174,6 +174,15 @@ void HexSynth::setPan(int idx, float value)
         voice->setPan(idx, value);
     }
 }
+
+void HexSynth::setLevel(int idx, float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->setLevel(idx, value);
+    }
+}
+
 void HexSynth::setWave(int idx, float value)
 {
     for(auto voice : hexVoices)
@@ -240,17 +249,20 @@ void HexSynth::updateOscillatorsForBlock()
         auto outputId = "audibleParam" + iStr;
         auto panId = "panParam" + iStr;
         auto waveId = "waveParam" + iStr;
+        auto levelId = "levelParam" + iStr;
         float ratio = *linkedTree->getRawParameterValue(ratioId);
         graphParams.opRatios[i] = ratio;
         float modIndex = *linkedTree->getRawParameterValue(indexId);
         graphParams.modIndeces[i] = modIndex;
         bool audible = (*linkedTree->getRawParameterValue(outputId) > 0.0f);
         float pan = *linkedTree->getRawParameterValue(panId);
+        float level = *linkedTree->getRawParameterValue(levelId);
         float wave = *linkedTree->getRawParameterValue(waveId);
         setRatio(i, ratio);
         setModIndex(i, modIndex);
         setAudible(i, audible);
         setPan(i, pan);
+        setLevel(i, level);
         setWave(i, wave);
     }
 }

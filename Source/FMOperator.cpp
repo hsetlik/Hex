@@ -16,6 +16,7 @@ index(opIndex),
 modIndex(0.0f),
 modOffset(0.0f),
 pan(0.5f),
+level(1.0f),
 lastOutMono(0.0f),
 lastOutL(0.0f),
 lastOutR(0.0f)
@@ -31,7 +32,7 @@ void FMOperator::setSampleRate(double rate)
 
 void FMOperator::tick(double fundamental)
 {
-    lastOutMono = envelope.process(oscillator.getSample((fundamental * baseRatio) + (modIndex * modOffset)));
+    lastOutMono = envelope.process(oscillator.getSample((fundamental * baseRatio) + (modIndex * modOffset)) * level);
     lastOutL = lastOutMono * pan;
     lastOutR = lastOutMono * (1.0f - pan);
 }

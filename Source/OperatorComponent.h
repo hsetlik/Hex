@@ -160,14 +160,17 @@ private:
     juce::Slider ratioSlider;
     juce::Slider modSlider;
     juce::Slider panSlider;
+    juce::Slider levelSlider;
     
     RotaryLabel ratioLabel;
     RotaryLabel modLabel;
     RotaryLabel panLabel;
+    RotaryLabel levelLabel;
     
     pSliderAttach ratioAttach;
     pSliderAttach modAttach;
     pSliderAttach panAttach;
+    pSliderAttach levelAttach;
     
     pButtonAttach outAttach;
 };

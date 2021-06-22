@@ -26,8 +26,8 @@ public:
             //strings and parameters for the operator
             auto ratioId = "ratioParam" + iStr;
             auto ratioName = "Operator " + iStr + " ratio";
-            //auto levelId = "levelParam" + iStr;
-            //auto levelName = "Operator " + iStr + " level";
+            auto levelId = "levelParam" + iStr;
+            auto levelName = "Operator " + iStr + " level";
             auto indexId = "indexParam" + iStr;
             auto indexName = "Operator " + iStr + " Mod Index";
             auto outputId = "audibleParam" + iStr;
@@ -39,7 +39,7 @@ public:
             modIndexRange.setSkewForCentre(MODINDEX_CENTER);
             ratioRange.setSkewForCentre(RATIO_CENTER);
             layout.add(std::make_unique<juce::AudioParameterFloat>(ratioId, ratioName, ratioRange, RATIO_DEFAULT));
-            //layout.add(std::make_unique<juce::AudioParameterFloat>(levelId, levelName, 0.0f, 1.0f, 1.0f));
+            layout.add(std::make_unique<juce::AudioParameterFloat>(levelId, levelName, 0.0f, 1.0f, 1.0f));
             layout.add(std::make_unique<juce::AudioParameterFloat>(indexId, indexName, modIndexRange, MODINDEX_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterFloat>(panId, panName, PAN_MIN, PAN_MAX, PAN_DEFAULT));
             layout.add(std::make_unique<juce::AudioParameterBool>(outputId, outputName, false));

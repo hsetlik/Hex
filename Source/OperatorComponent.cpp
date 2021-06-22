@@ -347,7 +347,8 @@ envComponent(idx, tree, gParams),
 waveSelect(idx, tree),
 ratioLabel(&ratioSlider),
 modLabel(&modSlider),
-panLabel(&panSlider)
+panLabel(&panSlider),
+levelLabel(&levelSlider)
 {
     addAndMakeVisible(&envComponent);
     addAndMakeVisible(&waveSelect);
@@ -355,25 +356,32 @@ panLabel(&panSlider)
     SliderUtil::setRotaryNoBox(ratioSlider);
     SliderUtil::setRotaryNoBox(modSlider);
     SliderUtil::setRotaryNoBox(panSlider);
+    SliderUtil::setRotaryNoBox(levelSlider);
     
     addAndMakeVisible(&ratioSlider);
     addAndMakeVisible(&modSlider);
     addAndMakeVisible(&panSlider);
+    addAndMakeVisible(&levelSlider);
+    
     addAndMakeVisible(&outButton);
     
     addAndMakeVisible(&ratioLabel);
     addAndMakeVisible(&modLabel);
     addAndMakeVisible(&panLabel);
+    addAndMakeVisible(&levelLabel);
     
     auto iStr = juce::String(opIndex);
     auto ratioId = "ratioParam" + iStr;
     auto indexId = "indexParam" + iStr;
     auto panId = "panParam" + iStr;
+    auto levelId = "levelParam" + iStr;
     auto outputId = "audibleParam" + iStr;
     
     ratioAttach.reset(new sliderAttach(*linkedTree, ratioId, ratioSlider));
     modAttach.reset(new sliderAttach(*linkedTree, indexId, modSlider));
     panAttach.reset(new sliderAttach(*linkedTree, panId, panSlider));
+    levelAttach.reset(new sliderAttach(*linkedTree, levelId, levelSlider));
+    
     outAttach.reset(new buttonAttach(*linkedTree, outputId, outButton));
     
     outButton.addListener(this);
@@ -394,14 +402,17 @@ void OperatorComponent::resized()
     envComponent.setBounds(envBounds);
     auto dX = fBounds.getWidth() / 25;
     auto dY = fBounds.getHeight() / 16;
-    ratioSlider.setBounds(dX, dX, 4.5 * dX, 4.5 * dX);
-    modSlider.setBounds(6 * dX, dX, 4.5 * dX, 4.5 * dX);
-    panSlider.setBounds(11 * dX, dX, 4.5 * dX, 4.5 * dX);
-    outButton.setBounds(16 * dX, 2 * dX, 6 * dX, 2 * dX);
+    ratioSlider.setBounds(dX, 3 * dX, 4.5 * dX, 4.5 * dX);
+    modSlider.setBounds(6 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
+    levelSlider.setBounds(11 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
+    panSlider.setBounds(16 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
+    
+    outButton.setBounds(16 * dX, dX, 6 * dX, 2 * dX);
     
     ratioLabel.resized();
     modLabel.resized();
     panLabel.resized();
+    levelLabel.resized();
     
     waveSelect.setBounds(dX, 8 * dY, 16 * dX, 3 * dY);
 }
