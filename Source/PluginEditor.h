@@ -9,7 +9,7 @@
 #pragma once
 #include "HexEditor.h"
 #include <JuceHeader.h>
-#include "PluginProcessor.h"
+#include "PatchBrowser.h"
 
 //==============================================================================
 /**

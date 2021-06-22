@@ -157,17 +157,18 @@ juce::AudioProcessorEditor* HexAudioProcessor::createEditor()
 //==============================================================================
 void HexAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = tree.copyState();
+    std::unique_ptr<juce::XmlElement> xml (state.createXml());
+    copyXmlToBinary(*xml, destData);
 }
 
 void HexAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+            if (xmlState.get() != nullptr)
+                if (xmlState->hasTagName (tree.state.getType()))
+                    tree.replaceState (juce::ValueTree::fromXml (*xmlState));
 }
-
 //==============================================================================
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

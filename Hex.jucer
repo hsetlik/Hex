@@ -24,6 +24,8 @@
         <FILE id="n4Qswg" name="FMOscillator.cpp" compile="1" resource="0"
               file="Source/FMOscillator.cpp"/>
         <FILE id="LM4N72" name="FMOscillator.h" compile="0" resource="0" file="Source/FMOscillator.h"/>
+        <FILE id="Wsqz5i" name="LFO.cpp" compile="1" resource="0" file="Source/LFO.cpp"/>
+        <FILE id="H9cH1K" name="LFO.h" compile="0" resource="0" file="Source/LFO.h"/>
         <FILE id="wJS7Ab" name="ParameterLayout.cpp" compile="1" resource="0"
               file="Source/ParameterLayout.cpp"/>
         <FILE id="TaCOCt" name="ParameterLayout.h" compile="0" resource="0"
@@ -43,6 +45,9 @@
               file="Source/OperatorComponent.cpp"/>
         <FILE id="mWfxmk" name="OperatorComponent.h" compile="0" resource="0"
               file="Source/OperatorComponent.h"/>
+        <FILE id="ZOeYg3" name="PatchBrowser.cpp" compile="1" resource="0"
+              file="Source/PatchBrowser.cpp"/>
+        <FILE id="aLFujZ" name="PatchBrowser.h" compile="0" resource="0" file="Source/PatchBrowser.h"/>
         <FILE id="MkWL00" name="RingBuffer.h" compile="0" resource="0" file="Source/RingBuffer.h"/>
         <FILE id="SZtPrh" name="SliderLabel.cpp" compile="1" resource="0" file="Source/SliderLabel.cpp"/>
         <FILE id="lOv21j" name="SliderLabel.h" compile="0" resource="0" file="Source/SliderLabel.h"/>

@@ -60,15 +60,21 @@ void FilterPanel::paint(juce::Graphics &g)
 }
 
 //==============================================================================
-HexEditor::HexEditor(apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer) :
+HexEditor::HexEditor(HexAudioProcessor* proc, apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer) :
 linkedTree(tree),
 modGrid(tree),
 graph(params, buffer),
-fPanel(tree, params)
+fPanel(tree, params),
+loader(proc, &saveDialog),
+saveDialog(&loader)
 {
     addAndMakeVisible(&modGrid);
     addAndMakeVisible(&graph);
     addAndMakeVisible(&fPanel);
+    addAndMakeVisible(&loader);
+    addAndMakeVisible(&saveDialog);
+    saveDialog.setEnabled(false);
+    saveDialog.setVisible(false);
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
         addAndMakeVisible(opComponents.add(new OperatorComponent(i, linkedTree, params)));
@@ -80,6 +86,9 @@ void HexEditor::resized()
     auto gridWidth = getWidth() / 4.5f;
     auto bounds = getLocalBounds();
     auto rightColumn = bounds.removeFromRight(gridWidth);
+    auto loaderHeight = rightColumn.getWidth() / 3;
+    auto loaderBounds = rightColumn.removeFromTop(loaderHeight);
+    loader.setBounds(loaderBounds);
     modGrid.setBounds(rightColumn.removeFromTop(gridWidth));
     auto gBounds = rightColumn.removeFromTop(gridWidth);
     auto cushion = gBounds.getWidth() / 15;
@@ -95,6 +104,11 @@ void HexEditor::resized()
     opComponents[3]->setBounds(bounds.removeFromLeft(dX));
     opComponents[4]->setBounds(bounds.removeFromLeft(dX));
     opComponents[5]->setBounds(bounds);
+    
+    auto xCushion = getWidth() / 3;
+    auto yCushion = getHeight() / 3;
+    auto saveBounds = getLocalBounds().reduced(xCushion, yCushion);
+    saveDialog.setBounds(saveBounds);
 }
 
 void HexEditor::paint(juce::Graphics &g)

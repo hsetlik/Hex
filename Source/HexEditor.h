@@ -12,6 +12,7 @@
 #include "OperatorComponent.h"
 #include "ModulationGrid.h"
 #include "WaveGraphComponent.h"
+#include "PatchBrowser.h"
 
 class FilterPanel : public juce::Component
 {
@@ -39,7 +40,7 @@ private:
 class HexEditor : public juce::Component
 {
 public:
-    HexEditor(apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer);
+    HexEditor(HexAudioProcessor* proc, apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer);
     apvts* const linkedTree;
     void resized() override;
     void paint(juce::Graphics& g) override;
@@ -48,6 +49,8 @@ private:
     ModulationGrid modGrid;
     WaveGraph graph;
     FilterPanel fPanel;
+    PatchLoader loader;
+    PatchDialogBox saveDialog;
 };
 
 
