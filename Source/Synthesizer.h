@@ -11,6 +11,7 @@
 #pragma once
 #include "FMOperator.h"
 #include "RingBuffer.h"
+#include "Filter.h"
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
 class HexSound : public juce::SynthesiserSound
@@ -37,6 +38,7 @@ public:
     int pointFrequency;
     int pointIdx;
     std::atomic<float> levels[NUM_VOICES][NUM_OPERATORS];
+    std::atomic<float> filterLevels[NUM_VOICES];
     std::array<float, NUM_OPERATORS> opRatios;
     std::array<float, NUM_VOICES> voiceFundamentals;
     std::array<bool, NUM_OPERATORS> opOutputs;
@@ -73,6 +75,7 @@ public:
     void setSampleRate(double newRate)
     {
         setCurrentPlaybackSampleRate(newRate);
+        voiceFilter.setSampleRate(newRate);
         for(auto op : operators)
             op->setSampleRate(newRate);
     }
@@ -94,6 +97,7 @@ public:
     //===============================================
     void renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) override;
     juce::OwnedArray<FMOperator> operators;
+    StereoFilter voiceFilter;
     //! function to make sure each operator has the appropriate offset before calculating samples
     void tickModulation();
     //! functions for setting parameters inside the operators
@@ -165,6 +169,14 @@ public:
     void setDecay(int idx, float value);
     void setSustain(int idx, float value);
     void setRelease(int idx, float value);
+    //=================================================
+    //! Filter Parameters
+    void setDelayF(float value);
+    void setAttackF(float value);
+    void setHoldF(float value);
+    void setDecayF(float value);
+    void setSustainF(float value);
+    void setReleaseF(float value);
     //===============================================
     void setRatio(int idx, float value);
     void setModIndex(int idx, float value);

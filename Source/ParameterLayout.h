@@ -11,7 +11,7 @@
 #pragma once
 #include "DAHDSR.h"
 #include "FMOperator.h"
-
+#include "Filter.h"
 class HexParameters
 {
 public:
@@ -19,6 +19,52 @@ public:
     {
         using fRange = juce::NormalisableRange<float>;
         apvts::ParameterLayout layout;
+        auto delayId = "filterDelayParam";
+        auto delayName = "Filter Delay";
+        auto attackId = "filterAttackParam";
+        auto attackName = "Filter Attack";
+        auto holdId = "filterHoldParam";
+        auto holdName = "Filter Hold";
+        auto decayId = "filterDecayParam";
+        auto decayName = "Filter Decay";
+        auto sustainId = "filterSustainParam";
+        auto sustainName = "Filter Sustain";
+        auto releaseId = "filterReleaseParam";
+        auto releaseName = "Filter Release";
+        fRange delayRange(DELAY_MIN, DELAY_MAX);
+        delayRange.setSkewForCentre(DELAY_CENTER);
+        fRange attackRange(ATTACK_MIN, ATTACK_MAX);
+        attackRange.setSkewForCentre(ATTACK_CENTER);
+        fRange holdRange(HOLD_MIN, HOLD_MAX);
+        holdRange.setSkewForCentre(HOLD_CENTER);
+        fRange decayRange(DECAY_MIN, DECAY_MAX);
+        decayRange.setSkewForCentre(DECAY_CENTER);
+        fRange sustainRange(SUSTAIN_MIN, SUSTAIN_MAX);
+        fRange releaseRange(RELEASE_MIN, RELEASE_MAX);
+        releaseRange.setSkewForCentre(RELEASE_CENTER);
+        layout.add(std::make_unique<juce::AudioParameterFloat>(delayId, delayName, delayRange, DELAY_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(attackId, attackName, attackRange, ATTACK_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(holdId, holdName, holdRange, HOLD_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(decayId, decayName, decayRange, DECAY_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(sustainId, sustainName, sustainRange, SUSTAIN_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(releaseId, releaseName, releaseRange, RELEASE_DEFAULT));
+        
+        auto cutoffId = "cutoffParam";
+        auto cutoffName = "Filter Cutoff";
+        auto resId = "resonanceParam";
+        auto resName = "Filter Resonance";
+        auto wetId = "wetDryParam";
+        auto wetName = "Filter wet/dry";
+        auto depthId = "depthParam";
+        auto depthName = "Filter envelope depth";
+        fRange cutoffRange(CUTOFF_MIN, CUTOFF_MAX);
+        cutoffRange.setSkewForCentre(CUTOFF_CENTER);
+        fRange resRange(RESONANCE_MIN, RESONANCE_MAX);
+        resRange.setSkewForCentre(RESONANCE_CENTER);
+        layout.add(std::make_unique<juce::AudioParameterFloat>(cutoffId, cutoffName, cutoffRange, CUTOFF_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(resId, resName, resRange, RESONANCE_DEFAULT));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(wetId, wetName, 0.0f, 1.0f, 1.0f));
+        layout.add(std::make_unique<juce::AudioParameterFloat>(depthId, depthName, 0.0f, 1.0f, 0.5f));
         for(int i = 0; i < NUM_OPERATORS; ++i)
         {
             juce::String iStr = juce::String(i);

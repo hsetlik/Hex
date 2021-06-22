@@ -9,18 +9,20 @@
 */
 
 #include "Filter.h"
-HexFilter::HexFilter(int voiceIdx) :
+StereoFilter::StereoFilter(int voiceIdx) :
 cutoffVal(2500.0f),
 resonanceVal(1.0f),
 rateVal(44100.0f),
+envDepth(0.5f),
+wetLevel(1.0f),
 voiceIndex(voiceIdx),
 currentType(LoPass),
-pFilter(std::make_unique<LibLowPass>())
+lFilter(std::make_unique<LibLowPass>()),
+rFilter(std::make_unique<LibLowPass>())
 {
     
 }
-
-void HexFilter::setType(int filterType)
+void StereoFilter::setType(int filterType)
 {
     auto nType = (FilterType)filterType;
     if(currentType != nType)
@@ -30,23 +32,26 @@ void HexFilter::setType(int filterType)
     }
 }
 
-void HexFilter::handleAsyncUpdate()
+void StereoFilter::handleAsyncUpdate()
 {
     switch(currentType)
     {
         case LoPass:
         {
-            pFilter.reset(new LibLowPass());
+            lFilter.reset(new LibLowPass());
+            rFilter.reset(new LibLowPass());
             break;
         }
         case HiPass:
         {
-            pFilter.reset(new LibHiPass());
+            lFilter.reset(new LibHiPass());
+            rFilter.reset(new LibHiPass());
             break;
         }
         case BandPass:
         {
-            pFilter.reset(new LibBandPass());
+            lFilter.reset(new LibBandPass());
+            rFilter.reset(new LibBandPass());
             break;
         }
     }

@@ -91,8 +91,9 @@ void EnvelopeComponent::DAHDSRGraph::paint(juce::Graphics &g)
     g.strokePath(trace, stroke);
 }
 //==============================================================================
-EnvelopeComponent::LevelMeter::LevelMeter(int idx, GraphParamSet* params) :
+EnvelopeComponent::LevelMeter::LevelMeter(int idx, GraphParamSet* params, bool filter) :
 envIndex(idx),
+isFilter(filter),
 linkedParams(params),
 level(0.0f),
 lastVoice(0)
@@ -105,7 +106,11 @@ void EnvelopeComponent::LevelMeter::timerCallback() {triggerAsyncUpdate(); }
 void EnvelopeComponent::LevelMeter::handleAsyncUpdate()
 {
     lastVoice = linkedParams->lastTriggeredVoice;
-    auto newLevel = linkedParams->levels[lastVoice][envIndex].load();
+    float newLevel;
+    if(!isFilter)
+        newLevel = linkedParams->levels[lastVoice][envIndex].load();
+    else
+        newLevel = linkedParams->filterLevels[lastVoice].load();
     if(level != newLevel)
     {
         level = newLevel;
@@ -124,11 +129,12 @@ void EnvelopeComponent::LevelMeter::paint(juce::Graphics &g)
 }
 
 //==============================================================================
-EnvelopeComponent::EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams) :
+EnvelopeComponent::EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams, bool isFilterComp) :
 opIndex(idx),
+isFilter(isFilterComp),
 linkedTree(tree),
 graph(this),
-meter(idx, gParams)
+meter(idx, gParams, isFilter)
 {
     SliderUtil::setVerticalLinearNoBox(delaySlider);
     SliderUtil::setVerticalLinearNoBox(attackSlider);
@@ -162,6 +168,15 @@ meter(idx, gParams)
     auto decayId = "decayParam" + iStr;
     auto sustainId = "sustainParam" + iStr;
     auto releaseId = "releaseParam" + iStr;
+    if(isFilter)
+    {
+        delayId = "filterDelayParam";
+        attackId = "filterAttackParam";
+        holdId = "filterHoldId";
+        decayId = "filterDecayId";
+        sustainId = "filterSustainId";
+        releaseId = "filterSustainId";
+    }
     
     delayAttach.reset(new sliderAttach(*linkedTree, delayId, delaySlider));
     attackAttach.reset(new sliderAttach(*linkedTree, attackId, attackSlider));

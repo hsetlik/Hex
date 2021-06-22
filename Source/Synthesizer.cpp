@@ -14,6 +14,7 @@ linkedTree(tree),
 linkedParams(gParams),
 linkedBuffer(buffer),
 voiceIndex(idx),
+voiceFilter(voiceIndex),
 sumL(0.0f),
 sumR(0.0f),
 fundamental(0.0f),
@@ -30,6 +31,7 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice = voiceIndex;
     linkedParams->voiceFundamentals[voiceIndex] = (float)fundamental;
+    voiceFilter.envelope.triggerOn();
     for(auto op : operators)
     {
         op->trigger(true);
@@ -38,6 +40,7 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
 {
+    voiceFilter.envelope.triggerOff();
     for(auto op : operators)
     {
         op->trigger(false);
@@ -51,6 +54,7 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
         for(auto o : operators)
             o->clearOffset();
         tickModulation();
+        voiceFilter.tick();
         sumL = 0.0f;
         sumR = 0.0f;
         for(int op = 0; op < NUM_OPERATORS; ++op)
@@ -62,12 +66,13 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += operators[op]->lastRight();
             }
         }
-        outputBuffer.addSample(0, i, sumR);
-        outputBuffer.addSample(1, i, sumL);
+        outputBuffer.addSample(0, i, voiceFilter.processRight(sumR));
+        outputBuffer.addSample(1, i, voiceFilter.processLeft(sumL));
     }
     for(int op = 0; op < NUM_OPERATORS; ++op)
     {
         linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
+        linkedParams->filterLevels[voiceIndex] = voiceFilter.envelope.getLastLevel();
     }
     if(linkedParams->lastTriggeredVoice == voiceIndex)
     {
@@ -144,6 +149,48 @@ void HexSynth::setRelease(int idx, float value)
     for(auto voice : hexVoices)
     {
         voice->setRelease(idx, value);
+    }
+}
+void HexSynth::setDelayF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setDelay(value);
+    }
+}
+void HexSynth::setAttackF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setAttack(value);
+    }
+}
+void HexSynth::setHoldF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setHold(value);
+    }
+}
+void HexSynth::setDecayF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setDecay(value);
+    }
+}
+void HexSynth::setSustainF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setSustain(value);
+    }
+}
+void HexSynth::setReleaseF(float value)
+{
+    for(auto voice : hexVoices)
+    {
+        voice->voiceFilter.envelope.setRelease(value);
     }
 }
 void HexSynth::setAudible(int idx, bool value)

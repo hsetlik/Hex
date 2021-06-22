@@ -11,6 +11,17 @@
 #pragma once
 #include "/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Source/1.9.0/include/Iir.h"
 #include <JuceHeader.h>
+#include "DAHDSR.h"
+#include "MathUtil.h"
+#define CUTOFF_MIN 20.0f
+#define CUTOFF_MAX 4000.0f
+#define CUTOFF_DEFAULT 2500.0f
+#define CUTOFF_CENTER 600.0f
+
+#define RESONANCE_MIN 0.0f
+#define RESONANCE_MAX 20.0f
+#define RESONANCE_DEFAULT 1.0f
+#define RESONANCE_CENTER 5.0f
 enum FilterType
 {
     LoPass,
@@ -97,37 +108,54 @@ private:
     Iir::RBJ::BandPass1 filter;
 };
 
-class HexFilter :
+class StereoFilter :
 public juce::AsyncUpdater
 {
 public:
-    HexFilter(int voiceIdx);
+    StereoFilter(int voiceIdx);
     void setSampleRate(double rate)
     {
         rateVal = rate;
-        pFilter->setSampleRate(rateVal);
+        envelope.setSampleRate(rate);
+        lFilter->setSampleRate(rateVal);
+        rFilter->setSampleRate(rateVal);
     }
     void setCutoff(float value)
     {
         cutoffVal = value;
-        pFilter->setCutoff(cutoffVal);
+        lFilter->setCutoff(cutoffVal);
+        rFilter->setCutoff(cutoffVal);
     }
     void setResonance(float value)
     {
         resonanceVal = value;
-        pFilter->setResonance(resonanceVal);
+        lFilter->setResonance(resonanceVal);
+        rFilter->setResonance(resonanceVal);
+    }
+    void setDepth(float value) {envDepth = value; }
+    void setWetLevel(float value) {wetLevel = value; }
+    void tick()
+    {
+        auto modVal = envelope.process(envDepth);
+        auto inc = (CUTOFF_MAX - cutoffVal) * modVal;
+        lFilter->setCutoff(cutoffVal + inc);
+        rFilter->setCutoff(cutoffVal + inc);
     }
     void handleAsyncUpdate() override;
     void setType(int filterType);
-    float process(float input) {return pFilter->process(input); }
+    float processLeft(float input) {return MathUtil::fLerp(input, lFilter->process(input), wetLevel); }
+    float processRight(float input) {return MathUtil::fLerp(input, rFilter->process(input), wetLevel); }
+    DAHDSR envelope;
 private:
     float cutoffVal;
     float resonanceVal;
     double rateVal;
+    float envDepth;
+    float wetLevel;
     const int voiceIndex;
     FilterType currentType;
-    std::unique_ptr<FilterCore> pFilter;
-    
+    std::unique_ptr<FilterCore> lFilter;
+    std::unique_ptr<FilterCore> rFilter;
 };
 
 

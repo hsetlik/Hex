@@ -51,8 +51,9 @@ public:
     public juce::Timer
     {
     public:
-        LevelMeter(int idx, GraphParamSet* params);
+        LevelMeter(int idx, GraphParamSet* params, bool filter);
         const int envIndex;
+        const bool isFilter;
         GraphParamSet* const linkedParams;
         void timerCallback() override;
         void handleAsyncUpdate() override;
@@ -61,8 +62,9 @@ public:
         float level;
         int lastVoice;
     };
-    EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams);
+    EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams, bool isFilterComp = false);
     const int opIndex;
+    const bool isFilter;
     apvts* const linkedTree;
     void resized() override;
     
@@ -84,6 +86,7 @@ public:
     pSliderAttach sustainAttach;
     pSliderAttach releaseAttach;
 };
+
 //============================================================================
 //! button classes for wave selection
 class WaveButton : public SymbolButton
