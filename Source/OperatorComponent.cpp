@@ -373,6 +373,11 @@ levelLabel(&levelSlider)
     SliderUtil::setRotaryNoBox(panSlider);
     SliderUtil::setRotaryNoBox(levelSlider);
     
+    ratioSlider.setLookAndFeel(&hexLnf);
+    modSlider.setLookAndFeel(&hexLnf);
+    panSlider.setLookAndFeel(&hexLnf);
+    levelSlider.setLookAndFeel(&hexLnf);
+    
     addAndMakeVisible(&ratioSlider);
     addAndMakeVisible(&modSlider);
     addAndMakeVisible(&panSlider);
@@ -384,6 +389,11 @@ levelLabel(&levelSlider)
     addAndMakeVisible(&modLabel);
     addAndMakeVisible(&panLabel);
     addAndMakeVisible(&levelLabel);
+    
+    ratioLabel.setLookAndFeel(&hexLnf);
+    modLabel.setLookAndFeel(&hexLnf);
+    panLabel.setLookAndFeel(&hexLnf);
+    levelLabel.setLookAndFeel(&hexLnf);
     
     auto iStr = juce::String(opIndex);
     auto ratioId = "ratioParam" + iStr;
@@ -402,6 +412,18 @@ levelLabel(&levelSlider)
     outButton.addListener(this);
 }
 
+OperatorComponent::~OperatorComponent()
+{
+    ratioSlider.setLookAndFeel(nullptr);
+    modSlider.setLookAndFeel(nullptr);
+    panSlider.setLookAndFeel(nullptr);
+    levelSlider.setLookAndFeel(nullptr);
+    ratioLabel.setLookAndFeel(nullptr);
+    modLabel.setLookAndFeel(nullptr);
+    panLabel.setLookAndFeel(nullptr);
+    levelLabel.setLookAndFeel(nullptr);
+}
+
 void OperatorComponent::buttonClicked(juce::Button *b)
 {
     if(b->getToggleState())
@@ -417,10 +439,10 @@ void OperatorComponent::resized()
     envComponent.setBounds(envBounds);
     auto dX = fBounds.getWidth() / 25;
     auto dY = fBounds.getHeight() / 16;
-    ratioSlider.setBounds(dX, 3 * dX, 4.5 * dX, 4.5 * dX);
-    modSlider.setBounds(6 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
-    levelSlider.setBounds(11 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
-    panSlider.setBounds(16 * dX, 3 * dX, 4.5 * dX, 4.5 * dX);
+    ratioSlider.setBounds(dX, 4 * dX, 4.5 * dX, 4.5 * dX);
+    modSlider.setBounds(6 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
+    levelSlider.setBounds(11 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
+    panSlider.setBounds(16 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
     
     outButton.setBounds(16 * dX, dX, 6 * dX, 2 * dX);
     
@@ -429,5 +451,5 @@ void OperatorComponent::resized()
     panLabel.resized();
     levelLabel.resized();
     
-    waveSelect.setBounds(dX, 8 * dY, 16 * dX, 3 * dY);
+    waveSelect.setBounds(dX, 10 * dY, 16 * dX, 3 * dY);
 }

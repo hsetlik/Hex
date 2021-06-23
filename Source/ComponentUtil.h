@@ -29,7 +29,7 @@ public:
 class ComponentUtil
 {
 public:
-    static juce::Rectangle<int> boxBelow(juce::Component& parent, int heightFraction)
+    static juce::Rectangle<int> boxBelow(juce::Component& parent, int heightFraction, int spaceFraction=0)
     {
         int x, y, width, height;
         auto iBounds = parent.getBounds();
@@ -37,6 +37,10 @@ public:
         width = iBounds.getWidth();
         x = iBounds.getX();
         y = iBounds.getBottom();
+        if(spaceFraction != 0)
+        {
+            y += iBounds.getHeight() / spaceFraction;
+        }
         return juce::Rectangle<int>(x, y, width, height);
     }
 };

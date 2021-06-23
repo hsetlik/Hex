@@ -30,7 +30,7 @@ void RotaryLabel::sliderValueChanged(juce::Slider *s)
 
 void RotaryLabel::resized()
 {
-    setBounds(ComponentUtil::boxBelow(*linkedSlider, 6));
+    setBounds(ComponentUtil::boxBelow(*linkedSlider, 6, 10));
     auto height = (float)getHeight() * 1.5f;
     setFont(getFont().withHeight(height));
 }

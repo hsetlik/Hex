@@ -134,11 +134,11 @@ void PatchLoader::resized()
     auto bounds = getLocalBounds();
     auto halfY = bounds.getHeight() / 2;
     auto upperBounds = bounds.removeFromTop(halfY);
-    lastPatchButton.setBounds(upperBounds.removeFromLeft(halfY));
-    nextPatchButton.setBounds(upperBounds.removeFromLeft(halfY));
-    auto saveWidth = saveButton.getBestWidthForHeight(halfY);
-    saveButton.setBounds(upperBounds.removeFromRight(saveWidth));
     auto cushion = halfY / 6;
+    lastPatchButton.setBounds(upperBounds.removeFromLeft(halfY).reduced(cushion));
+    nextPatchButton.setBounds(upperBounds.removeFromLeft(halfY).reduced(cushion));
+    auto saveWidth = saveButton.getBestWidthForHeight(halfY);
+    saveButton.setBounds(upperBounds.removeFromRight(saveWidth).reduced(cushion));
     patchSelector.setBounds(bounds.reduced(cushion));
 }
 

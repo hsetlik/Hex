@@ -14,6 +14,7 @@
 #include "SymbolButton.h"
 #include "ComponentUtil.h"
 #include "SliderLabel.h"
+#include "CustomLnF.h"
 #define REPAINT_FPS 24
 #define NOISE_SEED 2239
 using sliderAttach = juce::AudioProcessorValueTreeState::SliderAttachment;
@@ -152,6 +153,7 @@ public juce::Button::Listener
 {
 public:
     OperatorComponent(int idx, apvts* tree, GraphParamSet* gParams);
+    ~OperatorComponent();
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;
@@ -176,4 +178,6 @@ private:
     pSliderAttach levelAttach;
     
     pButtonAttach outAttach;
+    
+    HexLookAndFeel hexLnf;
 };
