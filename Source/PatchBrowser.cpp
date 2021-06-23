@@ -148,12 +148,8 @@ void PatchLoader::savePreset(juce::String name, juce::String type)
     if(presetFolder.exists())
     {
         auto file = presetFolder.getChildFile(fileName);
-        bool isNew = false;
         if(!file.existsAsFile())
-        {
             file.create();
-            isNew = true;
-        }
         auto state = processor->tree.copyState();
         std::unique_ptr<juce::XmlElement> xml = state.createXml();
         xml->setAttribute("HexPatchName", name);

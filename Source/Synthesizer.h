@@ -39,22 +39,8 @@ public:
     int pointIdx;
     std::atomic<float> levels[NUM_VOICES][NUM_OPERATORS];
     std::atomic<float> filterLevels[NUM_VOICES];
-    std::array<float, NUM_OPERATORS> opRatios;
-    std::array<float, NUM_VOICES> voiceFundamentals;
-    std::array<bool, NUM_OPERATORS> opOutputs;
-    std::array<float, NUM_OPERATORS> modIndeces;
-    std::array<WaveType, NUM_OPERATORS> opWaves;
+    std::atomic<float> voiceFundamentals[NUM_VOICES];
     RoutingGrid grid;
-    std::array<float, 256> dataValues;
-    void pushIn(float input)
-    {
-        dataValues[0] = input;
-        for(int i = 255; i > 0; --i)
-        {
-            dataValues[i + 1] = dataValues[i];
-        }
-        
-    }
 private:
     int listLength;
     

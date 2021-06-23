@@ -84,6 +84,11 @@ float DAHDSR::process(float input)
     return input * output;
 }
 
+void DAHDSR::killQuick(float msFade)
+{
+    //! function to bring down the envelope output very quickly (but not immediately) for voice stealing
+}
+
 void DAHDSR::printDebug()
 {
     printf("This output: %f\n", output);

@@ -335,9 +335,7 @@ void HexSynth::updateOscillatorsForBlock()
         auto waveId = "waveParam" + iStr;
         auto levelId = "levelParam" + iStr;
         float ratio = *linkedTree->getRawParameterValue(ratioId);
-        graphParams.opRatios[i] = ratio;
         float modIndex = *linkedTree->getRawParameterValue(indexId);
-        graphParams.modIndeces[i] = modIndex;
         bool audible = (*linkedTree->getRawParameterValue(outputId) > 0.0f);
         float pan = *linkedTree->getRawParameterValue(panId);
         float level = *linkedTree->getRawParameterValue(levelId);

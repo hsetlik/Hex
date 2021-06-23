@@ -95,6 +95,7 @@ public:
         }
     }
     void enterPhase(envPhase newPhase);
+    void killQuick(float msFade = 2.0f);
     void setSampleRate(double value) {sampleRate = value;}
     float process(float input);
     float clockOutput()
@@ -103,7 +104,7 @@ public:
     }
     bool isActive()
     {
-        return !(output == 0.0f);
+        return !(currentPhase == noteOff);
     }
     envPhase getPhase() {return currentPhase;}
     float output;
