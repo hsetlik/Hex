@@ -20,10 +20,10 @@ public juce::OpenGLRenderer,
 public juce::Component
 {
 public:
-    WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer);
+    WaveGraph(GraphParamSet* params, RingBuffer<float>* rBuffer);
     ~WaveGraph();
     GraphParamSet* const linkedParams;
-    RingBuffer<GLfloat>* const ringBuffer;
+    RingBuffer<float>* const ringBuffer;
     void paint(juce::Graphics& g) override;
     //! OpenGL overrides
     void newOpenGLContextCreated() override;

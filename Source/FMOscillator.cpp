@@ -106,8 +106,8 @@ AntiAliasOsc::AntiAliasOsc(WaveType type) : phase(0.0f), tablesAdded(0)
     {
         tables.add(new Wavetable()); //fill the OwnedArray with empty tables
     }
-    float* fReal = new float[TABLESIZE];
-    float* fImag = new float[TABLESIZE];
+    float fReal[TABLESIZE];
+    float fImag[TABLESIZE];
     for(int i = 0; i < TABLESIZE; ++i)
     {
         fReal[i] = 0.0f;
@@ -128,8 +128,8 @@ void AntiAliasOsc::createTables(int size, float *real, float *imag)
     while((fabs(real[maxHarmonic]) + fabs(imag[maxHarmonic]) < minVal) && maxHarmonic)
         --maxHarmonic;
     float topFreq = (float)(2.0f / 3.0f / maxHarmonic); //note:: topFreq is in units of phase fraction per sample, not Hz
-    float* ar = new float[size];
-    float* ai = new float[size];
+    float ar[size];
+    float ai[size];
     float scale = 0.0f;
     float lastMinFreq = 0.0f;
     while(maxHarmonic)

@@ -49,10 +49,10 @@ private:
 class HexVoice : public juce::SynthesiserVoice
 {
 public:
-    HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<GLfloat>* buffer, int idx);
+    HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, int idx);
     apvts* const linkedTree;
     GraphParamSet* const linkedParams;
-    RingBuffer<GLfloat>* const linkedBuffer;
+    RingBuffer<float>* const linkedBuffer;
     const int voiceIndex;
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
@@ -182,7 +182,7 @@ public:
         graphBuffer.setSize(2, blockSize * 10);
     }
     GraphParamSet graphParams;
-    RingBuffer<GLfloat> graphBuffer;
+    RingBuffer<float> graphBuffer;
 private:
     RoutingGrid grid;
     std::vector<HexVoice*> hexVoices;

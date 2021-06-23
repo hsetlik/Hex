@@ -9,7 +9,7 @@
 */
 
 #include "Synthesizer.h"
-HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<GLfloat>* buffer, int idx) :
+HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, int idx) :
 linkedTree(tree),
 linkedParams(gParams),
 linkedBuffer(buffer),

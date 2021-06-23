@@ -10,7 +10,7 @@
 
 #include "WaveGraphComponent.h"
 
-WaveGraph::WaveGraph(GraphParamSet* params, RingBuffer<GLfloat>* rBuffer) :
+WaveGraph::WaveGraph(GraphParamSet* params, RingBuffer<float>* rBuffer) :
 linkedParams(params),
 ringBuffer(rBuffer),
 fundamental(0.0f),
@@ -81,7 +81,7 @@ void WaveGraph::renderOpenGL()
             // Read in samples from ring buffer
     if (uniforms->audioSampleData != nullptr)
     {
-        ringBuffer->readSamples (readBuffer, RING_BUFFER_READ_SIZE * 5);
+        ringBuffer->readSamples(readBuffer, RING_BUFFER_READ_SIZE * 5);
                 
         juce::FloatVectorOperations::clear (visualizationBuffer, RING_BUFFER_READ_SIZE);
         //fill the visualization buffer with the appropriate samples for the fundamental
@@ -96,13 +96,13 @@ void WaveGraph::renderOpenGL()
                 break;
             }
         }
-        if((fallingZeroCross + (int)(sampleIncrement * 256)) < readBuffer.getNumSamples())
+        if((fallingZeroCross + (int)(sampleIncrement * RING_BUFFER_READ_SIZE)) < readBuffer.getNumSamples())
         {
-            for(int i = 0; i < 256; ++i)
+            for(int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
             {
                 auto lSample = readBuffer.getSample(0, fallingZeroCross + (int)(sampleIncrement * i));
                 auto rSample = readBuffer.getSample(1, fallingZeroCross + (int)(sampleIncrement * i));
-                visualizationBuffer[i] = lSample + rSample;
+                visualizationBuffer[i] = (GLfloat)((lSample + rSample) / 2.0f);
             }
         }
         uniforms->audioSampleData->set(visualizationBuffer, 256);
