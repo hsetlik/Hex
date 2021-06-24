@@ -17,8 +17,7 @@ voiceIndex(idx),
 voiceFilter(voiceIndex),
 sumL(0.0f),
 sumR(0.0f),
-fundamental(0.0f),
-lastMonoSum(0.0f)
+fundamental(0.0f)
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
@@ -29,13 +28,14 @@ lastMonoSum(0.0f)
 void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
-    linkedParams->lastTriggeredVoice = voiceIndex;
-    linkedParams->voiceFundamentals[voiceIndex] = (float)fundamental;
+    linkedParams->lastTriggeredVoice.store(voiceIndex);
+    linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
     voiceFilter.envelope.triggerOn();
     for(auto op : operators)
     {
         op->trigger(true);
     }
+    debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
@@ -51,24 +51,25 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
 {
     for(int i = startSample; i < (startSample + numSamples); ++i)
     {
-        for(auto o : operators)
-            o->clearOffset();
+        for(auto op : operators)
+            op->clearOffset();
         tickModulation();
         voiceFilter.tick();
         sumL = 0.0f;
         sumR = 0.0f;
-        for(int op = 0; op < NUM_OPERATORS; ++op)
+        for(auto op : operators)
         {
-            operators[op]->tick(fundamental);
-            if(operators[op]->isAudible())
+            op->tick(fundamental);
+            if(op->isAudible())
             {
-                sumL += operators[op]->lastLeft();
-                sumR += operators[op]->lastRight();
+                sumL += op->lastLeft();
+                sumR += op->lastRight();
             }
         }
         outputBuffer.addSample(0, i, voiceFilter.processRight(sumR));
         outputBuffer.addSample(1, i, voiceFilter.processLeft(sumL));
     }
+    /*
     for(int op = 0; op < NUM_OPERATORS; ++op)
     {
         linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
@@ -78,8 +79,12 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     {
         linkedBuffer->writeSamples(outputBuffer, startSample, numSamples);
     }
+     */
     if(!anyEnvsActive())
+    {
         clearCurrentNote();
+        //debugPrinter.addMessage("Note Cleared on voice " + juce::String(voiceIndex));
+    }
 }
 //=====================================================================================================================
 void HexVoice::tickModulation()
@@ -107,6 +112,7 @@ graphBuffer(2, 256 * 10)
         hexVoices.push_back(voice);
     }
     addSound(new HexSound);
+    setNoteStealingEnabled(false);
 }
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)
@@ -284,13 +290,12 @@ void HexSynth::updateRoutingForBlock()
         {
             auto iStr = juce::String(i);
             auto str = oStr + "to" + iStr + "Param";
-            if(linkedTree->getRawParameterValue(str)->load() > 0.0f)
+            if(*linkedTree->getRawParameterValue(str) > 0.0f)
                 grid[o][i] = true;
             else
                 grid[o][i] = false;
         }
     }
-    graphParams.grid = grid;
     for(auto voice : hexVoices)
     {
         voice->updateGrid(grid);

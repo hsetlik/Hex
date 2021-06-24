@@ -99,3 +99,14 @@ public:
     }
     
 };
+
+struct stdu
+{
+   template <typename T>
+    static T loadIfLockFree(std::atomic<T>& input)
+    {
+        if(input.is_lock_free())
+            return input.load();
+        return 0;
+    }
+};

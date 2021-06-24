@@ -52,7 +52,9 @@ void WaveGraph::openGLContextClosing()
 void WaveGraph::renderOpenGL()
 {
     jassert(juce::OpenGLHelpers::isContextActive());
-    fundamental = linkedParams->voiceFundamentals[linkedParams->lastTriggeredVoice];
+    int idx = stdu::loadIfLockFree(linkedParams->lastTriggeredVoice);
+    
+    fundamental = stdu::loadIfLockFree(linkedParams->voiceFundamentals[idx]);
     // Setup Viewport
     const float renderingScale = (float) openGLContext.getRenderingScale();
     glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));

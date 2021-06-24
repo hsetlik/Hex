@@ -144,8 +144,10 @@ void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     magnitude = buffer.getMagnitude(0, buffer.getNumSamples());
     if(magnitude > 1.0f)
     {
-        buffer.applyGain(1.0f / magnitude);
+        buffer.applyGain(0.6f / magnitude);
     }
+    else
+        buffer.applyGain(0.6f);
 }
 
 //==============================================================================

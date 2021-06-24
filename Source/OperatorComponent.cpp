@@ -105,12 +105,17 @@ void EnvelopeComponent::LevelMeter::timerCallback() {triggerAsyncUpdate(); }
 
 void EnvelopeComponent::LevelMeter::handleAsyncUpdate()
 {
-    lastVoice = linkedParams->lastTriggeredVoice;
-    float newLevel;
-    if(!isFilter)
-        newLevel = linkedParams->levels[lastVoice][envIndex].load();
+    lastVoice = linkedParams->lastTriggeredVoice.load();
+    float newLevel = 0.0f;
+    if(linkedParams->filterLevels[lastVoice].is_lock_free())
+    {
+        if(!isFilter)
+            newLevel = linkedParams->levels[lastVoice][envIndex].load();
+        else
+            newLevel = linkedParams->filterLevels[lastVoice].load();
+    }
     else
-        newLevel = linkedParams->filterLevels[lastVoice].load();
+        printf("Warning: Graph parameters have locks!\n");
     if(level != newLevel)
     {
         level = newLevel;

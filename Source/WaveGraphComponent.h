@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "Synthesizer.h"
 #include "RingBuffer.h"
+#include "MathUtil.h"
 #define WAVE_RES 256
 #define RING_BUFFER_READ_SIZE 256
 

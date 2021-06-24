@@ -34,16 +34,10 @@ public:
     {
         
     }
-    int lastTriggeredVoice;
-    int pointFrequency;
-    int pointIdx;
+    std::atomic<int> lastTriggeredVoice;
     std::atomic<float> levels[NUM_VOICES][NUM_OPERATORS];
     std::atomic<float> filterLevels[NUM_VOICES];
     std::atomic<float> voiceFundamentals[NUM_VOICES];
-    RoutingGrid grid;
-private:
-    int listLength;
-    
 };
 
 class HexVoice : public juce::SynthesiserVoice
@@ -100,31 +94,20 @@ public:
     void setAudible(int idx, bool value) {operators[idx]->setAudible(value); }
     void setLevel(int idx, float value) {operators[idx]->setLevel(value); }
     void setWave(int idx, float value) {operators[idx]->setWave((int)value); }
-    void clickDebug(float newSum, int currentSample, int sSample, int nSamples)
-    {
-        if(fabs(lastMonoSum - newSum) > 0.18f)
-        {
-            printf("Voice #%d clicked at sample index %d\n", voiceIndex, currentSample);
-            printf("Difference: %f\n", lastMonoSum - newSum);
-            printf("Start sample: %d\n", sSample);
-            printf("Num Samples: %d\n\n", nSamples);
-        }
-        lastMonoSum = newSum;
-    }
     bool anyEnvsActive()
     {
         for(auto op : operators)
         {
-            if(op->envelope.isActive() && op->isAudible())
+            if(op->envelope.isActive())
                 return true;
         }
         return false;
     }
 private:
+    AsyncDebugPrinter debugPrinter;
     float sumL;
     float sumR;
     double fundamental;
-    float lastMonoSum;
     RoutingGrid grid;
 };
 

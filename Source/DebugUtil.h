@@ -52,3 +52,22 @@ private:
     juce::OwnedArray<DebugTest> tests;
     static std::unique_ptr<DebugSingle> instance;
 };
+
+class AsyncDebugPrinter : public juce::AsyncUpdater
+{
+public:
+    void addMessage(juce::String message)
+    {
+        messages.push_back(message);
+        if(!isUpdatePending())
+            triggerAsyncUpdate();
+    }
+    void handleAsyncUpdate() override
+    {
+        for(auto m : messages)
+            printf("%s\n", m.toRawUTF8());
+        messages.clear();
+    }
+private:
+    std::vector<juce::String> messages;
+};
