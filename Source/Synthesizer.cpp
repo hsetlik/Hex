@@ -35,7 +35,7 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     {
         op->trigger(true);
     }
-    debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
+    //debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
@@ -44,6 +44,10 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
     for(auto op : operators)
     {
         op->trigger(false);
+    }
+    if(!allowTailOff)
+    {
+        clearCurrentNote();
     }
 }
 
@@ -66,20 +70,20 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += op->lastRight();
             }
         }
-        outputBuffer.addSample(0, i, voiceFilter.processRight(sumR));
-        outputBuffer.addSample(1, i, voiceFilter.processLeft(sumL));
+        sumL = voiceFilter.processLeft(sumL);
+        sumR = voiceFilter.processRight(sumR);
+        outputBuffer.addSample(0, i, sumR);
+        outputBuffer.addSample(1, i, sumL);
     }
-    /*
     for(int op = 0; op < NUM_OPERATORS; ++op)
     {
-        linkedParams->levels[voiceIndex][op] = operators[op]->envelope.getLastLevel();
-        linkedParams->filterLevels[voiceIndex] = voiceFilter.envelope.getLastLevel();
+        linkedParams->levels[voiceIndex][op].store(operators[op]->envelope.getLastLevel());
+        linkedParams->filterLevels[voiceIndex].store(voiceFilter.envelope.getLastLevel());
     }
     if(linkedParams->lastTriggeredVoice == voiceIndex)
     {
         linkedBuffer->writeSamples(outputBuffer, startSample, numSamples);
     }
-     */
     if(!anyEnvsActive())
     {
         clearCurrentNote();
@@ -114,9 +118,58 @@ graphBuffer(2, 256 * 10)
     addSound(new HexSound);
     setNoteStealingEnabled(false);
 }
+
+void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity)
+{
+    const juce::ScopedLock sl(lock);
+    for (auto* sound : sounds)
+    {
+        if (sound->appliesToNote (midiNoteNumber) && sound->appliesToChannel (midiChannel))
+        {
+            for (auto* voice : voices)
+                //! if a voice is already playing this note, stop it
+                if (voice->getCurrentlyPlayingNote() == midiNoteNumber && voice->isPlayingChannel (midiChannel))
+                    stopVoice (voice, 1.0f, true);
+
+            startVoice (findFreeVoice(sound, midiChannel, midiNoteNumber, isNoteStealingEnabled()),
+                        sound, midiChannel, midiNoteNumber, velocity);
+        }
+    }
+}
+void HexSynth::noteOff(int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff)
+{
+    const juce::ScopedLock sl(lock);
+    for (auto* voice : voices)
+    {
+        if (voice->getCurrentlyPlayingNote() == midiNoteNumber
+              && voice->isPlayingChannel (midiChannel))
+        {
+            if (auto sound = voice->getCurrentlyPlayingSound())
+            {
+                if (sound->appliesToNote (midiNoteNumber)
+                     && sound->appliesToChannel (midiChannel))
+                {
+                    voice->setKeyDown (false);
+                    if (! (voice->isSustainPedalDown() || voice->isSostenutoPedalDown()))
+                        stopVoice (voice, velocity, allowTailOff);
+                }
+            }
+        }
+    }
+}
+void HexSynth::renderVoices(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
+{
+    for(auto voice : hexVoices)
+    {
+        if(voice->anyEnvsActive())
+            voice->renderNextBlock(buffer, startSample, numSamples);
+    }
+}
+
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setDelay(idx, value);
@@ -124,6 +177,7 @@ void HexSynth::setDelay(int idx, float value)
 }
 void HexSynth::setAttack(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setAttack(idx, value);
@@ -131,6 +185,7 @@ void HexSynth::setAttack(int idx, float value)
 }
 void HexSynth::setHold(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setHold(idx, value);
@@ -138,6 +193,7 @@ void HexSynth::setHold(int idx, float value)
 }
 void HexSynth::setDecay(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setDecay(idx, value);
@@ -145,6 +201,7 @@ void HexSynth::setDecay(int idx, float value)
 }
 void HexSynth::setSustain(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setSustain(idx, value);
@@ -152,6 +209,7 @@ void HexSynth::setSustain(int idx, float value)
 }
 void HexSynth::setRelease(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setRelease(idx, value);
@@ -159,6 +217,7 @@ void HexSynth::setRelease(int idx, float value)
 }
 void HexSynth::setDelayF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setDelay(value);
@@ -166,6 +225,7 @@ void HexSynth::setDelayF(float value)
 }
 void HexSynth::setAttackF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setAttack(value);
@@ -173,6 +233,7 @@ void HexSynth::setAttackF(float value)
 }
 void HexSynth::setHoldF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setHold(value);
@@ -180,6 +241,7 @@ void HexSynth::setHoldF(float value)
 }
 void HexSynth::setDecayF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setDecay(value);
@@ -187,6 +249,7 @@ void HexSynth::setDecayF(float value)
 }
 void HexSynth::setSustainF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setSustain(value);
@@ -194,6 +257,7 @@ void HexSynth::setSustainF(float value)
 }
 void HexSynth::setReleaseF(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.envelope.setRelease(value);
@@ -201,6 +265,7 @@ void HexSynth::setReleaseF(float value)
 }
 void HexSynth::setCutoff(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.setCutoff(value);
@@ -208,6 +273,7 @@ void HexSynth::setCutoff(float value)
 }
 void HexSynth::setResonance(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.setResonance(value);
@@ -215,6 +281,7 @@ void HexSynth::setResonance(float value)
 }
 void HexSynth::setWetDry(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.setWetLevel(value);
@@ -222,6 +289,7 @@ void HexSynth::setWetDry(float value)
 }
 void HexSynth::setDepth(float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->voiceFilter.setDepth(value);
@@ -229,6 +297,7 @@ void HexSynth::setDepth(float value)
 }
 void HexSynth::setFilterType(float value)
 {
+    const juce::ScopedLock sl(lock);
     auto tVal = (int)value;
     for(auto voice : hexVoices)
     {
@@ -238,6 +307,7 @@ void HexSynth::setFilterType(float value)
 //============================================================
 void HexSynth::setAudible(int idx, bool value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setAudible(idx, value);
@@ -245,6 +315,7 @@ void HexSynth::setAudible(int idx, bool value)
 }
 void HexSynth::setModIndex(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setModIndex(idx, value);
@@ -252,6 +323,7 @@ void HexSynth::setModIndex(int idx, float value)
 }
 void HexSynth::setRatio(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setRatio(idx, value);
@@ -259,6 +331,7 @@ void HexSynth::setRatio(int idx, float value)
 }
 void HexSynth::setPan(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setPan(idx, value);
@@ -267,6 +340,7 @@ void HexSynth::setPan(int idx, float value)
 
 void HexSynth::setLevel(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setLevel(idx, value);
@@ -275,11 +349,26 @@ void HexSynth::setLevel(int idx, float value)
 
 void HexSynth::setWave(int idx, float value)
 {
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->setWave(idx, value);
     }
 }
+//===========================================================================
+
+juce::SynthesiserVoice* HexSynth::findFreeVoice(juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
+{
+    int idx = 0;
+    for(auto v : hexVoices)
+    {
+        if(!v->anyEnvsActive())
+            return voices[idx];
+        ++idx;
+    }
+    return voices.getLast();
+}
+
 //===========================================================================
 void HexSynth::updateRoutingForBlock()
 {
@@ -296,6 +385,7 @@ void HexSynth::updateRoutingForBlock()
                 grid[o][i] = false;
         }
     }
+    const juce::ScopedLock sl(lock);
     for(auto voice : hexVoices)
     {
         voice->updateGrid(grid);

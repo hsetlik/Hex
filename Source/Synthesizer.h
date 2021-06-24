@@ -127,6 +127,10 @@ public:
             voice->setSampleRate(newRate);
         }
     }
+    juce::SynthesiserVoice* findFreeVoice(juce::SynthesiserSound* soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible)const override;
+    void noteOn(int midiChannel, int midiNoteNumber, float velocity) override;
+    void noteOff(int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff) override;
+    void renderVoices(juce::AudioBuffer<float>& buffer, int startSample, int numSamples) override;
     //===============================================
     void updateRoutingForBlock();
     void updateEnvelopesForBlock();
