@@ -70,8 +70,24 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += op->lastRight();
             }
         }
+        /*
+        if(isnan(sumL))
+        {
+            juce::String debugStr = "NaN before filter on voice ";
+            debugStr += juce::String(voiceIndex) + " sample " + juce::String(i);
+            debugPrinter.addMessage(debugStr);
+        }
+         */
         sumL = voiceFilter.processLeft(sumL);
         sumR = voiceFilter.processRight(sumR);
+        /*
+        if(isnan(sumL))
+        {
+            juce::String debugStr = "NaN after filter on voice ";
+            debugStr += juce::String(voiceIndex) + " sample " + juce::String(i);
+            debugPrinter.addMessage(debugStr);
+        }
+         */
         outputBuffer.addSample(0, i, sumR);
         outputBuffer.addSample(1, i, sumL);
     }
