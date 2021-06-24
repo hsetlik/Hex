@@ -132,7 +132,7 @@ void EnvelopeComponent::LevelMeter::paint(juce::Graphics &g)
     g.setColour(UXPalette::darkBlue);
     g.fillRect(lBounds);
 }
-
+//asdferasdfasdf
 //==============================================================================
 EnvelopeComponent::EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams, bool isFilterComp) :
 opIndex(idx),
@@ -415,6 +415,7 @@ levelLabel(&levelSlider)
     outAttach.reset(new buttonAttach(*linkedTree, outputId, outButton));
     
     outButton.addListener(this);
+    buttonClicked(&outButton);
 }
 
 OperatorComponent::~OperatorComponent()
@@ -432,9 +433,15 @@ OperatorComponent::~OperatorComponent()
 void OperatorComponent::buttonClicked(juce::Button *b)
 {
     if(b->getToggleState())
+    {
         panSlider.setVisible(true);
+        panLabel.setVisible(true);
+    }
     else
+    {
         panSlider.setVisible(false);
+        panLabel.setVisible(false);
+    }
 }
 
 void OperatorComponent::resized()
