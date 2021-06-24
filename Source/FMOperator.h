@@ -12,7 +12,7 @@
 #include "FMOscillator.h"
 #include "DAHDSR.h"
 #define NUM_OPERATORS 6
-#define NUM_VOICES 6
+#define NUM_VOICES 10
 //! macros for use in parameter layout
 #define RATIO_MIN 0.1f
 #define RATIO_MAX 10.0f
