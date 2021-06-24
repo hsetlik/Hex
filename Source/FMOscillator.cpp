@@ -89,6 +89,8 @@ float SineOsc::getSample(double hz)
 {
     if(hz > nyquist)
         hz = nyquist;
+    if(hz < 10.0f)
+        hz = 10.0f;
     phaseDelta = (float)(hz / sampleRate);
     phase += phaseDelta;
     if(phase >= 1.0f)
@@ -210,6 +212,8 @@ float AntiAliasOsc::getSample(double hz)
 {
     if(hz > nyquist)
         hz = nyquist;
+    if(hz < 10.0f)
+        hz = 10.0f;
     phaseDelta = (float)(hz / sampleRate);
     phase += phaseDelta;
     if(phase > 1.0f)
