@@ -17,7 +17,7 @@ typedef std::array<float, TABLESIZE> LfoArray;
 class WaveArray
 {
 public:
-    static LfoArray arryForType(WaveType type);
+    static LfoArray arrayForType(WaveType type);
 };
 
 class LfoBase
@@ -68,7 +68,7 @@ private:
 class NoiseLfo : public LfoBase
 {
 public:
-    NoiseLfo() : rGen(12)
+    NoiseLfo() : phase(0.0f), rGen(12)
     {
         output = rGen.nextFloat();
     }
@@ -84,6 +84,8 @@ public:
         return output;
     }
 private:
+    float phase;
+    float phaseDelta;
     juce::Random rGen;
     float output;
 };

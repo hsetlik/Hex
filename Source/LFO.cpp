@@ -10,7 +10,7 @@
 
 #include "LFO.h"
 
-LfoArray WaveArray::arryForType(WaveType type)
+LfoArray WaveArray::arrayForType(WaveType type)
 {
     LfoArray array;
     switch(type)
@@ -38,7 +38,7 @@ LfoArray WaveArray::arryForType(WaveType type)
         case Saw:
         {
             auto dY = 1.0f / (float)TABLESIZE;
-            for(int i = 0; i < TABLESIZE: ++i)
+            for(int i = 0; i < TABLESIZE; ++i)
             {
                 array[i] = i * dY;
             }
@@ -58,6 +58,10 @@ LfoArray WaveArray::arryForType(WaveType type)
             }
             break;
         }
+        case Noise:
+        {
+            break;
+        }
     }
     return array;
 }
@@ -73,6 +77,7 @@ rate(1.0f)
 }
 void HexLfo::setType(WaveType type)
 {
+    //! safe to call this on every block bc replacement code only runs when the type changes
     if(type != currentType)
     {
         currentType = type;
@@ -86,6 +91,7 @@ void HexLfo::handleAsyncUpdate()
         pOsc.reset(new WaveLfo(currentType));
     else
         pOsc.reset(new NoiseLfo());
+    //! Make sure other parameters stay the same when the type gets changed
     pOsc->setSampleRate(sampleRate);
     pOsc->setRate(rate);
 }
