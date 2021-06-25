@@ -35,7 +35,7 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     {
         op->trigger(true);
     }
-    //debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
+    debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
@@ -47,7 +47,7 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
     }
     if(!allowTailOff)
     {
-        clearCurrentNote();
+        killQuick();
     }
 }
 
@@ -70,24 +70,8 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += op->lastRight();
             }
         }
-        /*
-        if(isnan(sumL))
-        {
-            juce::String debugStr = "NaN before filter on voice ";
-            debugStr += juce::String(voiceIndex) + " sample " + juce::String(i);
-            debugPrinter.addMessage(debugStr);
-        }
-         */
         sumL = voiceFilter.processLeft(sumL);
         sumR = voiceFilter.processRight(sumR);
-        /*
-        if(isnan(sumL))
-        {
-            juce::String debugStr = "NaN after filter on voice ";
-            debugStr += juce::String(voiceIndex) + " sample " + juce::String(i);
-            debugPrinter.addMessage(debugStr);
-        }
-         */
         outputBuffer.addSample(0, i, sumR);
         outputBuffer.addSample(1, i, sumL);
     }
@@ -103,7 +87,7 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     if(!anyEnvsActive())
     {
         clearCurrentNote();
-        //debugPrinter.addMessage("Note Cleared on voice " + juce::String(voiceIndex));
+        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " cleared");
     }
 }
 //=====================================================================================================================
@@ -132,9 +116,19 @@ graphBuffer(2, 256 * 10)
         hexVoices.push_back(voice);
     }
     addSound(new HexSound);
-    setNoteStealingEnabled(false);
+    setNoteStealingEnabled(true);
 }
-
+juce::SynthesiserVoice* HexSynth::findFreeVoice(juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
+{
+    int idx = 0;
+    for(auto v : hexVoices)
+    {
+        if(!v->anyEnvsActive())
+            return voices[idx];
+        ++idx;
+    }
+    return voices.getLast();
+}
 void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity)
 {
     const juce::ScopedLock sl(lock);
@@ -142,13 +136,12 @@ void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity)
     {
         if (sound->appliesToNote (midiNoteNumber) && sound->appliesToChannel (midiChannel))
         {
+            auto* freeVoice = findFreeVoice(sound, midiChannel, midiNoteNumber, isNoteStealingEnabled());
             for (auto* voice : voices)
                 //! if a voice is already playing this note, stop it
                 if (voice->getCurrentlyPlayingNote() == midiNoteNumber && voice->isPlayingChannel (midiChannel))
-                    stopVoice (voice, 1.0f, true);
-
-            startVoice (findFreeVoice(sound, midiChannel, midiNoteNumber, isNoteStealingEnabled()),
-                        sound, midiChannel, midiNoteNumber, velocity);
+                    stopVoice(voice, 1.0f, true);
+            startVoice (freeVoice, sound, midiChannel, midiNoteNumber, velocity);
         }
     }
 }
@@ -373,17 +366,7 @@ void HexSynth::setWave(int idx, float value)
 }
 //===========================================================================
 
-juce::SynthesiserVoice* HexSynth::findFreeVoice(juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
-{
-    int idx = 0;
-    for(auto v : hexVoices)
-    {
-        if(!v->anyEnvsActive())
-            return voices[idx];
-        ++idx;
-    }
-    return voices.getLast();
-}
+
 
 //===========================================================================
 void HexSynth::updateRoutingForBlock()

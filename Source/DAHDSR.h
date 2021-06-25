@@ -95,7 +95,7 @@ public:
         }
     }
     void enterPhase(envPhase newPhase);
-    void killQuick(float msFade = 2.0f);
+    void killQuick(float msFade = 5.0f);
     void setSampleRate(double value) {sampleRate = value;}
     float process(float input);
     float clockOutput()

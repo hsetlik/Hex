@@ -103,6 +103,14 @@ public:
         }
         return false;
     }
+    void killQuick()
+    {
+        for(auto op : operators)
+        {
+            op->envelope.killQuick();
+        }
+        voiceFilter.envelope.killQuick();
+    }
 private:
     AsyncDebugPrinter debugPrinter;
     float sumL;

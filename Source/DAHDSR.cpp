@@ -87,6 +87,12 @@ float DAHDSR::process(float input)
 void DAHDSR::killQuick(float msFade)
 {
     //! function to bring down the envelope output very quickly (but not immediately) for voice stealing
+    currentPhase = releasePhase;
+    _startLevel = output;
+    _endLevel = minLevel;
+    samplesInPhase = msFade * sampleRate / 1000;
+    factor = factorFor(_startLevel, _endLevel, msFade);
+    
 }
 
 void DAHDSR::printDebug()
