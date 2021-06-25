@@ -301,7 +301,7 @@ void NoiseButton::setSymbol()
     }
 }
 //=======================================================
-WaveSelector::WaveSelector(int index, apvts* tree) :
+WaveSelector::WaveSelector(int index, apvts* tree, juce::String prefix) :
 opIndex(index),
 linkedTree(tree)
 {
@@ -317,7 +317,7 @@ linkedTree(tree)
     hiddenBox.addItem("Saw", 3);
     hiddenBox.addItem("Tri", 4);
     hiddenBox.addItem("Noise", 5);
-    auto waveId = "waveParam" + juce::String(opIndex);
+    auto waveId = prefix + juce::String(opIndex);
     hiddenBoxAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*linkedTree, waveId, hiddenBox));
     auto radioNum = 60 + opIndex;
     bSine.setRadioGroupId(radioNum);
@@ -364,7 +364,7 @@ OperatorComponent::OperatorComponent(int idx, apvts* tree, GraphParamSet* gParam
 opIndex(idx),
 linkedTree(tree),
 envComponent(idx, tree, gParams),
-waveSelect(idx, tree),
+waveSelect(idx, tree, "waveParam"),
 ratioLabel(&ratioSlider),
 modLabel(&modSlider),
 panLabel(&panSlider),

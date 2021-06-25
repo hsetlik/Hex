@@ -132,7 +132,7 @@ public juce::Component,
 public juce::Button::Listener
 {
 public:
-    WaveSelector(int idx, apvts* tree);
+    WaveSelector(int idx, apvts* tree, juce::String prefix);
     const int opIndex;
     apvts* const linkedTree;
     void resized() override;
