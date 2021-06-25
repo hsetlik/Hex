@@ -17,7 +17,8 @@ voiceIndex(idx),
 voiceFilter(voiceIndex),
 sumL(0.0f),
 sumR(0.0f),
-fundamental(0.0f)
+fundamental(0.0f),
+voiceCleared(true)
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
@@ -27,6 +28,9 @@ fundamental(0.0f)
 
 void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
+    if(!voiceCleared)
+        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " restarted");
+    voiceCleared = false;
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice.store(voiceIndex);
     linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
@@ -35,7 +39,7 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     {
         op->trigger(true);
     }
-    debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
+    //debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
@@ -50,6 +54,7 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
         killQuick();
     }
 }
+
 
 void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
@@ -87,7 +92,7 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     if(!anyEnvsActive())
     {
         clearCurrentNote();
-        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " cleared");
+        voiceCleared = true;
     }
 }
 //=====================================================================================================================
@@ -116,18 +121,19 @@ graphBuffer(2, 256 * 10)
         hexVoices.push_back(voice);
     }
     addSound(new HexSound);
-    setNoteStealingEnabled(true);
+    setNoteStealingEnabled(false);
 }
+
 juce::SynthesiserVoice* HexSynth::findFreeVoice(juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
 {
     int idx = 0;
     for(auto v : hexVoices)
     {
-        if(!v->anyEnvsActive())
+        if(v->isVoiceCleared())
             return voices[idx];
         ++idx;
     }
-    return voices.getLast();
+    return nullptr;
 }
 void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity)
 {
@@ -136,12 +142,13 @@ void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity)
     {
         if (sound->appliesToNote (midiNoteNumber) && sound->appliesToChannel (midiChannel))
         {
-            auto* freeVoice = findFreeVoice(sound, midiChannel, midiNoteNumber, isNoteStealingEnabled());
+            //! if a voice is already playing this note, stop it
             for (auto* voice : voices)
-                //! if a voice is already playing this note, stop it
                 if (voice->getCurrentlyPlayingNote() == midiNoteNumber && voice->isPlayingChannel (midiChannel))
                     stopVoice(voice, 1.0f, true);
-            startVoice (freeVoice, sound, midiChannel, midiNoteNumber, velocity);
+            auto* freeVoice = findFreeVoice(sound, midiChannel, midiNoteNumber, isNoteStealingEnabled());
+            if(freeVoice != nullptr)
+                startVoice(freeVoice, sound, midiChannel, midiNoteNumber, velocity);
         }
     }
 }
@@ -160,21 +167,21 @@ void HexSynth::noteOff(int midiChannel, int midiNoteNumber, float velocity, bool
                 {
                     voice->setKeyDown (false);
                     if (! (voice->isSustainPedalDown() || voice->isSostenutoPedalDown()))
-                        stopVoice (voice, velocity, allowTailOff);
+                        stopVoice(voice, velocity, allowTailOff);
                 }
             }
         }
     }
 }
+
 void HexSynth::renderVoices(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
 {
     for(auto voice : hexVoices)
     {
-        if(voice->anyEnvsActive())
+        if(!voice->isVoiceCleared())
             voice->renderNextBlock(buffer, startSample, numSamples);
     }
 }
-
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)
 {
@@ -365,10 +372,6 @@ void HexSynth::setWave(int idx, float value)
     }
 }
 //===========================================================================
-
-
-
-//===========================================================================
 void HexSynth::updateRoutingForBlock()
 {
     for(int o = 0; o < NUM_OPERATORS; ++o)
@@ -416,7 +419,6 @@ void HexSynth::updateEnvelopesForBlock()
         setRelease(i, release);
     }
 }
-
 void HexSynth::updateOscillatorsForBlock()
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
@@ -442,7 +444,6 @@ void HexSynth::updateOscillatorsForBlock()
         setWave(i, wave);
     }
 }
-
 void HexSynth::updateFiltersForBlock()
 {
     float delay = *linkedTree->getRawParameterValue("filterDelayParam");

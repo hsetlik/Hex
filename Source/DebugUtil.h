@@ -68,6 +68,12 @@ public:
             printf("%s\n", m.toRawUTF8());
         messages.clear();
     }
+    static juce::String bStr(bool input)
+    {
+        if(input)
+            return "true";
+        return "false";
+    }
 private:
     std::vector<juce::String> messages;
 };
