@@ -9,7 +9,7 @@
 */
 
 #include "Synthesizer.h"
-HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, int idx) :
+HexVoice::HexVoice(apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer,  int idx) :
 linkedTree(tree),
 linkedParams(gParams),
 linkedBuffer(buffer),
@@ -23,6 +23,10 @@ voiceCleared(true)
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
         operators.add(new FMOperator(i));
+    }
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        lfos.add(new HexLfo(i));
     }
 }
 
@@ -107,6 +111,39 @@ void HexVoice::tickModulation()
         }
     }
 }
+float HexVoice::tickLevelModulation(int opIdx)
+{
+    float offset = 0.0f;
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        float fLfo = lfos[i]->tick();
+        if(lfoTargets[i] == opIdx + 1)
+        {
+            offset += ((1.0f - operators[opIdx]->getLevel()) * (fLfo * lfoDepths[i]));
+        }
+    }
+    return offset;
+}
+float HexVoice::tickFilterModulation()
+{
+    float offset = 0.0f;
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        if(lfoTargets[i] == NUM_LFOS + 2)
+        {
+            offset += ((CUTOFF_MAX - voiceFilter.getCutoff()) * (lfoValues[i] * lfoDepths[i]));
+        }
+    }
+    return offset;
+}
+void HexVoice::tickLfos()
+{
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        lfoValues[i] = lfos[i]->tick();
+    }
+}
+
 //=====================================================================================================================
 HexSynth::HexSynth(apvts* tree) :
 linkedTree(tree),
@@ -189,6 +226,32 @@ void HexSynth::renderVoices(juce::AudioBuffer<float> &buffer, int startSample, i
         ++numJumps;
     }
     lastMagnitude = magnitude;
+}
+//=====================================================================================================================
+void HexSynth::setRate(int idx, float value)
+{
+    
+}
+void HexSynth::setDepth(int idx, float value)
+{
+    const juce::ScopedLock sl(lock);
+    for(auto v : hexVoices)
+    {
+        v->lfoDepths[idx] = value;
+    }
+}
+void HexSynth::setTarget(int idx, float value)
+{
+    const juce::ScopedLock sl(lock);
+    for(auto v : hexVoices)
+    {
+        v->lfoTargets[idx] = value;
+    }
+    
+}
+void HexSynth::setLfoWave(int idx, float value)
+{
+    
 }
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)

@@ -21,7 +21,8 @@ HexAudioProcessor::HexAudioProcessor()
                      #endif
                        ),
 tree(*this, nullptr, "SynthParams", HexParameters::createLayout()),
-synth(&tree)
+synth(&tree),
+createdEditor(nullptr)
 #endif
 {
 }
@@ -99,6 +100,7 @@ void HexAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // initialisation that you need..
     synth.setSampleRate(sampleRate);
     synth.prepareRingBuffer(samplesPerBlock);
+    
 }
 
 void HexAudioProcessor::releaseResources()
@@ -160,7 +162,8 @@ bool HexAudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* HexAudioProcessor::createEditor()
 {
-    return new HexAudioProcessorEditor (*this);
+    createdEditor = new HexAudioProcessorEditor (*this);
+    return createdEditor;
 }
 
 //==============================================================================

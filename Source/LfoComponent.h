@@ -10,13 +10,17 @@
 
 #pragma once
 #include "OperatorComponent.h"
-
  /* Each LFO's APVTS Parametes are:
   lfoWaveParam: int, range 0-4
   lfoRateParam: float, range 0.1 - 20 (in hZ)
   lfoSyncParam: bool, controls whether LFO should be in sync or hz mode
   lfoTargetParam: int, range 0 - NUM_OPERATORS + 1
   lfoDepthParam: float, range 0 - 1
+  
+  lfoTargets should be laid out like:
+  0: none
+  1 - NUM_OPERATORS + 1: operator levels
+  NUM_OPERATORS + 2: filter cutoff
   */
 using PosInfo = juce::AudioPlayHead::CurrentPositionInfo;
 struct NoteLength
@@ -30,17 +34,19 @@ struct NoteLength
     bpm(_bpm)
     {
     }
-    static float periodHz(int num, int denom, float bpm)
+    static float frequencyHz(int num, int denom, float bpm)
     {
         auto beatsPerSecond = (float)bpm / 60.0f;
         auto lengthInBeats = ((float)num / (float)denom) * 4.0f;
-        return beatsPerSecond * lengthInBeats;
+        auto period = beatsPerSecond * lengthInBeats;
+        return 1.0f / period;
     }
-    float periodHz()
+    float frequencyHz()
     {
         auto beatsPerSecond = (float)bpm / 60.0f;
         auto lengthInBeats = ((float)numerator / (float)denominator) * 4.0f;
-        return beatsPerSecond * lengthInBeats;
+        auto period = beatsPerSecond * lengthInBeats;
+        return 1.0f / period;
     }
 };
 
@@ -93,13 +99,16 @@ public:
     void timerCallback() override;
     void prepare(); //! call this in the PrepareToPlay method in the processor, it should set the BPM for the slider
     void resized() override;
+    static juce::StringArray getTargetStrings();
 private:
     juce::TextButton bpmToggle;
+    juce::ComboBox targetBox;
     DualModeSlider rateSlider;
     DualModeLabel rateLabel;
     PosInfo currentPos;
     WaveSelector waveSelect;
     pSliderAttach rateAttach;
     pButtonAttach syncAttach;
+    pComboBoxAttach targetAttach;
     float bpm;
 };

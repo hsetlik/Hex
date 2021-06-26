@@ -12,6 +12,7 @@
 #include "FMOperator.h"
 #include "RingBuffer.h"
 #include "Filter.h"
+#include "LFO.h"
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
 class HexSound : public juce::SynthesiserSound
@@ -77,9 +78,13 @@ public:
     //===============================================
     void renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples) override;
     juce::OwnedArray<FMOperator> operators;
+    juce::OwnedArray<HexLfo> lfos;
     StereoFilter voiceFilter;
     //! function to make sure each operator has the appropriate offset before calculating samples
     void tickModulation();
+    void tickLfos();
+    float tickLevelModulation(int opIdx);
+    float tickFilterModulation();
     //! functions for setting parameters inside the operators
     void setDelay(int idx, float value) {operators[idx]->envelope.setDelay(value); }
     void setAttack(int idx, float value) {operators[idx]->envelope.setAttack(value); }
@@ -112,12 +117,16 @@ public:
         voiceFilter.envelope.killQuick();
     }
     bool isVoiceCleared() {return voiceCleared; }
+    int lfoTargets[NUM_LFOS];
+    float lfoDepths[NUM_LFOS];
+    float lfoValues[NUM_LFOS];
 private:
     AsyncDebugPrinter debugPrinter;
     float sumL;
     float sumR;
     double fundamental;
     RoutingGrid grid;
+    
     bool voiceCleared;
     
 };
@@ -147,6 +156,12 @@ public:
     void updateEnvelopesForBlock();
     void updateOscillatorsForBlock();
     void updateFiltersForBlock();
+    void updateLfosForBlock();
+    //! LFO update functions
+    void setRate(int idx, float value);
+    void setDepth(int idx, float value);
+    void setLfoWave(int idx, float value);
+    void setTarget(int idx, float value);
     //! fucnitons for updating the voices based on parameter changes
     void setDelay(int idx, float value);
     void setAttack(int idx, float value);

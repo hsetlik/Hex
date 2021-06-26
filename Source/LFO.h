@@ -102,7 +102,7 @@ public:
     float tickToValue(float baseValue, float maxValue, float depth);
     void setSampleRate(double rate);
     void setRate(float rate);
-    void setType(WaveType type);
+    void setType(int type);
     void handleAsyncUpdate() override;
 private:
     WaveType currentType;

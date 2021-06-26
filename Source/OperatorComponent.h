@@ -21,6 +21,9 @@ using sliderAttach = juce::AudioProcessorValueTreeState::SliderAttachment;
 using pSliderAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>;
 using buttonAttach = juce::AudioProcessorValueTreeState::ButtonAttachment;
 using pButtonAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>;
+using comboBoxAttach = juce::AudioProcessorValueTreeState::ComboBoxAttachment;
+using pComboBoxAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>;
+
 class EnvelopeComponent : public juce::Component
 {
 public:

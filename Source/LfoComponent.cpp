@@ -31,7 +31,7 @@ void DualModeSlider::calculateHzValues()
     hzValues.clear();
     for(auto length : noteLengths)
     {
-        hzValues.push_back(NoteLength::periodHz(length.first, length.second, bpm));
+        hzValues.push_back(NoteLength::frequencyHz(length.first, length.second, bpm));
     }
 }
 double DualModeSlider::snapValue(double attemptedValue, juce::Slider::DragMode dragMode)
@@ -153,6 +153,12 @@ waveSelect(i, tree, "lfoWaveParam")
     rateAttach.reset(new sliderAttach(*linkedTree, rateId, rateSlider));
     auto syncId = "lfoSyncParam" + iStr;
     syncAttach.reset(new buttonAttach(*linkedTree, syncId, bpmToggle));
+    auto targetId = "lfoTargetParam" + iStr;
+    targetAttach.reset(new comboBoxAttach(*linkedTree, targetId, targetBox));
+    auto targets = getTargetStrings();
+    targetBox.addItemList(targets, 1);
+    
+    addAndMakeVisible(&targetBox);
     
     addAndMakeVisible(&bpmToggle);
     bpmToggle.setButtonText("Sync");
@@ -184,25 +190,25 @@ void LfoComponent::prepare()
 
 void LfoComponent::resized()
 {
-    auto bounds = getLocalBounds();
-    auto sWidth = bounds.getWidth() / 3;
-    auto lBounds = bounds.removeFromLeft(sWidth);
-    auto dY = lBounds.getHeight() / 2;
-    auto cushion = lBounds.getWidth() / 8;
-    auto sliderBounds = lBounds.removeFromBottom(dY).reduced(cushion);
-    sliderBounds = sliderBounds.withY(sliderBounds.getY() * 0.65f);
-    rateSlider.setBounds(sliderBounds);
-    rateLabel.setBounds(ComponentUtil::boxBelow(rateSlider, 7));
-    cushion = lBounds.getWidth() / 6;
-    bpmToggle.setBounds(lBounds.reduced(cushion, 2.5f * cushion));
-    
-    auto waveBounds = bounds;
-    waveBounds = waveBounds.removeFromRight(bounds.getWidth() * 0.75f);
-    dY = waveBounds.getHeight() / 4;
-    waveBounds = waveBounds.removeFromTop(dY);
-    waveBounds = waveBounds.withY(waveBounds.getY() + waveBounds.getHeight() * 0.5f);
-    waveSelect.setBounds(waveBounds);
+    auto dX = getWidth() / 16;
+    rateSlider.setBounds(dX, dX, 5 * dX, 5 * dX);
+    rateLabel.setBounds(dX, 6 * dX, 5 * dX, dX);
+    bpmToggle.setBounds(7 * dX, dX, 3 * dX, 1.5f * dX);
+    targetBox.setBounds(8 * dX, 4 * dX, 8 * dX, 2 * dX);
+    waveSelect.setBounds(6 * dX, 7 * dX, 10 * dX, 3 * dX);
 }
 
 void LfoComponent::timerCallback() {prepare(); }
 
+juce::StringArray LfoComponent::getTargetStrings()
+{
+    juce::StringArray vec;
+    vec.add("No Target");
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        auto iStr = juce::String(i + 1);
+        vec.add("Operator " + iStr + " level");
+    }
+    vec.add("Filter Cutoff");
+    return vec;
+}

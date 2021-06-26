@@ -55,6 +55,8 @@ void WaveGraph::renderOpenGL()
     int idx = stdu::loadIfLockFree(linkedParams->lastTriggeredVoice);
     
     fundamental = stdu::loadIfLockFree(linkedParams->voiceFundamentals[idx]);
+    if(isnan(fundamental))
+        fundamental = 1.0f;
     // Setup Viewport
     const float renderingScale = (float) openGLContext.getRenderingScale();
     glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));
@@ -69,7 +71,7 @@ void WaveGraph::renderOpenGL()
     // Use Shader Program that's been defined
     shader->use();
     auto samplesPerCycle = (int)44100.0f / fundamental;
-    if(fundamental < 1.0f)
+    if(fundamental <= 1.0f)
         samplesPerCycle = (int)44100.0f / 440.0f;
     auto sampleIncrement = (samplesPerCycle * 3) / 256;
     

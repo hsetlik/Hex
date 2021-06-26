@@ -146,6 +146,7 @@ public:
     float processLeft(float input) {return MathUtil::fLerp(input, lFilter->process(input), wetLevel); }
     float processRight(float input) {return MathUtil::fLerp(input, rFilter->process(input), wetLevel); }
     DAHDSR envelope;
+    float getCutoff() {return cutoffVal; }
 private:
     float cutoffVal;
     float resonanceVal;

@@ -12,6 +12,7 @@
 #include "DAHDSR.h"
 #include "FMOperator.h"
 #include "Filter.h"
+#include "LfoComponent.h"
 #include "LFO.h"
 class HexParameters
 {
@@ -90,6 +91,10 @@ public:
             auto waveId = "lfoWaveParam" + iStr;
             auto waveName = "LFO " + iStr + " wave";
             layout.add(std::make_unique<juce::AudioParameterChoice>(waveId, waveName, waves, 0));
+            auto targets = LfoComponent::getTargetStrings();
+            auto targetId = "lfoTargetParam" + iStr;
+            auto targetName = "LFO " + iStr + " target";
+            layout.add(std::make_unique<juce::AudioParameterChoice>(targetId, targetName, targets, 0));
         }
         
         

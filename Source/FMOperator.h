@@ -51,6 +51,7 @@ public:
     void setLevel(float value) {level = value; }
     void setAudible(bool shouldBeAudible) {audible = shouldBeAudible; }
     void clearOffset() {modOffset = 0.0f; }
+    float getLevel() {return level; }
 private:
     bool audible;
 public:

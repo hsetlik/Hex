@@ -75,12 +75,12 @@ rate(1.0f)
 {
     
 }
-void HexLfo::setType(WaveType type)
+void HexLfo::setType(int type)
 {
     //! safe to call this on every block bc replacement code only runs when the type changes
-    if(type != currentType)
+    if(type != (int)currentType)
     {
-        currentType = type;
+        currentType = (WaveType)type;
         triggerAsyncUpdate();
     }
 }
