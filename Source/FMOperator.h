@@ -13,6 +13,7 @@
 #include "DAHDSR.h"
 #define NUM_OPERATORS 6
 #define NUM_VOICES 12
+#define NUM_LFOS 4
 //! macros for use in parameter layout
 #define RATIO_MIN 0.1f
 #define RATIO_MAX 10.0f

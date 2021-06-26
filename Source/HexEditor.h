@@ -13,6 +13,7 @@
 #include "ModulationGrid.h"
 #include "WaveGraphComponent.h"
 #include "PatchBrowser.h"
+#include "LfoComponent.h"
 
 class FilterPanel : public juce::Component
 {
@@ -46,6 +47,7 @@ public:
     void paint(juce::Graphics& g) override;
 private:
     juce::OwnedArray<OperatorComponent> opComponents;
+    juce::OwnedArray<LfoComponent> lfoComponents;
     ModulationGrid modGrid;
     WaveGraph graph;
     FilterPanel fPanel;

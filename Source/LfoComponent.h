@@ -10,6 +10,15 @@
 
 #pragma once
 #include "OperatorComponent.h"
+
+ /* Each LFO's APVTS Parametes are:
+  lfoWaveParam: int, range 0-4
+  lfoRateParam: float, range 0.1 - 20 (in hZ)
+  lfoSyncParam: bool, controls whether LFO should be in sync or hz mode
+  lfoTargetParam: int, range 0 - NUM_OPERATORS + 1
+  lfoDepthParam: float, range 0 - 1
+  */
+using PosInfo = juce::AudioPlayHead::CurrentPositionInfo;
 struct NoteLength
 {
     int numerator;
@@ -43,6 +52,8 @@ public:
     double snapValue(double attemptedValue, juce::Slider::DragMode dragMode) override;
     bool inSnapMode() {return snapMode; }
     void toggleSnapMode() {snapMode = !snapMode; }
+    std::pair<int, int> currentNoteLength();
+    bool setSync(int num, int denom);
 private:
     void calculateHzValues();
     std::vector<float> hzValues;
@@ -51,16 +62,39 @@ private:
     std::vector<std::pair<int, int>> noteLengths;
 };
 
+class DualModeLabel :
+public juce::Label,
+public juce::Slider::Listener
+{
+public:
+    DualModeLabel(DualModeSlider* s);
+    DualModeSlider* const linkedSlider;
+    void sliderValueChanged(juce::Slider* s) override;
+    void textWasEdited() override;
+    void setTextHz(float value);
+    void setTextNoteLength(int num, int denom);
+private:
+    juce::String lastStr;
+};
+
 
 class LfoComponent :
+public juce::Component,
 public juce::Button::Listener
 {
 public:
-    LfoComponent(juce::AudioProcessor* proc, GraphParamSet* gParams, apvts* tree);
+    LfoComponent(int i, juce::AudioProcessor* proc, GraphParamSet* gParams, apvts* tree);
+    const int lfoIndex;
     juce::AudioProcessor* const linkedProcessor;
     GraphParamSet* const linkedParams;
     apvts* const linkedTree;
     void buttonClicked(juce::Button* b) override;
+    void prepare(); //! call this in the PrepareToPlay method in the processor, it should set the BPM for the slider
+    void resized() override;
 private:
     juce::TextButton bpmToggle;
+    DualModeSlider rateSlider;
+    DualModeLabel rateLabel;
+    PosInfo currentPos;
+    float bpm;
 };

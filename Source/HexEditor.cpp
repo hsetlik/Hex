@@ -79,6 +79,10 @@ saveDialog(&loader)
     {
         addAndMakeVisible(opComponents.add(new OperatorComponent(i, linkedTree, params)));
     }
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        addAndMakeVisible(lfoComponents.add(new LfoComponent(i, proc, params, linkedTree)));
+    }
 }
 
 void HexEditor::resized()
@@ -95,6 +99,13 @@ void HexEditor::resized()
     graph.setBounds(gBounds.reduced(cushion));
     fPanel.setBounds(rightColumn);
     
+    auto lfoBounds = bounds.removeFromBottom(bounds.getHeight() / 5);
+    auto lfoWidth = lfoBounds.getWidth() / NUM_LFOS;
+    for(int i = 0; i < NUM_LFOS - 1; ++i)
+    {
+        lfoComponents[i]->setBounds(lfoBounds.removeFromLeft(lfoWidth));
+    }
+    lfoComponents[NUM_LFOS - 1]->setBounds(lfoBounds);
     auto dX = bounds.getWidth() / 3;
     auto topBounds = bounds.removeFromTop(bounds.getHeight() / 2);
     opComponents[0]->setBounds(topBounds.removeFromLeft(dX));

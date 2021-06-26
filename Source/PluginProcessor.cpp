@@ -145,6 +145,8 @@ void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     if(magnitude > 1.0f)
     {
         buffer.applyGain(0.6f / magnitude);
+        //! Note: apparently this is almost never an issue
+        printer.addMessage("Over-magnitude buffer: " + juce::String(magnitude));
     }
     else
         buffer.applyGain(0.6f);

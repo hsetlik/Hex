@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include <regex>
 #define SEMITONE_RATIO 1.05946309436f
 class MathUtil
 {
@@ -108,5 +109,27 @@ struct stdu
         if(input.is_lock_free())
             return input.load();
         return 0;
+    }
+    static std::vector<std::string> matchesAsVector(std::string body, std::regex reg)
+    {
+        std::vector<std::string> strings;
+        auto results = std::smatch{};
+        for (std::sregex_iterator it = std::sregex_iterator(body.begin(), body.end(), reg);
+                 it != std::sregex_iterator(); it++)
+        {
+            std::smatch match;
+            match = *it;
+            auto str = match.str(0);
+            strings.push_back(str);
+        }
+        return strings;
+    }
+    static std::pair<int, int> stringAsFraction(std::string input)
+    {
+        auto exp = std::regex("\\w+");
+        auto values = matchesAsVector(input, exp);
+        auto num = std::stoi(values[0]);
+        auto denom = std::stoi(values[1]);
+        return std::make_pair(num, denom);
     }
 };

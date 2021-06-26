@@ -105,7 +105,6 @@ public:
     }
     void killQuick()
     {
-        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " quick-killed");
         for(auto op : operators)
         {
             op->envelope.killQuick();
@@ -186,4 +185,7 @@ private:
     RoutingGrid grid;
     std::vector<HexVoice*> hexVoices;
     AsyncDebugPrinter printer;
+    float magnitude;
+    float lastMagnitude;
+    long numJumps;
 };

@@ -28,8 +28,6 @@ voiceCleared(true)
 
 void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
-    if(!voiceCleared)
-        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " restarted");
     voiceCleared = false;
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice.store(voiceIndex);
@@ -112,7 +110,10 @@ void HexVoice::tickModulation()
 //=====================================================================================================================
 HexSynth::HexSynth(apvts* tree) :
 linkedTree(tree),
-graphBuffer(2, 256 * 10)
+graphBuffer(2, 256 * 10),
+magnitude(0.0f),
+lastMagnitude(0.0f),
+numJumps(0)
 {
     for(int i = 0; i < NUM_VOICES; ++i)
     {
@@ -181,6 +182,13 @@ void HexSynth::renderVoices(juce::AudioBuffer<float> &buffer, int startSample, i
         if(!voice->isVoiceCleared())
             voice->renderNextBlock(buffer, startSample, numSamples);
     }
+    magnitude = buffer.getMagnitude(startSample, numSamples);
+    if(std::abs(magnitude - lastMagnitude) > 0.4f)
+    {
+        printer.addMessage("Magnitude jump " + juce::String(numJumps));
+        ++numJumps;
+    }
+    lastMagnitude = magnitude;
 }
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)
