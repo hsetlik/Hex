@@ -145,8 +145,15 @@ lfoIndex(i),
 linkedProcessor(proc),
 linkedParams(gParams),
 linkedTree(tree),
-rateLabel(&rateSlider)
+rateLabel(&rateSlider),
+waveSelect(i, tree, "lfoWaveParam")
 {
+    auto iStr = juce::String(lfoIndex);
+    auto rateId = "lfoRateParam" + iStr;
+    rateAttach.reset(new sliderAttach(*linkedTree, rateId, rateSlider));
+    auto syncId = "lfoSyncParam" + iStr;
+    syncAttach.reset(new buttonAttach(*linkedTree, syncId, bpmToggle));
+    
     addAndMakeVisible(&bpmToggle);
     bpmToggle.setButtonText("Sync");
     bpmToggle.setClickingTogglesState(true);
@@ -157,6 +164,9 @@ rateLabel(&rateSlider)
     rateSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
     addAndMakeVisible(&rateLabel);
     
+    addAndMakeVisible(&waveSelect);
+    
+    startTimerHz(2);
     prepare();
 }
 
@@ -184,6 +194,15 @@ void LfoComponent::resized()
     rateSlider.setBounds(sliderBounds);
     rateLabel.setBounds(ComponentUtil::boxBelow(rateSlider, 7));
     cushion = lBounds.getWidth() / 6;
-    bpmToggle.setBounds(lBounds.reduced(cushion, 2 * cushion));
+    bpmToggle.setBounds(lBounds.reduced(cushion, 2.5f * cushion));
+    
+    auto waveBounds = bounds;
+    waveBounds = waveBounds.removeFromRight(bounds.getWidth() * 0.75f);
+    dY = waveBounds.getHeight() / 4;
+    waveBounds = waveBounds.removeFromTop(dY);
+    waveBounds = waveBounds.withY(waveBounds.getY() + waveBounds.getHeight() * 0.5f);
+    waveSelect.setBounds(waveBounds);
 }
+
+void LfoComponent::timerCallback() {prepare(); }
 

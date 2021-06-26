@@ -12,6 +12,7 @@
 #include "DAHDSR.h"
 #include "FMOperator.h"
 #include "Filter.h"
+#include "LFO.h"
 class HexParameters
 {
 public:
@@ -70,6 +71,28 @@ public:
         filterTypes.add("High Pass");
         filterTypes.add("Band Pass");
         layout.add(std::make_unique<juce::AudioParameterChoice>("filterTypeParam", "Filter Type", filterTypes, 0));
+        
+        fRange rateRange(RATE_MIN, RATE_MAX);
+        for(int i = 0; i < NUM_LFOS; ++i)
+        {
+            auto iStr = juce::String(i);
+            auto rateId = "lfoRateParam" + iStr;
+            auto rateName = "LFO " + iStr + " rate";
+            layout.add(std::make_unique<juce::AudioParameterFloat>(rateId, rateName, rateRange, RATE_DEFAULT));
+            layout.add(std::make_unique<juce::AudioParameterFloat>("lfoDepthParam" + iStr, "LFO " + iStr + " depth", 0.0f, 1.0f, 0.0f));
+            layout.add(std::make_unique<juce::AudioParameterBool>("lfoSyncParam" + iStr, "LFO " + iStr + " sync", false));
+            juce::StringArray waves;
+            waves.add("Sine");
+            waves.add("Square");
+            waves.add("Saw");
+            waves.add("Tri");
+            waves.add("Noise");
+            auto waveId = "lfoWaveParam" + iStr;
+            auto waveName = "LFO " + iStr + " wave";
+            layout.add(std::make_unique<juce::AudioParameterChoice>(waveId, waveName, waves, 0));
+        }
+        
+        
         for(int i = 0; i < NUM_OPERATORS; ++i)
         {
             juce::String iStr = juce::String(i);

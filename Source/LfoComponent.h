@@ -80,7 +80,8 @@ private:
 
 class LfoComponent :
 public juce::Component,
-public juce::Button::Listener
+public juce::Button::Listener,
+public juce::Timer
 {
 public:
     LfoComponent(int i, juce::AudioProcessor* proc, GraphParamSet* gParams, apvts* tree);
@@ -89,6 +90,7 @@ public:
     GraphParamSet* const linkedParams;
     apvts* const linkedTree;
     void buttonClicked(juce::Button* b) override;
+    void timerCallback() override;
     void prepare(); //! call this in the PrepareToPlay method in the processor, it should set the BPM for the slider
     void resized() override;
 private:
@@ -96,5 +98,8 @@ private:
     DualModeSlider rateSlider;
     DualModeLabel rateLabel;
     PosInfo currentPos;
+    WaveSelector waveSelect;
+    pSliderAttach rateAttach;
+    pButtonAttach syncAttach;
     float bpm;
 };

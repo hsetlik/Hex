@@ -19,6 +19,8 @@
 #define NOISE_SEED 2239
 using sliderAttach = juce::AudioProcessorValueTreeState::SliderAttachment;
 using pSliderAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>;
+using buttonAttach = juce::AudioProcessorValueTreeState::ButtonAttachment;
+using pButtonAttach = std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>;
 class EnvelopeComponent : public juce::Component
 {
 public:

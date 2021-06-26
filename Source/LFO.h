@@ -11,6 +11,9 @@
 #pragma once
 #include "MathUtil.h"
 #include "FMOscillator.h"
+#define RATE_MIN 0.01f
+#define RATE_MAX 20.0f
+#define RATE_DEFAULT 1.0f
 
 typedef std::array<float, TABLESIZE> LfoArray;
 
@@ -29,7 +32,7 @@ public:
     virtual ~LfoBase() {}
     virtual void setSampleRate(double rate) {sampleRate = rate; }
     virtual void setRate(float speedHz) {rate = speedHz; }
-    virtual float tick() {}
+    virtual float tick() {return 0.0f; }
 protected:
     float rate;
     double sampleRate;
