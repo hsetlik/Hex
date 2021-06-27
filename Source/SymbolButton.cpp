@@ -61,7 +61,7 @@ OutputButton::OutputButton() :
 juce::ShapeButton("outputToggle", UXPalette::darkGray, UXPalette::darkGray, UXPalette::darkGray),
 litBkgnd(UXPalette::lightRed),
 unlitBkgnd(UXPalette::darkRed),
-litText(UXPalette::lightGray),
+litText(juce::Colours::white),
 unlitText(UXPalette::darkGray)
 {
     setClickingTogglesState(true);
@@ -77,5 +77,5 @@ void OutputButton::paintButton(juce::Graphics &g, bool highlighted, bool down)
     g.fillRoundedRectangle(fBounds, corner);
     auto tBounds = fBounds.reduced(corner * 1.5f);
     g.setColour(tColor);
-    g.drawText("Output", tBounds, juce::Justification::centred);
+    g.drawText("OUTPUT", tBounds, juce::Justification::centred);
 }

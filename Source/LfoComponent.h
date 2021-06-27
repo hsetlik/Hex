@@ -34,19 +34,16 @@ struct NoteLength
     bpm(_bpm)
     {
     }
+    static float periodsPerQuarterNote(int num, int denom)
+    {
+        return ((float)denom / 4.0f) / (float)num;
+    }
     static float frequencyHz(int num, int denom, float bpm)
     {
-        auto beatsPerSecond = (float)bpm / 60.0f;
-        auto lengthInBeats = ((float)num / (float)denom) * 4.0f;
-        auto period = beatsPerSecond * lengthInBeats;
-        return 1.0f / period;
-    }
-    float frequencyHz()
-    {
-        auto beatsPerSecond = (float)bpm / 60.0f;
-        auto lengthInBeats = ((float)numerator / (float)denominator) * 4.0f;
-        auto period = beatsPerSecond * lengthInBeats;
-        return 1.0f / period;
+        auto subdiv = periodsPerQuarterNote(num, denom);
+        auto delay = 1.0f / (bpm / 60.0f * subdiv * 0.001f);
+        auto output = 1000.0f / delay;
+        return output;
     }
 };
 
@@ -91,6 +88,7 @@ public juce::Timer
 {
 public:
     LfoComponent(int i, juce::AudioProcessor* proc, GraphParamSet* gParams, apvts* tree);
+    ~LfoComponent();
     const int lfoIndex;
     juce::AudioProcessor* const linkedProcessor;
     GraphParamSet* const linkedParams;
@@ -105,10 +103,14 @@ private:
     juce::ComboBox targetBox;
     DualModeSlider rateSlider;
     DualModeLabel rateLabel;
+    juce::Slider depthSlider;
+    RotaryLabel depthLabel;
     PosInfo currentPos;
     WaveSelector waveSelect;
     pSliderAttach rateAttach;
+    pSliderAttach depthAttach;
     pButtonAttach syncAttach;
     pComboBoxAttach targetAttach;
     float bpm;
+    HexLookAndFeel lnf;
 };

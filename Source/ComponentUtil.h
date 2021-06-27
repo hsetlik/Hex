@@ -39,8 +39,15 @@ public:
         y = iBounds.getBottom();
         if(spaceFraction != 0)
         {
-            y += iBounds.getHeight() / spaceFraction;
+            y  = y + (iBounds.getHeight() / spaceFraction);
         }
         return juce::Rectangle<int>(x, y, width, height);
+    }
+    static void cushionByFraction(juce::Component& comp, int fX, int fY)
+    {
+        auto startBounds = comp.getBounds();
+        auto dX = startBounds.getWidth() / fX;
+        auto dY = startBounds.getHeight() / fY;
+        comp.setBounds(startBounds.reduced(dX, dY));
     }
 };

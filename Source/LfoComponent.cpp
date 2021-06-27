@@ -29,9 +29,11 @@ DualModeSlider::DualModeSlider() : snapMode(false), bpm(120.0f)
 void DualModeSlider::calculateHzValues()
 {
     hzValues.clear();
+    printf("BPM is: %f\n", bpm);
     for(auto length : noteLengths)
     {
-        hzValues.push_back(NoteLength::frequencyHz(length.first, length.second, bpm));
+        auto value = NoteLength::frequencyHz(length.first, length.second, bpm);
+        hzValues.push_back(value);
     }
 }
 double DualModeSlider::snapValue(double attemptedValue, juce::Slider::DragMode dragMode)
@@ -146,6 +148,7 @@ linkedProcessor(proc),
 linkedParams(gParams),
 linkedTree(tree),
 rateLabel(&rateSlider),
+depthLabel(&depthSlider),
 waveSelect(i, tree, "lfoWaveParam")
 {
     auto iStr = juce::String(lfoIndex);
@@ -155,6 +158,9 @@ waveSelect(i, tree, "lfoWaveParam")
     syncAttach.reset(new buttonAttach(*linkedTree, syncId, bpmToggle));
     auto targetId = "lfoTargetParam" + iStr;
     targetAttach.reset(new comboBoxAttach(*linkedTree, targetId, targetBox));
+    auto depthId = "lfoDepthParam" + iStr;
+    depthAttach.reset(new sliderAttach(*linkedTree, depthId, depthSlider));
+    
     auto targets = getTargetStrings();
     targetBox.addItemList(targets, 1);
     
@@ -170,10 +176,35 @@ waveSelect(i, tree, "lfoWaveParam")
     rateSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
     addAndMakeVisible(&rateLabel);
     
+    addAndMakeVisible(&depthSlider);
+    depthSlider.setSliderStyle(juce::Slider::Rotary);
+    depthSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
+    
+    addAndMakeVisible(&depthLabel);
     addAndMakeVisible(&waveSelect);
     
     startTimerHz(2);
+    
+    rateSlider.setLookAndFeel(&lnf);
+    rateLabel.setLookAndFeel(&lnf);
+    
+    depthSlider.setLookAndFeel(&lnf);
+    depthLabel.setLookAndFeel(&lnf);
+    
+    targetBox.setLookAndFeel(&lnf);
+    
     prepare();
+}
+
+LfoComponent::~LfoComponent()
+{
+    rateSlider.setLookAndFeel(nullptr);
+    rateLabel.setLookAndFeel(nullptr);
+    
+    depthSlider.setLookAndFeel(nullptr);
+    depthLabel.setLookAndFeel(nullptr);
+    
+    targetBox.setLookAndFeel(nullptr);
 }
 
 void LfoComponent::buttonClicked(juce::Button *b)
@@ -192,6 +223,10 @@ void LfoComponent::resized()
 {
     auto dX = getWidth() / 16;
     rateSlider.setBounds(dX, dX, 5 * dX, 5 * dX);
+    ComponentUtil::cushionByFraction(rateSlider, 8, 8);
+    depthSlider.setBounds(dX, 7 * dX, 5 * dX, 5 * dX);
+    ComponentUtil::cushionByFraction(depthSlider, 8, 8);
+    depthLabel.resized();
     rateLabel.setBounds(dX, 6 * dX, 5 * dX, dX);
     bpmToggle.setBounds(7 * dX, dX, 3 * dX, 1.5f * dX);
     targetBox.setBounds(8 * dX, 4 * dX, 8 * dX, 2 * dX);
@@ -204,7 +239,7 @@ juce::StringArray LfoComponent::getTargetStrings()
 {
     juce::StringArray vec;
     vec.add("No Target");
-    for(int i = 0; i < NUM_LFOS; ++i)
+    for(int i = 0; i < NUM_OPERATORS; ++i)
     {
         auto iStr = juce::String(i + 1);
         vec.add("Operator " + iStr + " level");
