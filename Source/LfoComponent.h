@@ -54,9 +54,16 @@ public:
     void setBpm(float val) {bpm = val; calculateHzValues(); }
     double snapValue(double attemptedValue, juce::Slider::DragMode dragMode) override;
     bool inSnapMode() {return snapMode; }
-    void toggleSnapMode() {snapMode = !snapMode; }
+    void toggleSnapMode() {snapMode = !snapMode; resetRange(); }
     std::pair<int, int> currentNoteLength();
-    bool setSync(int num, int denom);
+    bool setSync(int num, int denom, float bpm);
+    void resetRange()
+    {
+        if(snapMode)
+            setSkewFactorFromMidPoint((double)NoteLength::frequencyHz(1, 1, bpm));
+        else
+            setSkewFactorFromMidPoint(RATE_CENTER);
+    }
 private:
     void calculateHzValues();
     std::vector<float> hzValues;
@@ -76,7 +83,9 @@ public:
     void textWasEdited() override;
     void setTextHz(float value);
     void setTextNoteLength(int num, int denom);
+    void setBpm(float val) {bpm = val; }
 private:
+    float bpm;
     juce::String lastStr;
 };
 

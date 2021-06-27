@@ -11,6 +11,9 @@
 #include "LfoComponent.h"
 DualModeSlider::DualModeSlider() : snapMode(false), bpm(120.0f)
 {
+    noteLengths.push_back(std::make_pair(1, 32));
+    noteLengths.push_back(std::make_pair(1, 24));
+    noteLengths.push_back(std::make_pair(1, 18));
     noteLengths.push_back(std::make_pair(1, 16));
     noteLengths.push_back(std::make_pair(1, 12));
     noteLengths.push_back(std::make_pair(1, 8));
@@ -29,7 +32,6 @@ DualModeSlider::DualModeSlider() : snapMode(false), bpm(120.0f)
 void DualModeSlider::calculateHzValues()
 {
     hzValues.clear();
-    printf("BPM is: %f\n", bpm);
     for(auto length : noteLengths)
     {
         auto value = NoteLength::frequencyHz(length.first, length.second, bpm);
@@ -67,23 +69,17 @@ std::pair<int, int> DualModeSlider::currentNoteLength()
     }
     return noteLengths[idx];
 }
-bool DualModeSlider::setSync(int num, int denom)
+bool DualModeSlider::setSync(int num, int denom, float bpm)
 {
     if(!snapMode)
         return false;
-    int idx = 0;
-    for(auto length : noteLengths)
-    {
-        if(std::make_pair(num, denom) == length)
-        {
-            setValue((double)hzValues[idx]);
-            return true;
-        }
-    }
-    return false;
+    setValue(NoteLength::frequencyHz(num, denom, bpm));
+    return true;
 }
 //======================================================================================
-DualModeLabel::DualModeLabel(DualModeSlider* s) : linkedSlider(s)
+DualModeLabel::DualModeLabel(DualModeSlider* s) :
+linkedSlider(s),
+bpm(120.0f)
 {
     linkedSlider->addListener(this);
     if(linkedSlider->inSnapMode())
@@ -96,6 +92,7 @@ DualModeLabel::DualModeLabel(DualModeSlider* s) : linkedSlider(s)
         lastStr = juce::String((float)linkedSlider->getValue());
     }
     setText(lastStr, juce::dontSendNotification);
+    setEditable(true);
 }
 void DualModeLabel::sliderValueChanged(juce::Slider *s)
 {
@@ -124,7 +121,7 @@ void DualModeLabel::textWasEdited()
     if(linkedSlider->inSnapMode() && str.contains("/"))
     {
         auto frac = stdu::stringAsFraction(str.toStdString());
-        if(linkedSlider->setSync(frac.first, frac.second))
+        if(linkedSlider->setSync(frac.first, frac.second, bpm))
             setTextNoteLength(frac.first, frac.second);
         else
             setText(lastStr, juce::dontSendNotification);
@@ -217,6 +214,7 @@ void LfoComponent::prepare()
 {
     linkedProcessor->getPlayHead()->getCurrentPosition(currentPos);
     bpm = (float)currentPos.bpm;
+    rateLabel.setBpm(bpm);
 }
 
 void LfoComponent::resized()

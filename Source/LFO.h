@@ -14,6 +14,7 @@
 #define RATE_MIN 0.01f
 #define RATE_MAX 20.0f
 #define RATE_DEFAULT 1.0f
+#define RATE_CENTER 2.0f
 
 typedef std::array<float, TABLESIZE> LfoArray;
 
