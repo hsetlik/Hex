@@ -19,7 +19,9 @@ internalBuffer(2, 512),
 sumL(0.0f),
 sumR(0.0f),
 fundamental(0.0f),
-voiceCleared(true)
+voiceCleared(true),
+magnitude(0.0f),
+lastMagnitude(0.0f)
 {
     for(int i = 0; i < NUM_OPERATORS; ++i)
     {
@@ -36,13 +38,15 @@ void HexVoice::startNote(int midiNoteNumber, float velocity, juce::SynthesiserSo
     voiceCleared = false;
     fundamental = juce::MidiMessage::getMidiNoteInHertz(midiNoteNumber);
     linkedParams->lastTriggeredVoice.store(voiceIndex);
+    ++linkedParams->voicesInUse;
     linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
     voiceFilter.envelope.triggerOn();
     for(auto op : operators)
     {
         op->trigger(true);
     }
-    //debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
+    debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " triggered with fundamental " + juce::String(fundamental));
+    //debugPrinter.addMessage(juce::String(linkedParams->voicesInUse.load()) + " voices in use");
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff)
@@ -55,6 +59,10 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
     if(!allowTailOff)
     {
         killQuick();
+    }
+    if(linkedParams->voicesInUse.load() > 0)
+    {
+        --linkedParams->voicesInUse;
     }
 }
 
@@ -96,10 +104,19 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     {
         linkedBuffer->writeSamples(internalBuffer, startSample, numSamples);
     }
+    /*
+    magnitude = internalBuffer.getMagnitude(0, internalBuffer.getNumSamples());
+    if(std::abs(magnitude - lastMagnitude) > 0.4f)
+    {
+        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " magnitude jumped");
+    }
+    lastMagnitude = magnitude;
+     */
     if(!anyEnvsActive())
     {
         clearCurrentNote();
         voiceCleared = true;
+        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " cleared");
     }
 }
 //=====================================================================================================================
@@ -169,11 +186,13 @@ numJumps(0)
 
 juce::SynthesiserVoice* HexSynth::findFreeVoice(juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
 {
-    int idx = 0;
+    auto idx = 0;
     for(auto v : hexVoices)
     {
         if(v->isVoiceCleared())
-            return voices[idx];
+        {
+            return v;
+        }
         ++idx;
     }
     return nullptr;
@@ -219,23 +238,30 @@ void HexSynth::noteOff(int midiChannel, int midiNoteNumber, float velocity, bool
 
 void HexSynth::renderVoices(juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
 {
-    for(auto voice : hexVoices)
+    //const juce::ScopedLock  sl(lock);
+    for(int i = 0; i < NUM_VOICES; ++i)
     {
-        if(!voice->isVoiceCleared())
-            voice->renderNextBlock(buffer, startSample, numSamples);
+        if(!hexVoices[i]->isVoiceCleared())
+        {
+            hexVoices[i]->renderNextBlock(buffer, startSample, numSamples);
+            magnitude = buffer.getMagnitude(startSample, numSamples);
+            if(std::abs(magnitude - lastMagnitude) > 0.6f)
+            {
+                printer.addMessage("Level jumped after voice " + juce::String(i));
+            }
+            lastMagnitude = magnitude;
+        }
     }
-    magnitude = buffer.getMagnitude(startSample, numSamples);
-    if(std::abs(magnitude - lastMagnitude) > 0.4f)
-    {
-        printer.addMessage("Magnitude jump " + juce::String(numJumps));
-        ++numJumps;
-    }
-    lastMagnitude = magnitude;
+    
 }
 //=====================================================================================================================
 void HexSynth::setRate(int idx, float value)
 {
-    
+    const juce::ScopedLock sl(lock);
+    for(auto v : hexVoices)
+    {
+        v->lfos[idx]->setRate(value);
+    }
 }
 void HexSynth::setDepth(int idx, float value)
 {
@@ -252,11 +278,11 @@ void HexSynth::setTarget(int idx, float value)
     {
         v->lfoTargets[idx] = value;
     }
-    
 }
 void HexSynth::setLfoWave(int idx, float value)
 {
-    
+    for(auto v : hexVoices)
+        v->lfos[idx]->setType((int)value);
 }
 //=====================================================================================================================
 void HexSynth::setDelay(int idx, float value)
@@ -545,4 +571,20 @@ void HexSynth::updateFiltersForBlock()
     setWetDry(wet);
     setDepth(depth);
     setFilterType(type);
+}
+
+void HexSynth::updateLfosForBlock()
+{
+    for(int i = 0; i < NUM_LFOS; ++i)
+    {
+        auto iStr = juce::String(i);
+        float rate = *linkedTree->getRawParameterValue("lfoRateParam" + iStr);
+        float depth = *linkedTree->getRawParameterValue("lfoDepthParam" + iStr);
+        float target = *linkedTree->getRawParameterValue("lfoTargetParam" + iStr);
+        float wave = *linkedTree->getRawParameterValue("lfoWaveParam" + iStr);
+        setRate(i, rate);
+        setDepth(i, depth);
+        setTarget(i, target);
+        setLfoWave(i, wave);
+    }
 }

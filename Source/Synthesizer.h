@@ -31,11 +31,20 @@ public:
 class GraphParamSet
 {
 public:
-    GraphParamSet() : lastTriggeredVoice(0)
+    GraphParamSet() : lastTriggeredVoice(0), voicesInUse(0)
     {
-        
+        for(int i = 0; i < NUM_VOICES; ++i)
+        {
+            filterLevels[i].store(0.0f);
+            voiceFundamentals[i].store(0.0f);
+            for(int n = 0; n < NUM_OPERATORS; ++n)
+            {
+                levels[i][n].store(0.0f);
+            }
+        }
     }
     std::atomic<int> lastTriggeredVoice;
+    std::atomic<int> voicesInUse;
     std::atomic<float> levels[NUM_VOICES][NUM_OPERATORS];
     std::atomic<float> filterLevels[NUM_VOICES];
     std::atomic<float> voiceFundamentals[NUM_VOICES];
@@ -121,6 +130,15 @@ public:
         voiceFilter.envelope.killQuick();
     }
     bool isVoiceCleared() {return voiceCleared; }
+    bool hasFilterMod()
+    {
+        for(int i = 0; i < NUM_LFOS; ++i)
+        {
+            if(lfoTargets[i] == NUM_OPERATORS + 2)
+                return true;
+        }
+        return false;
+    }
     int lfoTargets[NUM_LFOS];
     float lfoDepths[NUM_LFOS];
     float lfoValues[NUM_LFOS];
@@ -131,8 +149,9 @@ private:
     float sumR;
     double fundamental;
     RoutingGrid grid;
-    
     bool voiceCleared;
+    float magnitude;
+    float lastMagnitude;
     
 };
 
@@ -152,7 +171,10 @@ public:
             voice->setSampleRate(newRate);
         }
     }
-     juce::SynthesiserVoice* findFreeVoice(juce::SynthesiserSound* soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible)const override;
+     juce::SynthesiserVoice* findFreeVoice(juce::SynthesiserSound* soundToPlay,
+                                           int midiChannel,
+                                           int midiNoteNum,
+                                           bool stealIfNoneAvailible)const override;
     void noteOn(int midiChannel, int midiNoteNumber, float velocity) override;
     void noteOff(int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff) override;
     void renderVoices(juce::AudioBuffer<float>& buffer, int startSample, int numSamples) override;

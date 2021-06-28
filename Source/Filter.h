@@ -41,7 +41,13 @@ public:
     }
     virtual ~FilterCore() {}
     virtual float process(float input) {return 0.0f; }
+    virtual float processWithMod(float input, float modValue)
+    {
+        setup(modValue);
+        return process(input);
+    }
     virtual void setup() {}
+    virtual void setup(float modValue) {}
     virtual void setResonance(float value)
     {
         resonance = value;
@@ -70,6 +76,10 @@ public:
     {
         filter.setup(sampleRate, (double)cutoff, (double)resonance);
     }
+    void setup(float modValue) override
+    {
+        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+    }
     float process(float input) override
     {
         return filter.filter(input);
@@ -89,6 +99,10 @@ public:
     {
         return filter.filter(input);
     }
+    void setup(float modValue) override
+    {
+        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+    }
 private:
     Iir::RBJ::HighPass filter;
 };
@@ -99,6 +113,10 @@ public:
     void setup() override
     {
         filter.setup(sampleRate, (double)cutoff, (double)resonance);
+    }
+    void setup(float modValue) override
+    {
+        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
     }
     float process(float input) override
     {
@@ -144,7 +162,9 @@ public:
     void handleAsyncUpdate() override;
     void setType(int filterType);
     float processLeft(float input) {return MathUtil::fLerp(input, lFilter->process(input), wetLevel); }
+    float processLeft(float input, float modValue) {return MathUtil::fLerp(input, lFilter->processWithMod(input, modValue), wetLevel); }
     float processRight(float input) {return MathUtil::fLerp(input, rFilter->process(input), wetLevel); }
+    float processRight(float input, float modValue) {return MathUtil::fLerp(input, rFilter->processWithMod(input, modValue), wetLevel); }
     DAHDSR envelope;
     float getCutoff() {return cutoffVal; }
 private:

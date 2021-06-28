@@ -81,6 +81,10 @@ float DAHDSR::process(float input)
     updatePhase();
     ++samplesIntoPhase;
     output *= factor;
+    if(std::abs(lastOutput - output) > 0.2f)
+    {
+        printf("Envelope click\n");
+    }
     return input * output;
 }
 
