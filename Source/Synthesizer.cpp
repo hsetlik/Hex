@@ -78,14 +78,16 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
         voiceFilter.tick();
         sumL = 0.0f;
         sumR = 0.0f;
+        int idx = 0;
         for(auto op : operators)
         {
-            op->tick(fundamental);
+            op->tick(fundamental, levelMod(idx));
             if(op->isAudible())
             {
                 sumL += op->lastLeft();
                 sumR += op->lastRight();
             }
+            ++idx;
         }
         filterValue = filterMod();
         if(filterValue > 0.0f)

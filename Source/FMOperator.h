@@ -67,6 +67,7 @@ public:
         modOffset += source.lastMono();
     }
     void tick(double fundamental);
+    void tick(double fundamental, float modValue);
     void setWave(int type)
     {
         oscillator.setType((WaveType)type);

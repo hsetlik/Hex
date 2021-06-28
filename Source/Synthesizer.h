@@ -138,6 +138,15 @@ public:
         }
         return 0.0f;
     }
+    float levelMod(int opIdx)
+    {
+        for(int i = 0; i < NUM_LFOS; ++i)
+        {
+            if(lfoTargets[i] == opIdx + 1)
+                return lfos[i]->tick() * lfoDepths[i];
+        }
+        return 0.0f;
+    }
     int lfoTargets[NUM_LFOS];
     float lfoDepths[NUM_LFOS];
     float lfoValues[NUM_LFOS];

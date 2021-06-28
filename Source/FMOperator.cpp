@@ -36,3 +36,10 @@ void FMOperator::tick(double fundamental)
     lastOutL = lastOutMono * pan;
     lastOutR = lastOutMono * (1.0f - pan);
 }
+
+void FMOperator::tick(double fundamental, float modValue)
+{
+    lastOutMono = envelope.process(oscillator.getSample((fundamental * baseRatio) + (modIndex * modOffset)) * MathUtil::fLerp(level, 1.0f, modValue));
+    lastOutL = lastOutMono * pan;
+    lastOutR = lastOutMono * (1.0f - pan);
+}
