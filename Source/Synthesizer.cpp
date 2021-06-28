@@ -15,6 +15,7 @@ linkedParams(gParams),
 linkedBuffer(buffer),
 voiceIndex(idx),
 voiceFilter(voiceIndex),
+internalBuffer(2, 512),
 sumL(0.0f),
 sumR(0.0f),
 fundamental(0.0f),
@@ -60,6 +61,7 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
 
 void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
+    internalBuffer.clear();
     for(int i = startSample; i < (startSample + numSamples); ++i)
     {
         for(auto op : operators)
@@ -79,9 +81,12 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
         }
         sumL = voiceFilter.processLeft(sumL);
         sumR = voiceFilter.processRight(sumR);
-        outputBuffer.addSample(0, i, sumR);
-        outputBuffer.addSample(1, i, sumL);
+        internalBuffer.setSample(0, i, sumR);
+        internalBuffer.addSample(1, i, sumL);
     }
+    outputBuffer.addFrom(0, startSample, internalBuffer, 0, startSample, numSamples);
+    outputBuffer.addFrom(1, startSample, internalBuffer, 1, startSample, numSamples);
+    //! handle sending data to the graphing stuff
     for(int op = 0; op < NUM_OPERATORS; ++op)
     {
         linkedParams->levels[voiceIndex][op].store(operators[op]->envelope.getLastLevel());
@@ -89,7 +94,7 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     }
     if(linkedParams->lastTriggeredVoice == voiceIndex)
     {
-        linkedBuffer->writeSamples(outputBuffer, startSample, numSamples);
+        linkedBuffer->writeSamples(internalBuffer, startSample, numSamples);
     }
     if(!anyEnvsActive())
     {

@@ -49,6 +49,10 @@ public:
     GraphParamSet* const linkedParams;
     RingBuffer<float>* const linkedBuffer;
     const int voiceIndex;
+    void prepareBuffer(int blockSize)
+    {
+        internalBuffer.setSize(2, blockSize);
+    }
     bool canPlaySound(juce::SynthesiserSound* sound) override
     {
         return dynamic_cast<HexSound*>(sound) != nullptr;
@@ -122,6 +126,7 @@ public:
     float lfoValues[NUM_LFOS];
 private:
     AsyncDebugPrinter debugPrinter;
+    juce::AudioBuffer<float> internalBuffer;
     float sumL;
     float sumR;
     double fundamental;
@@ -193,6 +198,13 @@ public:
     void prepareRingBuffer(int blockSize)
     {
         graphBuffer.setSize(2, blockSize * 10);
+    }
+    void prepareVoiceBuffers(int blockSize)
+    {
+        for(auto v : hexVoices)
+        {
+            v->prepareBuffer(blockSize);
+        }
     }
     GraphParamSet graphParams;
     RingBuffer<float> graphBuffer;

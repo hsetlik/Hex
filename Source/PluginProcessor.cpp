@@ -100,6 +100,7 @@ void HexAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // initialisation that you need..
     synth.setSampleRate(sampleRate);
     synth.prepareRingBuffer(samplesPerBlock);
+    synth.prepareRingBuffer(samplesPerBlock);
     
 }
 
