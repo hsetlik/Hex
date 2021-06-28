@@ -87,8 +87,17 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
                 sumR += op->lastRight();
             }
         }
-        sumL = voiceFilter.processLeft(sumL);
-        sumR = voiceFilter.processRight(sumR);
+        filterValue = filterMod();
+        if(filterValue > 0.0f)
+        {
+            sumL = voiceFilter.processLeft(sumL, filterValue);
+            sumR = voiceFilter.processRight(sumR, filterValue);
+        }
+        else
+        {
+            sumL = voiceFilter.processLeft(sumL);
+            sumR = voiceFilter.processRight(sumR);
+        }
         internalBuffer.setSample(0, i, sumR);
         internalBuffer.addSample(1, i, sumL);
     }
@@ -104,14 +113,6 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int start
     {
         linkedBuffer->writeSamples(internalBuffer, startSample, numSamples);
     }
-    /*
-    magnitude = internalBuffer.getMagnitude(0, internalBuffer.getNumSamples());
-    if(std::abs(magnitude - lastMagnitude) > 0.4f)
-    {
-        debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " magnitude jumped");
-    }
-    lastMagnitude = magnitude;
-     */
     if(!anyEnvsActive())
     {
         clearCurrentNote();
@@ -133,39 +134,6 @@ void HexVoice::tickModulation()
         }
     }
 }
-float HexVoice::tickLevelModulation(int opIdx)
-{
-    float offset = 0.0f;
-    for(int i = 0; i < NUM_LFOS; ++i)
-    {
-        float fLfo = lfos[i]->tick();
-        if(lfoTargets[i] == opIdx + 1)
-        {
-            offset += ((1.0f - operators[opIdx]->getLevel()) * (fLfo * lfoDepths[i]));
-        }
-    }
-    return offset;
-}
-float HexVoice::tickFilterModulation()
-{
-    float offset = 0.0f;
-    for(int i = 0; i < NUM_LFOS; ++i)
-    {
-        if(lfoTargets[i] == NUM_LFOS + 2)
-        {
-            offset += ((CUTOFF_MAX - voiceFilter.getCutoff()) * (lfoValues[i] * lfoDepths[i]));
-        }
-    }
-    return offset;
-}
-void HexVoice::tickLfos()
-{
-    for(int i = 0; i < NUM_LFOS; ++i)
-    {
-        lfoValues[i] = lfos[i]->tick();
-    }
-}
-
 //=====================================================================================================================
 HexSynth::HexSynth(apvts* tree) :
 linkedTree(tree),

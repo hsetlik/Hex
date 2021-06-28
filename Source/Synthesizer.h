@@ -72,6 +72,8 @@ public:
         voiceFilter.setSampleRate(newRate);
         for(auto op : operators)
             op->setSampleRate(newRate);
+        for(auto lfo : lfos)
+            lfo->setSampleRate(newRate);
     }
     void startNote(int midiNoteNumber,
                     float velocity,
@@ -95,9 +97,6 @@ public:
     StereoFilter voiceFilter;
     //! function to make sure each operator has the appropriate offset before calculating samples
     void tickModulation();
-    void tickLfos();
-    float tickLevelModulation(int opIdx);
-    float tickFilterModulation();
     //! functions for setting parameters inside the operators
     void setDelay(int idx, float value) {operators[idx]->envelope.setDelay(value); }
     void setAttack(int idx, float value) {operators[idx]->envelope.setAttack(value); }
@@ -130,14 +129,14 @@ public:
         voiceFilter.envelope.killQuick();
     }
     bool isVoiceCleared() {return voiceCleared; }
-    bool hasFilterMod()
+    float filterMod()
     {
         for(int i = 0; i < NUM_LFOS; ++i)
         {
-            if(lfoTargets[i] == NUM_OPERATORS + 2)
-                return true;
+            if(lfoTargets[i] == NUM_OPERATORS + 1)
+                return lfos[i]->tick() * lfoDepths[i];
         }
-        return false;
+        return 0.0f;
     }
     int lfoTargets[NUM_LFOS];
     float lfoDepths[NUM_LFOS];
@@ -152,6 +151,7 @@ private:
     bool voiceCleared;
     float magnitude;
     float lastMagnitude;
+    float filterValue;
     
 };
 
