@@ -9,7 +9,7 @@
 
 #include <JuceHeader.h>
 #include <memory>
-
+#define RING_BUFFER_READ_SIZE 256
 /** A circular, lock-free buffer for multiple channels of audio.
  
     Supports a single writer (producer) and any number of readers (consumers).
@@ -39,6 +39,7 @@ public:
         audioBuffer = std::make_unique<juce::AudioBuffer<Type>>(numChannels, bufferSize);
         writePosition = 0;
     }
+    //! Resize the buffer and replace the unique_ptr
     void setSize(int nChannels, int bSize)
     {
         numChannels = nChannels;
@@ -121,6 +122,7 @@ public:
                                 Note, this must be less than the buffer size
                                 of the RingBuffer specified in the constructor.
     */
+    //! fill an AudioBuffer with the contents of this one
     void readSamples(juce::AudioBuffer<Type> & bufferToFill, int readSize)
     {
         // Ensure readSize does not exceed bufferSize
@@ -163,14 +165,13 @@ public:
             }
         }
     }
+    int getNumSamples() {return bufferSize; }
     
 private:
     int bufferSize;
     int numChannels;
     std::unique_ptr<juce::AudioBuffer<Type>> audioBuffer;
-    juce::Atomic<int> writePosition; // This must be atomic so the conumer does
-                               // not read it in a torn state as it is being
-                               // changed.
+    juce::Atomic<int> writePosition;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RingBuffer)
 };

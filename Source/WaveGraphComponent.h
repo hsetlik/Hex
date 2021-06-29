@@ -14,7 +14,7 @@
 #include "RingBuffer.h"
 #include "MathUtil.h"
 #define WAVE_RES 256
-#define RING_BUFFER_READ_SIZE 256
+
 
 class WaveGraph :
 public juce::OpenGLRenderer,
@@ -38,7 +38,11 @@ private:
             audioSampleData(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "audioSampleData"))
             {
                 resolution.reset (createUniform (openGLContext, shaderProgram, "resolution"));
+                auto rProgram = (int)resolution->uniformID;
+                printf("Resolution uniform: %d\n", rProgram);
                 audioSampleData.reset (createUniform (openGLContext, shaderProgram, "audioSampleData"));
+                auto aProgram = (int)audioSampleData->uniformID;
+                printf("Audio Sample Data uniform: %d\n", aProgram);
             }
             ~Uniforms()
             {

@@ -151,15 +151,16 @@ void WaveGraph::renderOpenGL()
 void WaveGraph::createShaders()
 {
     juce::String statusText;
-    std::unique_ptr<juce::OpenGLShaderProgram> shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
+    auto shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
             
            // Sets up pipeline of shaders and compiles the program
     if(shaderProgramAttempt->addFragmentShader({BinaryData::BasicFragment_glsl})
             && shaderProgramAttempt->addVertexShader({BinaryData::BasicVertex_glsl})
                && shaderProgramAttempt->link())
            {
-               uniforms.release();
+               //uniforms.release();
                shader = std::move(shaderProgramAttempt);
+               //shader->setUniform("programID", -1);
                uniforms.reset(new Uniforms (openGLContext, *shader));
                
                statusText = "Using GLSL: v" + juce::String(juce::OpenGLShaderProgram::getLanguageVersion(), 2);

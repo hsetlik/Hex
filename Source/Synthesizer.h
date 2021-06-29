@@ -228,7 +228,7 @@ public:
     //===============================================
     void prepareRingBuffer(int blockSize)
     {
-        graphBuffer.setSize(2, blockSize * 10);
+        graphBuffer.setSize(2, RING_BUFFER_READ_SIZE * 10);
     }
     void prepareVoiceBuffers(int blockSize)
     {

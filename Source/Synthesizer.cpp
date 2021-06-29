@@ -70,6 +70,8 @@ void HexVoice::stopNote(float velocity, bool allowTailOff)
 void HexVoice::renderNextBlock(juce::AudioBuffer<float> &outputBuffer, int startSample, int numSamples)
 {
     internalBuffer.clear();
+    if(outputBuffer.getNumSamples() > internalBuffer.getNumSamples())
+        internalBuffer.setSize(2, outputBuffer.getNumSamples());
     for(int i = startSample; i < (startSample + numSamples); ++i)
     {
         for(auto op : operators)
