@@ -23,9 +23,10 @@ public:
         auto val = str.getDoubleValue();
         linkedSlider->setValue(val);
     }
+    juce::String currentValueString();
     void sliderValueChanged(juce::Slider* s) override;
-    void resized() override;
     void setDecimalPlaces(int numPlaces) {decimalPlaces = numPlaces; }
+    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
 private:
     int decimalPlaces;
 };
@@ -53,8 +54,9 @@ class RotaryParamName : public ParamName
 //! Parameter
 {
 public:
-    RotaryParamName(juce::String name) : ParamName(name), fLift(0.1f)
+    RotaryParamName(juce::String name) : ParamName(name), fLift(0.05f)
     {
+        setJustificationType(juce::Justification::centredBottom);
     }
     void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
     void setLift(float value) {fLift = value; }
@@ -65,8 +67,9 @@ private:
 class VerticalParamName : public ParamName
 {
 public:
-    VerticalParamName(juce::String name) : ParamName(name), fLift(0.1f)
+    VerticalParamName(juce::String name) : ParamName(name), fLift(0.02f)
     {
+        setJustificationType(juce::Justification::centredTop);
     }
     void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
     void setLift(float value) {fLift = value; }

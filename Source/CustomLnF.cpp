@@ -12,8 +12,7 @@
 
 juce::Font HexLookAndFeel::getLabelFont(juce::Label &label)
 {
-    auto height = (float)label.getHeight();
-    return UXPalette::robotoLightItalic.withHeight(height);
+    return UXPalette::robotoLightItalic.withHeight(10.0f);
 }
 
 void HexLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)

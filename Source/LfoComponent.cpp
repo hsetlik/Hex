@@ -224,7 +224,6 @@ void LfoComponent::resized()
     ComponentUtil::cushionByFraction(rateSlider, 8, 8);
     depthSlider.setBounds(dX, 7 * dX, 5 * dX, 5 * dX);
     ComponentUtil::cushionByFraction(depthSlider, 8, 8);
-    depthLabel.resized();
     rateLabel.setBounds(dX, 6 * dX, 5 * dX, dX);
     bpmToggle.setBounds(7 * dX, dX, 3 * dX, 1.5f * dX);
     targetBox.setBounds(8 * dX, 4 * dX, 8 * dX, 2 * dX);

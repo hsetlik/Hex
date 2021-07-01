@@ -28,12 +28,40 @@ void RotaryLabel::sliderValueChanged(juce::Slider *s)
     setText(str, juce::dontSendNotification);
 }
 
-void RotaryLabel::resized()
+juce::String RotaryLabel::currentValueString()
 {
-    setBounds(ComponentUtil::boxBelow(*linkedSlider, 6, 10));
-    auto height = (float)getHeight() * 1.5f;
-    setFont(getFont().withHeight(height));
+    auto str = juce::String(linkedSlider->getValue());
+    if(str.length() > decimalPlaces)
+        str = str.substring(0, decimalPlaces);
+    return str;
 }
+
+void RotaryLabel::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
+{
+    auto& lf = getLookAndFeel();
+    auto f = lf.getLabelFont (*this);
+    auto borderSize = lf.getLabelBorderSize (*this);
+
+    if(isAttachedOnLeft())
+    {
+        auto width = fmin(juce::roundToInt(f.getStringWidthFloat(getText()) * 3.5f)
+                             + borderSize.getLeftAndRight(),
+                           component.getX());
+
+        setBounds(component.getX() - width, component.getY(), width, component.getHeight());
+    }
+    else
+    {
+        auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
+        auto stringWidth = f.getStringWidthFloat(currentValueString());
+        auto width = juce::roundToInt(stringWidth) + borderSize.getLeftAndRight();
+        auto centerX = component.getX() + juce::roundToInt(component.getWidth() / 2.0f);
+        auto x = centerX - juce::roundToInt(width / 2.0f);
+        setBounds(x, component.getBottom() + 1, width, height);
+    }
+}
+
+
 
 void RotaryParamName::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
 {
@@ -52,9 +80,9 @@ void RotaryParamName::componentMovedOrResized(juce::Component &component, bool w
     else
     {
         auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
-        auto width = juce::roundToInt(f.getStringWidthFloat(text) * 2.0f) + borderSize.getLeftAndRight();
+        auto width = juce::roundToInt(f.getStringWidthFloat(text)) + borderSize.getLeftAndRight();
         auto dX = (component.getWidth() - width) / 2;
-        auto gap = (int)(component.getHeight() * fLift);
+        auto gap = juce::roundToInt(component.getHeight() * fLift);
         setBounds(component.getX() + dX, component.getY() - height - gap, width, height);
     }
 }
@@ -76,9 +104,8 @@ void VerticalParamName::componentMovedOrResized(juce::Component &component, bool
     else
     {
         auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
-        auto width = juce::roundToInt(f.getStringWidthFloat(text) * 2.0f) + borderSize.getLeftAndRight();
+        auto width = juce::roundToInt(f.getStringWidthFloat(text)) + borderSize.getLeftAndRight();
         auto xCenter = component.getX() + (component.getWidth() / 2);
-        auto gap = (int)(component.getHeight() * fLift);
         setBounds(xCenter - (width / 2), component.getBottom(), width, height);
     }
 }

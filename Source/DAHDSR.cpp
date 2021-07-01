@@ -96,12 +96,10 @@ void DAHDSR::killQuick(float msFade)
     _endLevel = minLevel;
     samplesInPhase = msFade * sampleRate / 1000;
     factor = factorFor(_startLevel, _endLevel, msFade);
-    
 }
 
 void DAHDSR::printDebug()
 {
     printf("This output: %f\n", output);
     printf("Last output: %f\n", lastOutput);
-    //printf("Delay: %f\n", )
 }

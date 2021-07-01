@@ -430,6 +430,11 @@ levelLabel(&levelSlider)
     addAndMakeVisible(&panLabel);
     addAndMakeVisible(&levelLabel);
     
+    ratioLabel.attachToComponent(&ratioSlider, false);
+    modLabel.attachToComponent(&modSlider, false);
+    panLabel.attachToComponent(&panSlider, false);
+    levelLabel.attachToComponent(&levelSlider, false);
+    
     ratioLabel.setLookAndFeel(&hexLnf);
     modLabel.setLookAndFeel(&hexLnf);
     panLabel.setLookAndFeel(&hexLnf);
@@ -494,10 +499,6 @@ void OperatorComponent::resized()
     
     outButton.setBounds(16 * dX, dX, 6 * dX, 2 * dX);
     
-    ratioLabel.resized();
-    modLabel.resized();
-    panLabel.resized();
-    levelLabel.resized();
     
     waveSelect.setBounds(dX, 12 * dY, 16 * dX, 3 * dY);
 }
