@@ -20,6 +20,11 @@ readBuffer(2, RING_BUFFER_READ_SIZE * 5)
     openGLContext.setRenderer(this);
     openGLContext.attachTo(*getTopLevelComponent());
     openGLContext.setContinuousRepainting(true);
+    
+    for(int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
+    {
+        visualizationBuffer[i] = 0.0f; //! fill this array with zeroes to avoid weird graphs on startup
+    }
 }
 
 WaveGraph::~WaveGraph()

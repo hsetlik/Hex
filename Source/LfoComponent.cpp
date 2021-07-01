@@ -137,6 +137,31 @@ void DualModeLabel::textWasEdited()
     lastStr = str;
 }
 
+void DualModeLabel::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
+{
+    auto& lf = getLookAndFeel();
+    auto f = lf.getLabelFont (*this);
+    auto borderSize = lf.getLabelBorderSize (*this);
+
+    if(isAttachedOnLeft())
+    {
+        auto width = fmin(juce::roundToInt(f.getStringWidthFloat(getText()) * 3.5f)
+                             + borderSize.getLeftAndRight(),
+                           component.getX());
+
+        setBounds(component.getX() - width, component.getY(), width, component.getHeight());
+    }
+    else
+    {
+        auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
+        auto stringWidth = f.getStringWidthFloat(getText());
+        auto width = juce::roundToInt(stringWidth) + borderSize.getLeftAndRight();
+        auto centerX = component.getX() + juce::roundToInt(component.getWidth() / 2.0f);
+        auto x = centerX - juce::roundToInt(width / 2.0f);
+        setBounds(x, component.getBottom() + 1, width, height);
+    }
+}
+
 //======================================================================================
 
 LfoComponent::LfoComponent(int i, juce::AudioProcessor* proc, GraphParamSet* gParams, apvts* tree) :
@@ -176,6 +201,9 @@ waveSelect(i, tree, "lfoWaveParam")
     addAndMakeVisible(&depthSlider);
     depthSlider.setSliderStyle(juce::Slider::Rotary);
     depthSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 1, 1);
+    
+    depthLabel.attachToComponent(&depthSlider, false);
+    rateLabel.attachToComponent(&rateSlider, false);
     
     addAndMakeVisible(&depthLabel);
     addAndMakeVisible(&waveSelect);
@@ -224,7 +252,6 @@ void LfoComponent::resized()
     ComponentUtil::cushionByFraction(rateSlider, 8, 8);
     depthSlider.setBounds(dX, 7 * dX, 5 * dX, 5 * dX);
     ComponentUtil::cushionByFraction(depthSlider, 8, 8);
-    rateLabel.setBounds(dX, 6 * dX, 5 * dX, dX);
     bpmToggle.setBounds(7 * dX, dX, 3 * dX, 1.5f * dX);
     targetBox.setBounds(8 * dX, 4 * dX, 8 * dX, 2 * dX);
     waveSelect.setBounds(6 * dX, 7 * dX, 10 * dX, 3 * dX);

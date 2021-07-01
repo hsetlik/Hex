@@ -182,6 +182,13 @@ releaseName("Release")
     sustainSlider.addListener(&graph);
     releaseSlider.addListener(&graph);
     
+    delaySlider.setLookAndFeel(&lnf);
+    attackSlider.setLookAndFeel(&lnf);
+    holdSlider.setLookAndFeel(&lnf);
+    decaySlider.setLookAndFeel(&lnf);
+    sustainSlider.setLookAndFeel(&lnf);
+    releaseSlider.setLookAndFeel(&lnf);
+    
     addAndMakeVisible(&graph);
     
     addAndMakeVisible(&meter);
@@ -209,6 +216,16 @@ releaseName("Release")
     decayAttach.reset(new sliderAttach(*linkedTree, decayId, decaySlider));
     sustainAttach.reset(new sliderAttach(*linkedTree, sustainId, sustainSlider));
     releaseAttach.reset(new sliderAttach(*linkedTree, releaseId, releaseSlider));
+}
+
+EnvelopeComponent::~EnvelopeComponent()
+{
+    delaySlider.setLookAndFeel(nullptr);
+    attackSlider.setLookAndFeel(nullptr);
+    holdSlider.setLookAndFeel(nullptr);
+    decaySlider.setLookAndFeel(nullptr);
+    sustainSlider.setLookAndFeel(nullptr);
+    releaseSlider.setLookAndFeel(nullptr);
 }
 
 void EnvelopeComponent::resized()

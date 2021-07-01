@@ -56,3 +56,32 @@ void HexLookAndFeel::drawRotarySlider(juce::Graphics &g,
     thumb.applyTransform(juce::AffineTransform::rotation(rotaryStartAngle + angle, centerX, centerY));
     g.strokePath(thumb, strokeType);
 }
+void HexLookAndFeel::drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle style, juce::Slider &slider)
+{
+    auto fPos = 1.0f - (sliderPos / maxSliderPos);
+    auto fBounds = slider.getBounds().toFloat();
+    auto bkgndWidth = fBounds.getWidth() * 0.2f;
+    auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
+    auto corner = bkgndWidth / 2.0f;
+    auto thumbWidth = fBounds.getWidth() * 0.45f;
+    
+    auto thumbXOffset = (fBounds.getWidth() / 2.0f) - (thumbWidth / 2.0f);
+    auto thumbHeight = (fBounds.getHeight() - slider.getTextBoxHeight()) * 0.1f;
+    auto thumbY = (1.0f - fPos) * (fBounds.getHeight() - thumbHeight) - 5;
+    
+    //draw the background
+    g.setColour(UXPalette::darkGray);
+    g.fillRoundedRectangle(x + xOffsetBkgnd,
+                           5,
+                           bkgndWidth,
+                           fBounds.getHeight() - (slider.getTextBoxHeight() * 1.2f) - 5,
+                           corner);
+    //draw the thumb
+    g.setColour(UXPalette::highlight);
+    g.fillRoundedRectangle(x + thumbXOffset,
+                           thumbY,
+                           thumbWidth,
+                           thumbHeight,
+                           thumbHeight / 2.0f);
+    
+}

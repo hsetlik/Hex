@@ -84,6 +84,7 @@ public:
     void setTextHz(float value);
     void setTextNoteLength(int num, int denom);
     void setBpm(float val) {bpm = val; }
+    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
 private:
     float bpm;
     juce::String lastStr;

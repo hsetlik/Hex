@@ -69,6 +69,7 @@ public:
         int lastVoice;
     };
     EnvelopeComponent(int idx, apvts* tree, GraphParamSet* gParams, bool isFilterComp = false);
+    ~EnvelopeComponent();
     const int opIndex;
     const bool isFilter;
     apvts* const linkedTree;
@@ -99,6 +100,8 @@ public:
     pSliderAttach decayAttach;
     pSliderAttach sustainAttach;
     pSliderAttach releaseAttach;
+    
+    HexLookAndFeel lnf;
 };
 
 //============================================================================
