@@ -139,7 +139,13 @@ opIndex(idx),
 isFilter(isFilterComp),
 linkedTree(tree),
 graph(this),
-meter(idx, gParams, isFilter)
+meter(idx, gParams, isFilter),
+delayName("Delay"),
+attackName("Attack"),
+holdName("Hold"),
+decayName("Decay"),
+sustainName("Sustain"),
+releaseName("Release")
 {
     SliderUtil::setVerticalLinearNoBox(delaySlider);
     SliderUtil::setVerticalLinearNoBox(attackSlider);
@@ -154,6 +160,20 @@ meter(idx, gParams, isFilter)
     addAndMakeVisible(&decaySlider);
     addAndMakeVisible(&sustainSlider);
     addAndMakeVisible(&releaseSlider);
+    
+    addAndMakeVisible(&delayName);
+    addAndMakeVisible(&attackName);
+    addAndMakeVisible(&holdName);
+    addAndMakeVisible(&decayName);
+    addAndMakeVisible(&sustainName);
+    addAndMakeVisible(&releaseName);
+    
+    delayName.attachToComponent(&delaySlider, false);
+    attackName.attachToComponent(&attackSlider, false);
+    holdName.attachToComponent(&holdSlider, false);
+    decayName.attachToComponent(&decaySlider, false);
+    sustainName.attachToComponent(&sustainSlider, false);
+    releaseName.attachToComponent(&releaseSlider, false);
     
     delaySlider.addListener(&graph);
     attackSlider.addListener(&graph);
@@ -200,6 +220,7 @@ void EnvelopeComponent::resized()
     auto mBounds = upper.removeFromRight(dX);
     meter.setBounds(mBounds);
     graph.setBounds(upper);
+    auto lBounds = bounds.removeFromBottom(bounds.getHeight() / 8);
     dX = bounds.getWidth() / 6;
     delaySlider.setBounds(bounds.removeFromLeft(dX));
     attackSlider.setBounds(bounds.removeFromLeft(dX));
@@ -392,6 +413,11 @@ levelLabel(&levelSlider)
     addAndMakeVisible(&panSlider);
     addAndMakeVisible(&levelSlider);
     
+    ratioName.attachToComponent(&ratioSlider, false);
+    modName.attachToComponent(&modSlider, false);
+    levelName.attachToComponent(&levelSlider, false);
+    panName.attachToComponent(&panSlider, false);
+    
     addAndMakeVisible(&ratioName);
     addAndMakeVisible(&modName);
     addAndMakeVisible(&panName);
@@ -460,15 +486,11 @@ void OperatorComponent::resized()
     envComponent.setBounds(envBounds);
     auto dX = fBounds.getWidth() / 25;
     auto dY = fBounds.getHeight() / 16;
-    ratioSlider.setBounds(dX, 4 * dX, 4.5 * dX, 4.5 * dX);
-    modSlider.setBounds(6 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
-    levelSlider.setBounds(11 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
-    panSlider.setBounds(16 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
+    ratioSlider.setBounds(dX, 5 * dX, 4.5 * dX, 4.5 * dX);
+    modSlider.setBounds(6 * dX, 5 * dX, 4.5 * dX, 4.5 * dX);
+    levelSlider.setBounds(11 * dX, 5 * dX, 4.5 * dX, 4.5 * dX);
+    panSlider.setBounds(16 * dX, 5 * dX, 4.5 * dX, 4.5 * dX);
     
-    ratioName.placeRelative(ratioSlider, 4, 12, true);
-    modName.placeRelative(modSlider, 5, 10, true);
-    panName.placeRelative(panSlider, 5, 10, true);
-    levelName.placeRelative(levelSlider, 5, 10, true);
     
     outButton.setBounds(16 * dX, dX, 6 * dX, 2 * dX);
     
@@ -477,14 +499,16 @@ void OperatorComponent::resized()
     panLabel.resized();
     levelLabel.resized();
     
-    waveSelect.setBounds(dX, 10 * dY, 16 * dX, 3 * dY);
+    waveSelect.setBounds(dX, 12 * dY, 16 * dX, 3 * dY);
 }
 
 void OperatorComponent::paint(juce::Graphics &g)
 {
+    /*
     g.setColour(juce::Colours::black);
     g.fillRect(levelName.getBounds());
     g.fillRect(panName.getBounds());
     g.fillRect(ratioName.getBounds());
     g.fillRect(modName.getBounds());
+     */
 }

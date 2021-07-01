@@ -85,6 +85,14 @@ public:
     juce::Slider sustainSlider;
     juce::Slider releaseSlider;
     
+    VerticalParamName delayName;
+    VerticalParamName attackName;
+    VerticalParamName holdName;
+    VerticalParamName decayName;
+    VerticalParamName sustainName;
+    VerticalParamName releaseName;
+    
+    
     pSliderAttach delayAttach;
     pSliderAttach attackAttach;
     pSliderAttach holdAttach;

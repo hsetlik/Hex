@@ -10,6 +10,24 @@
 
 #include "CustomLnF.h"
 
+juce::Font HexLookAndFeel::getLabelFont(juce::Label &label)
+{
+    auto height = (float)label.getHeight();
+    return UXPalette::robotoLightItalic.withHeight(height);
+}
+
+void HexLookAndFeel::drawLabel(juce::Graphics &g, juce::Label &label)
+{
+    const juce::Font font(getLabelFont(label));
+    g.setFont (font);
+    g.setColour(juce::Colours::white);
+    auto textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
+    g.drawFittedText (label.getText(),
+                      textArea,
+                      label.getJustificationType(),
+                      1,
+                      label.getMinimumHorizontalScale());
+}
 void HexLookAndFeel::drawRotarySlider(juce::Graphics &g,
                                       int x, int y, int width, int height,
                                       float sliderPosProportional,

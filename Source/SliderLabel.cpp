@@ -35,17 +35,50 @@ void RotaryLabel::resized()
     setFont(getFont().withHeight(height));
 }
 
-void RotaryParamName::placeRelative(juce::Component &attach, int heightFraction, int gapFraction, bool isAbove)
+void RotaryParamName::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
 {
-    int x, y, width, height;
-    auto bounds = attach.getBounds();
-    height = bounds.getHeight() / heightFraction;
-    auto font = getFont().withHeight((float)height);
-    width = font.getStringWidth(text);
-    printf("Width for string \"%s\" is %d\n", text.toRawUTF8(), width);
-    x = bounds.getX() + ((bounds.getWidth() - width) / 2);
-    int gap = bounds.getHeight() / gapFraction;
-    y = (isAbove)? bounds.getY() - (height + gap) : bounds.getBottom() + gap;
-    setFont(font);
-    setBounds(x, y, width, height);
+    auto& lf = getLookAndFeel();
+    auto f = lf.getLabelFont (*this);
+    auto borderSize = lf.getLabelBorderSize (*this);
+
+    if(isAttachedOnLeft())
+    {
+        auto width = fmin(juce::roundToInt(f.getStringWidthFloat(text) * 3.5f)
+                             + borderSize.getLeftAndRight(),
+                           component.getX());
+
+        setBounds(component.getX() - width, component.getY(), width, component.getHeight());
+    }
+    else
+    {
+        auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
+        auto width = juce::roundToInt(f.getStringWidthFloat(text) * 2.0f) + borderSize.getLeftAndRight();
+        auto dX = (component.getWidth() - width) / 2;
+        auto gap = (int)(component.getHeight() * fLift);
+        setBounds(component.getX() + dX, component.getY() - height - gap, width, height);
+    }
+}
+
+void VerticalParamName::componentMovedOrResized(juce::Component &component, bool wasMoved, bool wasResized)
+{
+    auto& lf = getLookAndFeel();
+    auto f = lf.getLabelFont (*this);
+    auto borderSize = lf.getLabelBorderSize (*this);
+
+    if(isAttachedOnLeft())
+    {
+        auto width = fmin(juce::roundToInt(f.getStringWidthFloat(text) * 3.5f)
+                             + borderSize.getLeftAndRight(),
+                           component.getX());
+
+        setBounds(component.getX() - width, component.getY(), width, component.getHeight());
+    }
+    else
+    {
+        auto height = borderSize.getTopAndBottom() + 2 + juce::roundToInt(f.getHeight() * 1.5f);
+        auto width = juce::roundToInt(f.getStringWidthFloat(text) * 2.0f) + borderSize.getLeftAndRight();
+        auto xCenter = component.getX() + (component.getWidth() / 2);
+        auto gap = (int)(component.getHeight() * fLift);
+        setBounds(xCenter - (width / 2), component.getBottom(), width, height);
+    }
 }

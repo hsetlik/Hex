@@ -23,4 +23,6 @@ static Color lightRed = Color(226, 76, 85);
 static Color darkRed = lightRed.darker(0.45f);
 static Color darkBlue = Color(39, 104, 158);
 static Color lightBlue = Color(91, 201, 225);
+
+static juce::Font robotoLightItalic = juce::Font(juce::Typeface::createSystemTypefaceFor(BinaryData::RobotoLightItalic_ttf, BinaryData::RobotoLightItalic_ttfSize));
 }

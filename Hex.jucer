@@ -5,6 +5,10 @@
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
               headerPath="/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Builds/MacOSX/1.9.0/include">
   <MAINGROUP id="ahJN9s" name="Hex">
+    <GROUP id="{734444FD-2777-1503-F6CB-62ACCACDD09C}" name="Fonts">
+      <FILE id="JYGVYn" name="Roboto-LightItalic.ttf" compile="0" resource="1"
+            file="Source/Fonts/Roboto-LightItalic.ttf"/>
+    </GROUP>
     <GROUP id="{C19C4B9C-C1CE-DB96-BFBC-E32B33E7CFD7}" name="Source">
       <FILE id="HlX6GW" name="DebugUtil.cpp" compile="1" resource="0" file="Source/DebugUtil.cpp"/>
       <FILE id="VkOGlC" name="DebugUtil.h" compile="0" resource="0" file="Source/DebugUtil.h"/>

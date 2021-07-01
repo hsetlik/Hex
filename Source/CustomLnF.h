@@ -15,6 +15,8 @@
 class HexLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
+    juce::Font getLabelFont(juce::Label& label) override;
+    void drawLabel(juce::Graphics& g, juce::Label& label) override;
     void drawRotarySlider (juce::Graphics &g, int x, int y, int width, int height,
                            float sliderPosProportional,
                            float rotaryStartAngle,

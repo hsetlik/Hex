@@ -53,9 +53,24 @@ class RotaryParamName : public ParamName
 //! Parameter
 {
 public:
-    RotaryParamName(juce::String name) : ParamName(name)
+    RotaryParamName(juce::String name) : ParamName(name), fLift(0.1f)
     {
     }
-    void placeRelative(juce::Component& atttach, int heightFraction, int gapFraction, bool isAbove) override;
+    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
+    void setLift(float value) {fLift = value; }
+private:
+    float fLift;
+};
+
+class VerticalParamName : public ParamName
+{
+public:
+    VerticalParamName(juce::String name) : ParamName(name), fLift(0.1f)
+    {
+    }
+    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
+    void setLift(float value) {fLift = value; }
+private:
+    float fLift;
 };
 

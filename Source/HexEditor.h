@@ -19,6 +19,7 @@ class FilterPanel : public juce::Component
 {
 public:
     FilterPanel(apvts* tree, GraphParamSet* params);
+    ~FilterPanel();
     apvts* const linkedTree;
     void resized() override;
     void paint(juce::Graphics& g) override;
@@ -36,6 +37,7 @@ private:
     pSliderAttach resAttach;
     pSliderAttach wetAttach;
     pSliderAttach depthAttach;
+    HexLookAndFeel lnf;
 };
 
 class HexEditor : public juce::Component

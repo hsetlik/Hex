@@ -37,6 +37,18 @@ envComp(0, linkedTree, graph, true)
     addAndMakeVisible(&wetSlider);
     addAndMakeVisible(&depthSlider);
     
+    cutoffSlider.setLookAndFeel(&lnf);
+    resSlider.setLookAndFeel(&lnf);
+    wetSlider.setLookAndFeel(&lnf);
+    depthSlider.setLookAndFeel(&lnf);
+}
+
+FilterPanel::~FilterPanel()
+{
+    cutoffSlider.setLookAndFeel(nullptr);
+    resSlider.setLookAndFeel(nullptr);
+    wetSlider.setLookAndFeel(nullptr);
+    depthSlider.setLookAndFeel(nullptr);
 }
 
 void FilterPanel::resized()
@@ -47,10 +59,11 @@ void FilterPanel::resized()
     auto midBounds = bounds.removeFromTop(sWidth);
     auto cushion = midBounds.getHeight() / 5;
     typeBox.setBounds(midBounds.reduced(cushion));
-    cutoffSlider.setBounds(upperBounds.removeFromLeft(sWidth));
-    resSlider.setBounds(upperBounds.removeFromLeft(sWidth));
-    wetSlider.setBounds(upperBounds.removeFromLeft(sWidth));
-    depthSlider.setBounds(upperBounds);
+    cushion *= 0.5f;
+    cutoffSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
+    resSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
+    wetSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
+    depthSlider.setBounds(upperBounds.reduced(cushion));
     envComp.setBounds(bounds);
 }
 
