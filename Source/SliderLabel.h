@@ -11,7 +11,7 @@
 #pragma once
 #include "Color.h"
 #include "ComponentUtil.h"
-
+#include "CustomLnF.h"
 class RotaryLabel : public juce::Label, public juce::Slider::Listener
 {
 public:
@@ -29,3 +29,33 @@ public:
 private:
     int decimalPlaces;
 };
+
+class ParamName : public juce::Label
+//! label subclass with non-editable text. use \c placeRelative in the parent's \c resized() method to position label relative to some slider/button
+{
+public:
+    ParamName(juce::String name) : text(name)
+    {
+        setText(text, juce::dontSendNotification);
+        setEditable(false);
+        setMinimumHorizontalScale(0.01f);
+        setLookAndFeel(&lnf);
+    }
+    virtual ~ParamName() {setLookAndFeel(nullptr); }
+    virtual void placeRelative(juce::Component& attach, int heightFraction, int gapFraction, bool isAbove) {}
+protected:
+    juce::String text;
+private:
+    HexLookAndFeel lnf;
+};
+
+class RotaryParamName : public ParamName
+//! Parameter
+{
+public:
+    RotaryParamName(juce::String name) : ParamName(name)
+    {
+    }
+    void placeRelative(juce::Component& atttach, int heightFraction, int gapFraction, bool isAbove) override;
+};
+

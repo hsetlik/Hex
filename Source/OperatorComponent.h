@@ -163,14 +163,19 @@ public:
     apvts* const linkedTree;
     void resized() override;
     void buttonClicked(juce::Button* b) override;
+    void paint(juce::Graphics& g) override;
 private:
     EnvelopeComponent envComponent;
     WaveSelector waveSelect;
     OutputButton outButton;
     juce::Slider ratioSlider;
+    RotaryParamName ratioName;
     juce::Slider modSlider;
+    RotaryParamName modName;
     juce::Slider panSlider;
+    RotaryParamName panName;
     juce::Slider levelSlider;
+    RotaryParamName levelName;
     
     RotaryLabel ratioLabel;
     RotaryLabel modLabel;

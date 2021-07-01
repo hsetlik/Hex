@@ -365,6 +365,10 @@ opIndex(idx),
 linkedTree(tree),
 envComponent(idx, tree, gParams),
 waveSelect(idx, tree, "waveParam"),
+ratioName("Ratio"),
+modName("Mod Index"),
+panName("Pan"),
+levelName("Level"),
 ratioLabel(&ratioSlider),
 modLabel(&modSlider),
 panLabel(&panSlider),
@@ -387,6 +391,11 @@ levelLabel(&levelSlider)
     addAndMakeVisible(&modSlider);
     addAndMakeVisible(&panSlider);
     addAndMakeVisible(&levelSlider);
+    
+    addAndMakeVisible(&ratioName);
+    addAndMakeVisible(&modName);
+    addAndMakeVisible(&panName);
+    addAndMakeVisible(&levelName);
     
     addAndMakeVisible(&outButton);
     
@@ -456,6 +465,11 @@ void OperatorComponent::resized()
     levelSlider.setBounds(11 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
     panSlider.setBounds(16 * dX, 4 * dX, 4.5 * dX, 4.5 * dX);
     
+    ratioName.placeRelative(ratioSlider, 4, 12, true);
+    modName.placeRelative(modSlider, 5, 10, true);
+    panName.placeRelative(panSlider, 5, 10, true);
+    levelName.placeRelative(levelSlider, 5, 10, true);
+    
     outButton.setBounds(16 * dX, dX, 6 * dX, 2 * dX);
     
     ratioLabel.resized();
@@ -464,4 +478,13 @@ void OperatorComponent::resized()
     levelLabel.resized();
     
     waveSelect.setBounds(dX, 10 * dY, 16 * dX, 3 * dY);
+}
+
+void OperatorComponent::paint(juce::Graphics &g)
+{
+    g.setColour(juce::Colours::black);
+    g.fillRect(levelName.getBounds());
+    g.fillRect(panName.getBounds());
+    g.fillRect(ratioName.getBounds());
+    g.fillRect(modName.getBounds());
 }

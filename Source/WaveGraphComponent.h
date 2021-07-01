@@ -33,14 +33,14 @@ public:
 private:
     struct Uniforms
         {
-            Uniforms (juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram) :
+            Uniforms(juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram) :
             resolution(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "resolution")),
             audioSampleData(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "audioSampleData"))
             {
-                resolution.reset (createUniform (openGLContext, shaderProgram, "resolution"));
+                resolution.reset (createUniform(openGLContext, shaderProgram, "resolution"));
                 auto rProgram = (int)resolution->uniformID;
                 printf("Resolution uniform: %d\n", rProgram);
-                audioSampleData.reset (createUniform (openGLContext, shaderProgram, "audioSampleData"));
+                audioSampleData.reset(createUniform (openGLContext, shaderProgram, "audioSampleData"));
                 auto aProgram = (int)audioSampleData->uniformID;
                 printf("Audio Sample Data uniform: %d\n", aProgram);
             }
