@@ -18,38 +18,38 @@ using buttonAttach = juce::AudioProcessorValueTreeState::ButtonAttachment;
 class SymbolButton : public juce::ShapeButton
 {//! nice utility for making shape buttons with simple symbols
 public:
-    SymbolButton(juce::String name="symbol_button", juce::Colour bkgnd= UXPalette::lightGray, juce::Colour sColour= UXPalette::highlight) :
-    juce::ShapeButton(name, bkgnd, bkgnd, bkgnd),
-    upBkgnd(bkgnd),
-    downBkgnd(bkgnd.darker(0.3f)),
-    symbolOnColor(sColour),
-    symbolOffColor(sColour),
-    strokeMode(false),
-    strokeWidth(1.0f),
-    isRounded(false),
-    cornerSize(1.0f),
-    cornerFactor(6)
+    SymbolButton (juce::String name="symbol_button", juce::Colour bkgnd= UXPalette::lightGray, juce::Colour sColour= UXPalette::highlight) :
+    juce::ShapeButton (name, bkgnd, bkgnd, bkgnd),
+    upBkgnd (bkgnd),
+    downBkgnd (bkgnd.darker (0.3f)),
+    symbolOnColor (sColour),
+    symbolOffColor (sColour),
+    strokeMode (false),
+    strokeWidth (1.0f),
+    isRounded (false),
+    cornerSize (1.0f),
+    cornerFactor (6)
     {
         resized();
     }
     virtual ~SymbolButton() {}
-    void paintButton(juce::Graphics& g, bool highlighted, bool down) override
+    void paintButton (juce::Graphics& g, bool highlighted, bool down) override
     {
-        if(down)
-            g.setColour(downBkgnd);
+        if (down)
+            g.setColour (downBkgnd);
         else
-            g.setColour(upBkgnd);
-        g.fillPath(bkgnd);
-        if(getToggleState())
-            g.setColour(symbolOnColor);
+            g.setColour (upBkgnd);
+        g.fillPath (bkgnd);
+        if (getToggleState())
+            g.setColour (symbolOnColor);
         else
-            g.setColour(symbolOffColor);
-        if(!strokeMode)
-            g.fillPath(symbol);
+            g.setColour (symbolOffColor);
+        if (!strokeMode)
+            g.fillPath (symbol);
         else
         {
-            auto stroke = juce::PathStrokeType(strokeWidth);
-            g.strokePath(symbol, stroke);
+            auto stroke = juce::PathStrokeType (strokeWidth);
+            g.strokePath (symbol, stroke);
         }
     }
     void resized() override
@@ -57,26 +57,26 @@ public:
         auto fBounds = getLocalBounds().toFloat();
         cornerSize = fBounds.getWidth() / (float)cornerFactor;
         bkgnd.clear();
-        if(isRounded)
-            bkgnd.addRoundedRectangle(fBounds, cornerSize);
+        if (isRounded)
+            bkgnd.addRoundedRectangle (fBounds, cornerSize);
         else
-            bkgnd.addRectangle(fBounds);
+            bkgnd.addRectangle (fBounds);
         symbol.clear();
         setSymbol();
     }
-    void setRounded(bool shouldBeRounded, int corner=6)
+    void setRounded (bool shouldBeRounded, int corner=6)
     {
         isRounded = shouldBeRounded;
         cornerFactor = corner;
         resized();
     }
-    void setStroke(bool shouldStroke, float width=1.0f)
+    void setStroke (bool shouldStroke, float width=1.0f)
     {
         strokeMode = shouldStroke;
         strokeWidth = width;
     }
-    void setSymbolOnColor(Color col) {symbolOnColor = col; }
-    void setSymbolOffColor(Color col) {symbolOffColor = col; }
+    void setSymbolOnColor (Color col) {symbolOnColor = col; }
+    void setSymbolOffColor (Color col) {symbolOffColor = col; }
     virtual void setSymbol() {}
 protected:
     juce::Path symbol;
@@ -96,10 +96,10 @@ private:
 class ModulationToggle : public juce::ShapeButton
 {
 public:
-    ModulationToggle(int src, int dst);
+    ModulationToggle (int src, int dst);
     const int source;
     const int dest;
-    void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+    void paintButton (juce::Graphics& g, bool highlighted, bool down) override;
 private:
     Color litBkgndUpper;
     Color unlitBkgndUpper;
@@ -113,7 +113,7 @@ class OutputButton : public juce::ShapeButton
 {
 public:
     OutputButton();
-    void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+    void paintButton (juce::Graphics& g, bool highlighted, bool down) override;
 private:
     Color litBkgnd;
     Color unlitBkgnd;

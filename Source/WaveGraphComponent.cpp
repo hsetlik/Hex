@@ -10,18 +10,18 @@
 
 #include "WaveGraphComponent.h"
 
-WaveGraph::WaveGraph(GraphParamSet* params, RingBuffer<float>* rBuffer) :
-linkedParams(params),
-ringBuffer(rBuffer),
-fundamental(0.0f),
-readBuffer(2, RING_BUFFER_READ_SIZE * 5)
+WaveGraph::WaveGraph (GraphParamSet* params, RingBuffer<float>* rBuffer) :
+linkedParams (params),
+ringBuffer (rBuffer),
+fundamental (0.0f),
+readBuffer (2, RING_BUFFER_READ_SIZE * 5)
 {
-    openGLContext.setOpenGLVersionRequired(juce::OpenGLContext::OpenGLVersion::openGL3_2);
-    openGLContext.setRenderer(this);
-    openGLContext.attachTo(*getTopLevelComponent());
-    openGLContext.setContinuousRepainting(true);
+    openGLContext.setOpenGLVersionRequired (juce::OpenGLContext::OpenGLVersion::openGL3_2);
+    openGLContext.setRenderer (this);
+    openGLContext.attachTo (*getTopLevelComponent());
+    openGLContext.setContinuousRepainting (true);
     
-    for(int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
+    for (int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
     {
         visualizationBuffer[i] = 0.0f; //! fill this array with zeroes to avoid weird graphs on startup
     }
@@ -33,7 +33,7 @@ WaveGraph::~WaveGraph()
     openGLContext.detach();
 }
 
-void WaveGraph::paint(juce::Graphics &g)
+void WaveGraph::paint (juce::Graphics &g)
 {
     
 }
@@ -56,18 +56,18 @@ void WaveGraph::openGLContextClosing()
 
 void WaveGraph::renderOpenGL()
 {
-    jassert(juce::OpenGLHelpers::isContextActive());
-    int idx = stdu::loadIfLockFree(linkedParams->lastTriggeredVoice);
+    jassert (juce::OpenGLHelpers::isContextActive());
+    int idx = stdu::loadIfLockFree (linkedParams->lastTriggeredVoice);
     
-    fundamental = stdu::loadIfLockFree(linkedParams->voiceFundamentals[idx]);
-    if(isnan(fundamental))
+    fundamental = stdu::loadIfLockFree (linkedParams->voiceFundamentals[idx]);
+    if (isnan (fundamental))
         fundamental = 1.0f;
     // Setup Viewport
     const float renderingScale = (float) openGLContext.getRenderingScale();
-    glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt(renderingScale * getHeight()));
+    glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt (renderingScale * getHeight()));
             
     // Set background Color
-    juce::OpenGLHelpers::clear(UXPalette::darkGray);
+    juce::OpenGLHelpers::clear (UXPalette::darkGray);
             
             // Enable Alpha Blending
     glEnable (GL_BLEND);
@@ -76,7 +76,7 @@ void WaveGraph::renderOpenGL()
     // Use Shader Program that's been defined
     shader->use();
     auto samplesPerCycle = (int)44100.0f / fundamental;
-    if(fundamental <= 1.0f)
+    if (fundamental <= 1.0f)
         samplesPerCycle = (int)44100.0f / 440.0f;
     auto sampleIncrement = (samplesPerCycle * 3) / 256;
     
@@ -90,31 +90,31 @@ void WaveGraph::renderOpenGL()
             // Read in samples from ring buffer
     if (uniforms->audioSampleData != nullptr)
     {
-        ringBuffer->readSamples(readBuffer, RING_BUFFER_READ_SIZE * 5);
+        ringBuffer->readSamples (readBuffer, RING_BUFFER_READ_SIZE * 5);
                 
         juce::FloatVectorOperations::clear (visualizationBuffer, RING_BUFFER_READ_SIZE);
         //fill the visualization buffer with the appropriate samples for the fundamental
         int fallingZeroCross = 0;
-        for(int i = 1; i < RING_BUFFER_READ_SIZE * 5; ++i)
+        for (int i = 1; i < RING_BUFFER_READ_SIZE * 5; ++i)
         {
-            auto sample1 = readBuffer.getSample(0, i - 1);
-            auto sample2 = readBuffer.getSample(0, i);
-            if(sample1 > 0.0f && sample2 <= 0.0f)
+            auto sample1 = readBuffer.getSample (0, i - 1);
+            auto sample2 = readBuffer.getSample (0, i);
+            if (sample1 > 0.0f && sample2 <= 0.0f)
             {
                 fallingZeroCross = i;
                 break;
             }
         }
-        if((fallingZeroCross + (int)(sampleIncrement * RING_BUFFER_READ_SIZE)) < readBuffer.getNumSamples())
+        if ((fallingZeroCross + (int)(sampleIncrement * RING_BUFFER_READ_SIZE)) < readBuffer.getNumSamples())
         {
-            for(int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
+            for (int i = 0; i < RING_BUFFER_READ_SIZE; ++i)
             {
-                auto lSample = readBuffer.getSample(0, fallingZeroCross + (int)(sampleIncrement * i));
-                auto rSample = readBuffer.getSample(1, fallingZeroCross + (int)(sampleIncrement * i));
+                auto lSample = readBuffer.getSample (0, fallingZeroCross + (int)(sampleIncrement * i));
+                auto rSample = readBuffer.getSample (1, fallingZeroCross + (int)(sampleIncrement * i));
                 visualizationBuffer[i] = (GLfloat)((lSample + rSample) / 2.0f);
             }
         }
-        uniforms->audioSampleData->set(visualizationBuffer, 256);
+        uniforms->audioSampleData->set (visualizationBuffer, 256);
     }
             
             // Define Vertices for a Square (the view plane)
@@ -156,25 +156,25 @@ void WaveGraph::renderOpenGL()
 void WaveGraph::createShaders()
 {
     juce::String statusText;
-    auto shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram>(openGLContext);
+    auto shaderProgramAttempt = std::make_unique<juce::OpenGLShaderProgram> (openGLContext);
             
            // Sets up pipeline of shaders and compiles the program
-    if(shaderProgramAttempt->addFragmentShader({BinaryData::BasicFragment_glsl})
-            && shaderProgramAttempt->addVertexShader({BinaryData::BasicVertex_glsl})
+    if (shaderProgramAttempt->addFragmentShader ({BinaryData::BasicFragment_glsl})
+            && shaderProgramAttempt->addVertexShader ({BinaryData::BasicVertex_glsl})
                && shaderProgramAttempt->link())
            {
                //uniforms.release();
-               shader = std::move(shaderProgramAttempt);
+               shader = std::move (shaderProgramAttempt);
                //shader->setUniform("programID", -1);
-               uniforms.reset(new Uniforms (openGLContext, *shader));
+               uniforms.reset (new Uniforms (openGLContext, *shader));
                
-               statusText = "Using GLSL: v" + juce::String(juce::OpenGLShaderProgram::getLanguageVersion(), 2);
+               statusText = "Using GLSL: v" + juce::String (juce::OpenGLShaderProgram::getLanguageVersion(), 2);
            }
            else
            {
                statusText = shaderProgramAttempt->getLastError();
                
            }
-           printf("%s\n", statusText.toRawUTF8());
+           printf ("%s\n", statusText.toRawUTF8());
 }
 

@@ -20,9 +20,9 @@ HexAudioProcessor::HexAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
-tree(*this, nullptr, "SynthParams", HexParameters::createLayout()),
-synth(&tree),
-createdEditor(nullptr)
+tree (*this, nullptr, "SynthParams", HexParameters::createLayout()),
+synth (&tree),
+createdEditor (nullptr)
 #endif
 {
 }
@@ -98,9 +98,9 @@ void HexAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
-    synth.setSampleRate(sampleRate);
-    synth.prepareRingBuffer(samplesPerBlock);
-    synth.prepareRingBuffer(samplesPerBlock);
+    synth.setSampleRate (sampleRate);
+    synth.prepareRingBuffer (samplesPerBlock);
+    synth.prepareRingBuffer (samplesPerBlock);
     
 }
 
@@ -139,21 +139,21 @@ bool HexAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) cons
 void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     buffer.clear();
-    synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    synth.renderNextBlock (buffer, midiMessages, 0, buffer.getNumSamples());
     synth.updateRoutingForBlock();
     synth.updateOscillatorsForBlock();
     synth.updateEnvelopesForBlock();
     synth.updateFiltersForBlock();
     synth.updateLfosForBlock();
-    magnitude = buffer.getMagnitude(0, buffer.getNumSamples());
-    if(magnitude > 1.0f)
+    magnitude = buffer.getMagnitude (0, buffer.getNumSamples());
+    if (magnitude > 1.0f)
     {
-        buffer.applyGain(0.6f / magnitude);
+        buffer.applyGain (0.6f / magnitude);
         //! Note: apparently this is almost never an issue
-        printer.addMessage("Over-magnitude buffer: " + juce::String(magnitude));
+        printer.addMessage ("Over-magnitude buffer: " + juce::String (magnitude));
     }
     else
-        buffer.applyGain(0.6f);
+        buffer.applyGain (0.6f);
 }
 
 //==============================================================================
@@ -173,7 +173,7 @@ void HexAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     auto state = tree.copyState();
     std::unique_ptr<juce::XmlElement> xml (state.createXml());
-    copyXmlToBinary(*xml, destData);
+    copyXmlToBinary (*xml, destData);
 }
 
 void HexAudioProcessor::setStateInformation (const void* data, int sizeInBytes)

@@ -15,19 +15,19 @@
 class MathUtil
 {
 public:
-    static float fLerp(float lower, float upper, float t)
+    static float fLerp (float lower, float upper, float t)
     {
         return lower + ((upper - lower) * t);
     }
-    static double dLerp(double lower, double upper, double t)
+    static double dLerp (double lower, double upper, double t)
     {
         return lower + ((upper - lower) * t);
     }
-    static float hypot(float dX, float dY)
+    static float hypot (float dX, float dY)
     {
-        return std::sqrt(std::pow(dX, 2.0f) + std::pow(dY, 2.0f));
+        return std::sqrt (std::pow (dX, 2.0f) + std::pow (dY, 2.0f));
     }
-    static void fft(int N, float *ar, float *ai)
+    static void fft (int N, float *ar, float *ai)
     /*
      in-place complex fft
      
@@ -55,7 +55,7 @@ public:
         j = 1;
         for (i = 1; i <= NM1; i++)
         {
-            if(i<j)
+            if (i<j)
             {             /* swap a[i] and a[j] */
                 t = ar[j-1];
                 ar[j-1] = ar[i-1];
@@ -65,7 +65,7 @@ public:
                 ai[i-1] = t;
             }
             k = NV2;             /* bit-reversed counter */
-            while(k < j)
+            while (k < j)
             {
                 j -= k;
                 k /= 2;
@@ -104,13 +104,13 @@ public:
 struct stdu
 {
    template <typename T>
-    static T loadIfLockFree(std::atomic<T>& input)
+    static T loadIfLockFree (std::atomic<T>& input)
     {
-        if(input.is_lock_free())
+        if (input.is_lock_free())
             return input.load();
         return 0;
     }
-    static std::vector<std::string> matchesAsVector(std::string body, std::regex reg)
+    static std::vector<std::string> matchesAsVector (std::string body, std::regex reg)
     {
         std::vector<std::string> strings;
         auto results = std::smatch{};
@@ -119,17 +119,17 @@ struct stdu
         {
             std::smatch match;
             match = *it;
-            auto str = match.str(0);
-            strings.push_back(str);
+            auto str = match.str (0);
+            strings.push_back (str);
         }
         return strings;
     }
-    static std::pair<int, int> stringAsFraction(std::string input)
+    static std::pair<int, int> stringAsFraction (std::string input)
     {
-        auto exp = std::regex("\\w+");
-        auto values = matchesAsVector(input, exp);
-        auto num = std::stoi(values[0]);
-        auto denom = std::stoi(values[1]);
-        return std::make_pair(num, denom);
+        auto exp = std::regex ("\\w+");
+        auto values = matchesAsVector (input, exp);
+        auto num = std::stoi (values[0]);
+        auto denom = std::stoi (values[1]);
+        return std::make_pair (num, denom);
     }
 };

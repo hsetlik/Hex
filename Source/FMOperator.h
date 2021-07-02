@@ -35,21 +35,21 @@ using apvts = juce::AudioProcessorValueTreeState;
 class FMOperator
 {
 public:
-    FMOperator(int opIndex);
-    void trigger(bool on)
+    FMOperator (int opIndex);
+    void trigger (bool on)
     {
-        if(on)
+        if (on)
             envelope.triggerOn();
         else
             envelope.triggerOff();
     }
-    void setSampleRate(double rate);
+    void setSampleRate (double rate);
     //! functions to set private variables
-    void setRatio(float value) {baseRatio = value; }
-    void setModIndex(float value) {modIndex = value; }
-    void setPan(float value) {pan = value; }
-    void setLevel(float value) {level = value; }
-    void setAudible(bool shouldBeAudible) {audible = shouldBeAudible; }
+    void setRatio (float value) {baseRatio = value; }
+    void setModIndex (float value) {modIndex = value; }
+    void setPan (float value) {pan = value; }
+    void setLevel (float value) {level = value; }
+    void setAudible (bool shouldBeAudible) {audible = shouldBeAudible; }
     void clearOffset() {modOffset = 0.0f; }
     float getLevel() {return level; }
 private:
@@ -62,15 +62,15 @@ public:
     float lastLeft() {return lastOutL; }
     float lastRight() {return lastOutR; }
     //! where the magic happens
-    void addModFrom(FMOperator& source)
+    void addModFrom (FMOperator& source)
     {
         modOffset += source.lastMono();
     }
-    void tick(double fundamental);
-    void tick(double fundamental, float modValue);
-    void setWave(int type)
+    void tick (double fundamental);
+    void tick (double fundamental, float modValue);
+    void setWave (int type)
     {
-        oscillator.setType((WaveType)type);
+        oscillator.setType ((WaveType)type);
     }
     HexOsc oscillator;
     DAHDSR envelope;

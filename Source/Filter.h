@@ -33,32 +33,32 @@ class FilterCore
 {
 public:
     FilterCore() :
-    sampleRate(44100.0f),
-    cutoff(2500.0f),
-    resonance(1.0f)
+    sampleRate (44100.0f),
+    cutoff (2500.0f),
+    resonance (1.0f)
     {
         setup();
     }
     virtual ~FilterCore() {}
-    virtual float process(float input) {return 0.0f; }
-    virtual float processWithMod(float input, float modValue)
+    virtual float process (float input) {return 0.0f; }
+    virtual float processWithMod (float input, float modValue)
     {
-        setup(modValue);
-        return process(input);
+        setup (modValue);
+        return process (input);
     }
     virtual void setup() {}
-    virtual void setup(float modValue) {}
-    virtual void setResonance(float value)
+    virtual void setup (float modValue) {}
+    virtual void setResonance (float value)
     {
         resonance = value;
         setup();
     }
-    virtual void setCutoff(float value)
+    virtual void setCutoff (float value)
     {
         cutoff = value;
         setup();
     }
-    virtual void setSampleRate(double rate)
+    virtual void setSampleRate (double rate)
     {
         sampleRate = rate;
         setup();
@@ -74,15 +74,15 @@ class LibLowPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup(sampleRate, (double)cutoff, (double)resonance);
+        filter.setup (sampleRate, (double)cutoff, (double)resonance);
     }
-    void setup(float modValue) override
+    void setup (float modValue) override
     {
-        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
     }
-    float process(float input) override
+    float process (float input) override
     {
-        return filter.filter(input);
+        return filter.filter (input);
     }
 private:
     Iir::RBJ::LowPass filter;
@@ -93,15 +93,15 @@ class LibHiPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup(sampleRate, (double)cutoff, (double)resonance);
+        filter.setup (sampleRate, (double)cutoff, (double)resonance);
     }
-    float process(float input) override
+    float process (float input) override
     {
-        return filter.filter(input);
+        return filter.filter (input);
     }
-    void setup(float modValue) override
+    void setup (float modValue) override
     {
-        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
     }
 private:
     Iir::RBJ::HighPass filter;
@@ -112,15 +112,15 @@ class LibBandPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup(sampleRate, (double)cutoff, (double)resonance);
+        filter.setup (sampleRate, (double)cutoff, (double)resonance);
     }
-    void setup(float modValue) override
+    void setup (float modValue) override
     {
-        filter.setup(sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
     }
-    float process(float input) override
+    float process (float input) override
     {
-        return filter.filter(input);
+        return filter.filter (input);
     }
 private:
     Iir::RBJ::BandPass1 filter;
@@ -130,41 +130,41 @@ class StereoFilter :
 public juce::AsyncUpdater
 {
 public:
-    StereoFilter(int voiceIdx);
-    void setSampleRate(double rate)
+    StereoFilter (int voiceIdx);
+    void setSampleRate (double rate)
     {
         rateVal = rate;
-        envelope.setSampleRate(rate);
-        lFilter->setSampleRate(rateVal);
-        rFilter->setSampleRate(rateVal);
+        envelope.setSampleRate (rate);
+        lFilter->setSampleRate (rateVal);
+        rFilter->setSampleRate (rateVal);
     }
-    void setCutoff(float value)
+    void setCutoff (float value)
     {
         cutoffVal = value;
-        lFilter->setCutoff(cutoffVal);
-        rFilter->setCutoff(cutoffVal);
+        lFilter->setCutoff (cutoffVal);
+        rFilter->setCutoff (cutoffVal);
     }
-    void setResonance(float value)
+    void setResonance (float value)
     {
         resonanceVal = value;
-        lFilter->setResonance(resonanceVal);
-        rFilter->setResonance(resonanceVal);
+        lFilter->setResonance (resonanceVal);
+        rFilter->setResonance (resonanceVal);
     }
-    void setDepth(float value) {envDepth = value; }
-    void setWetLevel(float value) {wetLevel = value; }
+    void setDepth (float value) {envDepth = value; }
+    void setWetLevel (float value) {wetLevel = value; }
     void tick()
     {
-        auto modVal = envelope.process(envDepth);
+        auto modVal = envelope.process (envDepth);
         auto inc = (CUTOFF_MAX - cutoffVal) * modVal;
-        lFilter->setCutoff(cutoffVal + inc);
-        rFilter->setCutoff(cutoffVal + inc);
+        lFilter->setCutoff (cutoffVal + inc);
+        rFilter->setCutoff (cutoffVal + inc);
     }
     void handleAsyncUpdate() override;
-    void setType(int filterType);
-    float processLeft(float input) {return MathUtil::fLerp(input, lFilter->process(input), wetLevel); }
-    float processLeft(float input, float modValue) {return MathUtil::fLerp(input, lFilter->processWithMod(input, modValue), wetLevel); }
-    float processRight(float input) {return MathUtil::fLerp(input, rFilter->process(input), wetLevel); }
-    float processRight(float input, float modValue) {return MathUtil::fLerp(input, rFilter->processWithMod(input, modValue), wetLevel); }
+    void setType (int filterType);
+    float processLeft (float input) {return MathUtil::fLerp (input, lFilter->process (input), wetLevel); }
+    float processLeft (float input, float modValue) {return MathUtil::fLerp (input, lFilter->processWithMod (input, modValue), wetLevel); }
+    float processRight (float input) {return MathUtil::fLerp (input, rFilter->process (input), wetLevel); }
+    float processRight (float input, float modValue) {return MathUtil::fLerp (input, rFilter->processWithMod (input, modValue), wetLevel); }
     DAHDSR envelope;
     float getCutoff() {return cutoffVal; }
 private:

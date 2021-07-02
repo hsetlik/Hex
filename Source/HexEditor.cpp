@@ -9,46 +9,46 @@
 */
 
 #include "HexEditor.h"
-FilterPanel::FilterPanel(apvts* tree, GraphParamSet* graph) :
-linkedTree(tree),
-envComp(0, linkedTree, graph, true)
+FilterPanel::FilterPanel (apvts* tree, GraphParamSet* graph) :
+linkedTree (tree),
+envComp (0, linkedTree, graph, true)
 {
-    cutoffAttach.reset(new sliderAttach(*linkedTree, "cutoffParam", cutoffSlider));
-    resAttach.reset(new sliderAttach(*linkedTree, "resonanceParam", resSlider));
-    wetAttach.reset(new sliderAttach(*linkedTree, "wetDryParam", wetSlider));
-    depthAttach.reset(new sliderAttach(*linkedTree, "depthParam", depthSlider));
+    cutoffAttach.reset (new sliderAttach (*linkedTree, "cutoffParam", cutoffSlider));
+    resAttach.reset (new sliderAttach (*linkedTree, "resonanceParam", resSlider));
+    wetAttach.reset (new sliderAttach (*linkedTree, "wetDryParam", wetSlider));
+    depthAttach.reset (new sliderAttach (*linkedTree, "depthParam", depthSlider));
     
-    typeAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(*linkedTree, "filterTypeParam", typeBox));
-    typeBox.addItem("Low Pass", 1);
-    typeBox.addItem("High Pass", 2);
-    typeBox.addItem("Band Pass", 3);
-    typeBox.setSelectedId(1);
+    typeAttach.reset (new juce::AudioProcessorValueTreeState::ComboBoxAttachment (*linkedTree, "filterTypeParam", typeBox));
+    typeBox.addItem ("Low Pass", 1);
+    typeBox.addItem ("High Pass", 2);
+    typeBox.addItem ("Band Pass", 3);
+    typeBox.setSelectedId (1);
     
-    addAndMakeVisible(&typeBox);
+    addAndMakeVisible (&typeBox);
     
-    SliderUtil::setRotaryNoBox(cutoffSlider);
-    SliderUtil::setRotaryNoBox(resSlider);
-    SliderUtil::setRotaryNoBox(wetSlider);
-    SliderUtil::setRotaryNoBox(depthSlider);
+    SliderUtil::setRotaryNoBox (cutoffSlider);
+    SliderUtil::setRotaryNoBox (resSlider);
+    SliderUtil::setRotaryNoBox (wetSlider);
+    SliderUtil::setRotaryNoBox (depthSlider);
     
-    addAndMakeVisible(&envComp);
-    addAndMakeVisible(&cutoffSlider);
-    addAndMakeVisible(&resSlider);
-    addAndMakeVisible(&wetSlider);
-    addAndMakeVisible(&depthSlider);
+    addAndMakeVisible (&envComp);
+    addAndMakeVisible (&cutoffSlider);
+    addAndMakeVisible (&resSlider);
+    addAndMakeVisible (&wetSlider);
+    addAndMakeVisible (&depthSlider);
     
-    cutoffSlider.setLookAndFeel(&lnf);
-    resSlider.setLookAndFeel(&lnf);
-    wetSlider.setLookAndFeel(&lnf);
-    depthSlider.setLookAndFeel(&lnf);
+    cutoffSlider.setLookAndFeel (&lnf);
+    resSlider.setLookAndFeel (&lnf);
+    wetSlider.setLookAndFeel (&lnf);
+    depthSlider.setLookAndFeel (&lnf);
 }
 
 FilterPanel::~FilterPanel()
 {
-    cutoffSlider.setLookAndFeel(nullptr);
-    resSlider.setLookAndFeel(nullptr);
-    wetSlider.setLookAndFeel(nullptr);
-    depthSlider.setLookAndFeel(nullptr);
+    cutoffSlider.setLookAndFeel (nullptr);
+    resSlider.setLookAndFeel (nullptr);
+    wetSlider.setLookAndFeel (nullptr);
+    depthSlider.setLookAndFeel (nullptr);
 }
 
 void FilterPanel::resized()

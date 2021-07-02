@@ -54,16 +54,16 @@ public:
         noteOff
     };
     //functions
-    DAHDSR(int ind=0) : lastOutput(0.0f), factor(1.0f), sampleRate(44100), index(ind)
+    DAHDSR (int ind=0) : lastOutput (0.0f), factor (1.0f), sampleRate (44100), index (ind)
     {
         trigger = false;
         samplesIntoPhase = 0;
         currentPhase = noteOff;
     }
     ~DAHDSR() {}
-    static envPhase nextPhase(envPhase input)
+    static envPhase nextPhase (envPhase input)
     {
-        if(input != noteOff)
+        if (input != noteOff)
             return (envPhase)(input + 1);
         else
             return noteOff;
@@ -71,36 +71,36 @@ public:
     void triggerOn()
     {
         trigger = true;
-        enterPhase(delayPhase);
+        enterPhase (delayPhase);
     }
-    float factorFor(float startLevel, float endLevel, float lengthMs)
+    float factorFor (float startLevel, float endLevel, float lengthMs)
     {
-        if(startLevel == 0.0f)
+        if (startLevel == 0.0f)
             startLevel = minLevel;
-        if(endLevel == 0.0f)
+        if (endLevel == 0.0f)
             endLevel = minLevel;
         unsigned long phaseLengthSamples = lengthMs * (sampleRate / 1000);
-        return exp((log(endLevel) - log(startLevel)) / phaseLengthSamples);
+        return exp ((log (endLevel) - log (startLevel)) / phaseLengthSamples);
     }
     void triggerOff()
     {
         trigger = false;
-        enterPhase(releasePhase);
+        enterPhase (releasePhase);
     }
     void updatePhase()
     {
         if(samplesIntoPhase > samplesInPhase || samplesInPhase < 1)
         {
-            enterPhase(nextPhase(currentPhase));
+            enterPhase (nextPhase (currentPhase));
         }
     }
-    void enterPhase(envPhase newPhase);
-    void killQuick(float msFade = 10.0f);
-    void setSampleRate(double value) {sampleRate = value;}
-    float process(float input);
+    void enterPhase (envPhase newPhase);
+    void killQuick (float msFade = 10.0f);
+    void setSampleRate (double value) {sampleRate = value;}
+    float process (float input);
     float clockOutput()
     {
-        return process(1.0f);
+        return process (1.0f);
     }
     bool isActive()
     {
@@ -109,12 +109,12 @@ public:
     envPhase getPhase() {return currentPhase;}
     float output;
     float lastOutput;
-    void setDelay(float val) {delayTime = val;}
-    void setAttack(float val) {attackTime = val;}
-    void setHold(float val) {holdTime = val;}
-    void setDecay(float val) {decayTime = val;}
-    void setSustain(float val) {sustainLevel = val;}
-    void setRelease(float val) {releaseTime = val;}
+    void setDelay (float val) {delayTime = val;}
+    void setAttack (float val) {attackTime = val;}
+    void setHold (float val) {holdTime = val;}
+    void setDecay (float val) {decayTime = val;}
+    void setSustain (float val) {sustainLevel = val;}
+    void setRelease (float val) {releaseTime = val;}
     float getLastLevel() {return output;}
     void printDebug();
 private:

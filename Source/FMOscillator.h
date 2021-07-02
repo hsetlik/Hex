@@ -39,17 +39,17 @@ public:
 class OscBase
 {
 public:
-    OscBase() : sampleRate(44100.0f), nyquist(sampleRate / 2.0f)
+    OscBase() : sampleRate (44100.0f), nyquist (sampleRate / 2.0f)
     {
         
     }
     virtual ~OscBase() {}
-    virtual void setSampleRate(double rate)
+    virtual void setSampleRate (double rate)
     {
         sampleRate = rate;
         nyquist = sampleRate / 2.0f;
     }
-    virtual float getSample(double hz) {return 0.0f; }
+    virtual float getSample (double hz) {return 0.0f; }
 protected:
     double sampleRate;
     double nyquist;
@@ -59,7 +59,7 @@ class SineOsc : public OscBase
 {
 public:
     SineOsc();
-    float getSample(double hz) override;
+    float getSample (double hz) override;
 private:
     float phase;
     float phaseDelta;
@@ -72,11 +72,11 @@ private:
 class AntiAliasOsc : public OscBase
 {
 public:
-    AntiAliasOsc(WaveType type);
-    float getSample(double hz) override;
-    void createTables(int size, float* real, float* imag);
-    float makeTable(float* waveReal, float* waveImag, int numSamples, float scale, float bottomFreq, float topFreq);
-    Wavetable* tableForHz(double hz);
+    AntiAliasOsc (WaveType type);
+    float getSample (double hz) override;
+    void createTables (int size, float* real, float* imag);
+    float makeTable (float* waveReal, float* waveImag, int numSamples, float scale, float bottomFreq, float topFreq);
+    Wavetable* tableForHz (double hz);
 private:
     juce::OwnedArray<Wavetable> tables;
     float phase;
@@ -91,11 +91,11 @@ private:
 class NoiseOsc : public OscBase
 {
 public:
-    NoiseOsc() : rGen(2341)
+    NoiseOsc() : rGen (2341)
     {
         
     }
-    float getSample(double hz) override
+    float getSample (double hz) override
     {
         return (rGen.nextFloat() * 2.0f) - 1.0f;
     }
@@ -108,14 +108,14 @@ class HexOsc : public juce::AsyncUpdater
 public:
     HexOsc();
     void handleAsyncUpdate() override;
-    void setType(WaveType type);
-    void setSampleRate(double rate)
+    void setType (WaveType type);
+    void setSampleRate (double rate)
     {
-        pOsc->setSampleRate(rate);
+        pOsc->setSampleRate (rate);
     }
-    float getSample(double hz)
+    float getSample (double hz)
     {
-        return pOsc->getSample(hz);
+        return pOsc->getSample (hz);
     }
 private:
     std::unique_ptr<OscBase> pOsc;

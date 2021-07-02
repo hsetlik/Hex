@@ -40,11 +40,11 @@ public:
         writePosition = 0;
     }
     //! Resize the buffer and replace the unique_ptr
-    void setSize(int nChannels, int bSize)
+    void setSize (int nChannels, int bSize)
     {
         numChannels = nChannels;
         bufferSize = bSize;
-        audioBuffer.reset(new juce::AudioBuffer<Type>(numChannels, bufferSize));
+        audioBuffer.reset (new juce::AudioBuffer<Type>(numChannels, bufferSize));
         writePosition = 0;
     }
     

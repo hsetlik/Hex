@@ -19,16 +19,16 @@ struct DebugTest
 
 struct VoiceClickTest : public DebugTest
 {
-    VoiceClickTest(int voiceIdx, float sampleA, float sampleB) :
-    voice(voiceIdx),
-    s1(sampleA),
-    s2(sampleB)
+    VoiceClickTest (int voiceIdx, float sampleA, float sampleB) :
+    voice (voiceIdx),
+    s1 (sampleA),
+    s2 (sampleB)
     {
     }
     void printTest() override
     {
-        printf("ON VOICE %d:\n", voice);
-        printf("jumped from %f to %f\n", s1, s2);
+        printf ("ON VOICE %d:\n", voice);
+        printf ("jumped from %f to %f\n", s1, s2);
     }
 private:
     int voice;
@@ -39,9 +39,9 @@ class DebugSingle
 {
 public:
     static DebugSingle* getInstance();
-    void addClickTest(int voice, float sA, float sB)
+    void addClickTest (int voice, float sA, float sB)
     {
-        tests.add(new VoiceClickTest(voice, sA, sB));
+        tests.add (new VoiceClickTest (voice, sA, sB));
     }
     ~DebugSingle();
 private:
@@ -56,21 +56,21 @@ private:
 class AsyncDebugPrinter : public juce::AsyncUpdater
 {
 public:
-    void addMessage(juce::String message)
+    void addMessage (juce::String message)
     {
-        messages.push_back(message);
+        messages.push_back (message);
         if(!isUpdatePending())
             triggerAsyncUpdate();
     }
     void handleAsyncUpdate() override
     {
-        for(auto m : messages)
+        for (auto m : messages)
             printf("%s\n", m.toRawUTF8());
         messages.clear();
     }
-    static juce::String bStr(bool input)
+    static juce::String bStr (bool input)
     {
-        if(input)
+        if (input)
             return "true";
         return "false";
     }

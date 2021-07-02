@@ -21,18 +21,18 @@ typedef std::array<float, TABLESIZE> LfoArray;
 class WaveArray
 {
 public:
-    static LfoArray arrayForType(WaveType type);
+    static LfoArray arrayForType (WaveType type);
 };
 
 class LfoBase
 {
 public:
-    LfoBase() : rate(1.0f), sampleRate(44100.0f)
+    LfoBase() : rate (1.0f), sampleRate (44100.0f)
     {
     }
     virtual ~LfoBase() {}
-    virtual void setSampleRate(double rate) {sampleRate = rate; }
-    virtual void setRate(float speedHz) {rate = speedHz; }
+    virtual void setSampleRate (double rate) {sampleRate = rate; }
+    virtual void setRate (float speedHz) {rate = speedHz; }
     virtual float tick() {return 0.0f; }
 protected:
     float rate;
@@ -42,10 +42,10 @@ protected:
 class WaveLfo : public LfoBase
 {
 public:
-    WaveLfo(WaveType type) :
-    wave(type),
-    data(WaveArray::arrayForType(type)),
-    phase(0.0f)
+    WaveLfo (WaveType type) :
+    wave (type),
+    data (WaveArray::arrayForType (type)),
+    phase (0.0f)
     {
     }
     float tick() override
@@ -54,10 +54,10 @@ public:
         phase += phaseDelta;
         if(phase > 1.0f)
             phase -= 1.0f;
-        lowerIdx = std::floor(phase * TABLESIZE);
+        lowerIdx = std::floor (phase * TABLESIZE);
         upperIdx = (lowerIdx == TABLESIZE - 1) ? 0 : lowerIdx + 1;
         skew = (phase * TABLESIZE) - lowerIdx;
-        return MathUtil::fLerp(data[lowerIdx], data[upperIdx], skew);
+        return MathUtil::fLerp (data[lowerIdx], data[upperIdx], skew);
     }
 private:
     const WaveType wave;
@@ -72,7 +72,7 @@ private:
 class NoiseLfo : public LfoBase
 {
 public:
-    NoiseLfo() : phase(0.0f), rGen(12)
+    NoiseLfo() : phase (0.0f), rGen (12)
     {
         output = rGen.nextFloat();
     }
@@ -80,7 +80,7 @@ public:
     {
         phaseDelta = rate / sampleRate;
         phase += phaseDelta;
-        if(phase > 1.0f)
+        if (phase > 1.0f)
         {
             phase -= 1.0f;
             output = rGen.nextFloat();
@@ -97,13 +97,13 @@ private:
 class HexLfo : public juce::AsyncUpdater
 {
 public:
-    HexLfo(int idx);
+    HexLfo (int idx);
     const int lfoIndex;
     float tick();
-    float tickToValue(float baseValue, float maxValue, float depth);
-    void setSampleRate(double rate);
-    void setRate(float rate);
-    void setType(int type);
+    float tickToValue (float baseValue, float maxValue, float depth);
+    void setSampleRate (double rate);
+    void setRate (float rate);
+    void setType (int type);
     void handleAsyncUpdate() override;
 private:
     WaveType currentType;

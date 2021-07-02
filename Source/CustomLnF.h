@@ -15,12 +15,12 @@
 class HexLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
-    juce::Font getLabelFont(juce::Label& label) override;
-    void drawLabel(juce::Graphics& g, juce::Label& label) override;
+    juce::Font getLabelFont (juce::Label& label) override;
+    void drawLabel (juce::Graphics& g, juce::Label& label) override;
     void drawRotarySlider (juce::Graphics &g, int x, int y, int width, int height,
                            float sliderPosProportional,
                            float rotaryStartAngle,
                            float rotaryEndAngle,
                            juce::Slider &slider) override;
-    void drawLinearSlider(juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
+    void drawLinearSlider (juce::Graphics &g, int x, int y, int width, int height, float sliderPos, float minSliderPos, float maxSliderPos, const juce::Slider::SliderStyle, juce::Slider &) override;
 };

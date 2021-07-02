@@ -18,11 +18,11 @@
 class FilterPanel : public juce::Component
 {
 public:
-    FilterPanel(apvts* tree, GraphParamSet* params);
+    FilterPanel (apvts* tree, GraphParamSet* params);
     ~FilterPanel();
     apvts* const linkedTree;
     void resized() override;
-    void paint(juce::Graphics& g) override;
+    void paint (juce::Graphics& g) override;
 private:
     EnvelopeComponent envComp;
     juce::Slider cutoffSlider;
@@ -43,10 +43,10 @@ private:
 class HexEditor : public juce::Component
 {
 public:
-    HexEditor(HexAudioProcessor* proc, apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer);
+    HexEditor (HexAudioProcessor* proc, apvts* tree, GraphParamSet* params, RingBuffer<GLfloat>* buffer);
     apvts* const linkedTree;
     void resized() override;
-    void paint(juce::Graphics& g) override;
+    void paint (juce::Graphics& g) override;
 private:
     juce::OwnedArray<OperatorComponent> opComponents;
     juce::OwnedArray<LfoComponent> lfoComponents;

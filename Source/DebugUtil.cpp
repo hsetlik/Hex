@@ -13,15 +13,15 @@ std::unique_ptr<DebugSingle> DebugSingle::instance = nullptr;
 
 DebugSingle* DebugSingle::getInstance()
 {
-    if(instance == nullptr)
+    if (instance == nullptr)
     {
-        instance.reset(new DebugSingle());
+        instance.reset (new DebugSingle());
     }
     return instance.get();
 }
 
 DebugSingle::~DebugSingle()
 {
-    for(auto test : tests)
+    for (auto test : tests)
         test->printTest();
 }

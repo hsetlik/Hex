@@ -14,22 +14,22 @@
 class SliderUtil
 {
 public:
-    static void setVerticalLinearNoBox(juce::Slider& slider)
+    static void setVerticalLinearNoBox (juce::Slider& slider)
     {
-        slider.setSliderStyle(juce::Slider::LinearVertical);
-        slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 1, 1);
+        slider.setSliderStyle (juce::Slider::LinearVertical);
+        slider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
     }
-    static void setRotaryNoBox(juce::Slider& slider)
+    static void setRotaryNoBox (juce::Slider& slider)
     {
-        slider.setSliderStyle(juce::Slider::Rotary);
-        slider.setTextBoxStyle(juce::Slider::NoTextBox, false, 1, 1);
+        slider.setSliderStyle (juce::Slider::Rotary);
+        slider.setTextBoxStyle (juce::Slider::NoTextBox, false, 1, 1);
     }
 };
 
 class ComponentUtil
 {
 public:
-    static juce::Rectangle<int> boxBelow(juce::Component& parent, int heightFraction, int spaceFraction=0)
+    static juce::Rectangle<int> boxBelow (juce::Component& parent, int heightFraction, int spaceFraction=0)
     {
         int x, y, width, height;
         auto iBounds = parent.getBounds();
@@ -37,17 +37,17 @@ public:
         width = iBounds.getWidth();
         x = iBounds.getX();
         y = iBounds.getBottom();
-        if(spaceFraction != 0)
+        if (spaceFraction != 0)
         {
             y  = y + (iBounds.getHeight() / spaceFraction);
         }
-        return juce::Rectangle<int>(x, y, width, height);
+        return juce::Rectangle<int> (x, y, width, height);
     }
-    static void cushionByFraction(juce::Component& comp, int fX, int fY)
+    static void cushionByFraction (juce::Component& comp, int fX, int fY)
     {
         auto startBounds = comp.getBounds();
         auto dX = startBounds.getWidth() / fX;
         auto dY = startBounds.getHeight() / fY;
-        comp.setBounds(startBounds.reduced(dX, dY));
+        comp.setBounds (startBounds.reduced (dX, dY));
     }
 };

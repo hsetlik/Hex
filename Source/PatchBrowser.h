@@ -33,7 +33,7 @@ struct PatchInfo
 {
     juce::String name;
     PatchType type;
-    PatchInfo(juce::String n, PatchType t) : name(n), type(t)
+    PatchInfo (juce::String n, PatchType t) : name(n), type(t)
     {
         
     }
@@ -44,26 +44,26 @@ struct PatchInfo
 };
 struct PatchGroup
 {
-    PatchGroup(PatchType t) : type(t), typeId(PatchTypeStrings[(int)type])
+    PatchGroup(PatchType t) : type (t), typeId (PatchTypeStrings[(int)type])
     {
         
     }
     const PatchType type;
     const juce::String typeId;
     std::vector<juce::File> patches;
-    void loadFilesForType(juce::File& folder)
+    void loadFilesForType (juce::File& folder)
     {
-        auto allFiles = folder.findChildFiles(juce::File::TypesOfFileToFind::findFiles, true);
-        for(auto f : allFiles)
+        auto allFiles = folder.findChildFiles (juce::File::TypesOfFileToFind::findFiles, true);
+        for (auto f : allFiles)
         {
-            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML(f);
-            if(currentXml != nullptr)
+            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML (f);
+            if (currentXml != nullptr)
             {
-                if(currentXml->hasAttribute("HexPatchType"))
+                if (currentXml->hasAttribute ("HexPatchType"))
                 {
-                    auto checkType = currentXml->getStringAttribute("HexPatchType");
-                    if(checkType == PatchTypeStrings[(int)type])
-                        patches.push_back(f);
+                    auto checkType = currentXml->getStringAttribute ("HexPatchType");
+                    if (checkType == PatchTypeStrings[(int)type])
+                        patches.push_back (f);
                     
                 }
             }
@@ -71,11 +71,11 @@ struct PatchGroup
     }
     juce::String nameOfLastPatch()
     {
-        if(patches.size() > 0)
+        if (patches.size() > 0)
         {
-            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML(patches[patches.size() - 1]);
-            if(currentXml->hasAttribute("HexPatchName"))
-                return currentXml->getStringAttribute("HexPatchName");
+            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML (patches[patches.size() - 1]);
+            if(currentXml->hasAttribute ("HexPatchName"))
+                return currentXml->getStringAttribute ("HexPatchName");
         }
         return "";
     }
@@ -84,42 +84,42 @@ struct PatchGroup
 struct PatchLibrary
 {
     PatchLibrary() :
-    bassGroup(PatchType::bass),
-    leadGroup(PatchType::lead),
-    chordGroup(PatchType::chord),
-    padGroup(PatchType::pad)
+    bassGroup (PatchType::bass),
+    leadGroup (PatchType::lead),
+    chordGroup (PatchType::chord),
+    padGroup (PatchType::pad)
     {
-        auto appFolder = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory);
+        auto appFolder = juce::File::getSpecialLocation (juce::File::userDocumentsDirectory);
         appFolder.setAsCurrentWorkingDirectory();
-        auto patchFolder = appFolder.getChildFile("Hex_Patches");
-        if(patchFolder.exists() && patchFolder.isDirectory())
+        auto patchFolder = appFolder.getChildFile ("Hex_Patches");
+        if (patchFolder.exists() && patchFolder.isDirectory())
         {
             patchFolder.setAsCurrentWorkingDirectory();
-            printf("Folder Found\n");
+            printf ("Folder Found\n");
         }
         else
         {
             patchFolder.createDirectory();
-            printf("Folder Created\n");
+            printf ("Folder Created\n");
             patchFolder.setAsCurrentWorkingDirectory();
         }
         presetFolder = patchFolder;
-        bassGroup.loadFilesForType(presetFolder);
-        leadGroup.loadFilesForType(presetFolder);
-        chordGroup.loadFilesForType(presetFolder);
-        padGroup.loadFilesForType(presetFolder);
+        bassGroup.loadFilesForType (presetFolder);
+        leadGroup.loadFilesForType (presetFolder);
+        chordGroup.loadFilesForType (presetFolder);
+        padGroup.loadFilesForType (presetFolder);
     }
-    PatchGroup* getGroup(juce::String& typeStr)
+    PatchGroup* getGroup (juce::String& typeStr)
     {
         PatchType type = PatchType::lead;
         int idx = 0;
-        for(auto s : PatchTypeStrings)
+        for (auto s : PatchTypeStrings)
         {
-            if(s == typeStr)
+            if (s == typeStr)
                 type = (PatchType)idx;
             ++idx;
         }
-        switch(type)
+        switch (type)
         {
             case PatchType::bass:
             {
@@ -149,21 +149,21 @@ struct PatchLibrary
 class PatchSelector : public juce::ComboBox
 {
 public:
-    PatchSelector() : lib(std::make_unique<PatchLibrary>())
+    PatchSelector() : lib (std::make_unique<PatchLibrary>())
     {
         initialize();
         lastPatchNames = patchNames;
         int colorId = juce::ComboBox::ColourIds::backgroundColourId;
-        getLookAndFeel().setColour(colorId, UXPalette::darkGray);
+        getLookAndFeel().setColour (colorId, UXPalette::darkGray);
         colorId = juce::TextButton::ColourIds::buttonColourId;
-        getLookAndFeel().setColour(colorId, UXPalette::darkGray);
+        getLookAndFeel().setColour (colorId, UXPalette::darkGray);
         colorId = juce::PopupMenu::ColourIds::backgroundColourId;
-        getLookAndFeel().setColour(colorId, UXPalette::darkGray);
+        getLookAndFeel().setColour (colorId, UXPalette::darkGray);
     }
     ~PatchSelector(){}
     void initialize();
     void selectNewest();
-    void addPatch(std::unique_ptr<juce::XmlElement>& element, int idNum);
+    void addPatch (std::unique_ptr<juce::XmlElement>& element, int idNum);
     void reInitList()
     {
         clear();
@@ -171,11 +171,11 @@ public:
         initialize();
         selectNewest();
     }
-    int getIndexWithText(juce::String text)
+    int getIndexWithText (juce::String text)
     {
-        for(int i = 0; i < getNumItems(); ++i)
+        for (int i = 0; i < getNumItems(); ++i)
         {
-            if(getItemText(i) == text)
+            if (getItemText(i) == text)
                 return i;
         }
         return getNumItems() - 1;
@@ -189,16 +189,16 @@ private:
 class PatchLoader : public juce::Component, juce::Button::Listener, juce::ComboBox::Listener
 {
 public:
-    PatchLoader(HexAudioProcessor* proc, juce::Component* patchDlg);
+    PatchLoader (HexAudioProcessor* proc, juce::Component* patchDlg);
     ~PatchLoader() {}
     void resized() override;
-    void paint(juce::Graphics& g) override
+    void paint (juce::Graphics& g) override
     {
-        g.fillAll(UXPalette::darkGray);
+        g.fillAll (UXPalette::darkGray);
     }
-    void savePreset(juce::String name, juce::String type);
-    void loadPreset(juce::String name);
-    void comboBoxChanged(juce::ComboBox* box) override;
+    void savePreset (juce::String name, juce::String type);
+    void loadPreset (juce::String name);
+    void comboBoxChanged (juce::ComboBox* box) override;
     //
     juce::ComboBox* getSelectorBox()
     {
@@ -210,44 +210,44 @@ public:
     }
     juce::String getCurrentPresetType()
     {
-        auto fArray = presetFolder.findChildFiles(juce::File::TypesOfFileToFind::findFiles, true);
+        auto fArray = presetFolder.findChildFiles (juce::File::TypesOfFileToFind::findFiles, true);
         juce::String output = "Bass";
         auto pName = getCurrentPresetName();
-        for(auto f : fArray)
+        for (auto f : fArray)
         {
-            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML(f);
-            if(currentXml != nullptr)
+            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML (f);
+            if (currentXml != nullptr)
             {
-                if(currentXml->hasAttribute("HexFmPatchType"))
+                if (currentXml->hasAttribute ("HexFmPatchType"))
                 {
-                    auto checkName = currentXml->getStringAttribute("HexFmPatchName");
-                    if(checkName == pName)
+                    auto checkName = currentXml->getStringAttribute ("HexFmPatchName");
+                    if (checkName == pName)
                     {
-                        output = currentXml->getStringAttribute("HexFmPatchType");
+                        output = currentXml->getStringAttribute ("HexFmPatchType");
                     }
                 }
             }
         }
         return output;
     }
-    void buttonClicked(juce::Button* button) override
+    void buttonClicked (juce::Button* button) override
     {
         auto totalItems = patchSelector.getNumItems();
         auto currentIndex = patchSelector.getSelectedItemIndex();
         auto maxIncrease = totalItems - currentIndex;
-        if(button == &nextPatchButton && maxIncrease > 0)
+        if (button == &nextPatchButton && maxIncrease > 0)
         {
-            patchSelector.setSelectedItemIndex(currentIndex + 1);
+            patchSelector.setSelectedItemIndex (currentIndex + 1);
         }
-        else if(button == &lastPatchButton && (currentIndex - 1) >= 0)
+        else if (button == &lastPatchButton && (currentIndex - 1) >= 0)
         {
-            patchSelector.setSelectedItemIndex(currentIndex - 1);
+            patchSelector.setSelectedItemIndex (currentIndex - 1);
         }
-        else if(button == &saveButton)
+        else if (button == &saveButton)
         {
-            saveDialogComponent->setEnabled(true);
-            saveDialogComponent->setVisible(true);
-            saveDialogComponent->toFront(true);
+            saveDialogComponent->setEnabled (true);
+            saveDialogComponent->setVisible (true);
+            saveDialogComponent->toFront (true);
             saveDialogComponent->resized();
         }
     }
@@ -267,11 +267,11 @@ private:
 class PatchDialogBox : public juce::Component, juce::Button::Listener
 {
 public:
-    PatchDialogBox(PatchLoader* loader);
+    PatchDialogBox (PatchLoader* loader);
     ~PatchDialogBox() {}
     void resized() override;
-    void buttonClicked(juce::Button* button) override;
-    void paint(juce::Graphics& g) override;
+    void buttonClicked (juce::Button* button) override;
+    void paint (juce::Graphics& g) override;
     juce::String getNewPatchName()
     {
         return nameField.getText();

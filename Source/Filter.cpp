@@ -9,23 +9,23 @@
 */
 
 #include "Filter.h"
-StereoFilter::StereoFilter(int voiceIdx) :
-cutoffVal(2500.0f),
-resonanceVal(1.0f),
-rateVal(44100.0f),
-envDepth(0.5f),
-wetLevel(1.0f),
-voiceIndex(voiceIdx),
-currentType(LoPass),
-lFilter(std::make_unique<LibLowPass>()),
-rFilter(std::make_unique<LibLowPass>())
+StereoFilter::StereoFilter (int voiceIdx) :
+cutoffVal (2500.0f),
+resonanceVal (1.0f),
+rateVal (44100.0f),
+envDepth (0.5f),
+wetLevel (1.0f),
+voiceIndex (voiceIdx),
+currentType (LoPass),
+lFilter (std::make_unique<LibLowPass>()),
+rFilter (std::make_unique<LibLowPass>())
 {
     
 }
-void StereoFilter::setType(int filterType)
+void StereoFilter::setType (int filterType)
 {
     auto nType = (FilterType)filterType;
-    if(currentType != nType)
+    if (currentType != nType)
     {
         currentType = nType;
         triggerAsyncUpdate();
@@ -34,29 +34,29 @@ void StereoFilter::setType(int filterType)
 
 void StereoFilter::handleAsyncUpdate()
 {
-    switch(currentType)
+    switch (currentType)
     {
         case LoPass:
         {
-            lFilter.reset(new LibLowPass());
-            rFilter.reset(new LibLowPass());
+            lFilter.reset (new LibLowPass());
+            rFilter.reset (new LibLowPass());
             break;
         }
         case HiPass:
         {
-            lFilter.reset(new LibHiPass());
-            rFilter.reset(new LibHiPass());
+            lFilter.reset (new LibHiPass());
+            rFilter.reset (new LibHiPass());
             break;
         }
         case BandPass:
         {
-            lFilter.reset(new LibBandPass());
-            rFilter.reset(new LibBandPass());
+            lFilter.reset (new LibBandPass());
+            rFilter.reset (new LibBandPass());
             break;
         }
     }
     //! make sure these parameters stay the same when the unique_ptr gets reset
-    setSampleRate(rateVal);
-    setCutoff(cutoffVal);
-    setResonance(resonanceVal);
+    setSampleRate (rateVal);
+    setCutoff (cutoffVal);
+    setResonance (resonanceVal);
 }

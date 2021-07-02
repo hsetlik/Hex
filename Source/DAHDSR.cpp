@@ -9,11 +9,11 @@
 */
 
 #include "DAHDSR.h"
-void DAHDSR::enterPhase(envPhase newPhase)
+void DAHDSR::enterPhase (envPhase newPhase)
 {
     currentPhase = newPhase;
     samplesIntoPhase = 0;
-    switch(newPhase)
+    switch (newPhase)
     {
         case delayPhase:
         {
@@ -75,31 +75,31 @@ void DAHDSR::enterPhase(envPhase newPhase)
     output = _startLevel;
     updatePhase();
 }
-float DAHDSR::process(float input)
+float DAHDSR::process (float input)
 {
     lastOutput = output;
     updatePhase();
     ++samplesIntoPhase;
     output *= factor;
-    if(std::abs(lastOutput - output) > 0.2f)
+    if (std::abs (lastOutput - output) > 0.2f)
     {
-        printf("Envelope click\n");
+        printf ("Envelope click\n");
     }
     return input * output;
 }
 
-void DAHDSR::killQuick(float msFade)
+void DAHDSR::killQuick (float msFade)
 {
     //! function to bring down the envelope output very quickly (but not immediately) for voice stealing
     currentPhase = releasePhase;
     _startLevel = output;
     _endLevel = minLevel;
     samplesInPhase = msFade * sampleRate / 1000;
-    factor = factorFor(_startLevel, _endLevel, msFade);
+    factor = factorFor (_startLevel, _endLevel, msFade);
 }
 
 void DAHDSR::printDebug()
 {
-    printf("This output: %f\n", output);
-    printf("Last output: %f\n", lastOutput);
+    printf ("This output: %f\n", output);
+    printf ("Last output: %f\n", lastOutput);
 }

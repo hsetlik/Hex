@@ -15,18 +15,18 @@
 class RotaryLabel : public juce::Label, public juce::Slider::Listener
 {
 public:
-    RotaryLabel(juce::Slider* s, int decimals = 5);
+    RotaryLabel (juce::Slider* s, int decimals = 5);
     juce::Slider* const linkedSlider;
     void textWasEdited() override
     {
-        auto str = getText(true);
+        auto str = getText (true);
         auto val = str.getDoubleValue();
-        linkedSlider->setValue(val);
+        linkedSlider->setValue (val);
     }
     juce::String currentValueString();
-    void sliderValueChanged(juce::Slider* s) override;
-    void setDecimalPlaces(int numPlaces) {decimalPlaces = numPlaces; }
-    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
+    void sliderValueChanged (juce::Slider* s) override;
+    void setDecimalPlaces (int numPlaces) {decimalPlaces = numPlaces; }
+    void componentMovedOrResized (juce::Component& comp, bool wasMoved, bool wasResized) override;
 private:
     int decimalPlaces;
 };
@@ -35,15 +35,15 @@ class ParamName : public juce::Label
 //! label subclass with non-editable text. use \c placeRelative in the parent's \c resized() method to position label relative to some slider/button
 {
 public:
-    ParamName(juce::String name) : text(name)
+    ParamName (juce::String name) : text (name)
     {
-        setText(text, juce::dontSendNotification);
-        setEditable(false);
-        setMinimumHorizontalScale(0.01f);
-        setLookAndFeel(&lnf);
+        setText (text, juce::dontSendNotification);
+        setEditable (false);
+        setMinimumHorizontalScale (0.01f);
+        setLookAndFeel (&lnf);
     }
-    virtual ~ParamName() {setLookAndFeel(nullptr); }
-    virtual void placeRelative(juce::Component& attach, int heightFraction, int gapFraction, bool isAbove) {}
+    virtual ~ParamName() {setLookAndFeel (nullptr); }
+    virtual void placeRelative (juce::Component& attach, int heightFraction, int gapFraction, bool isAbove) {}
 protected:
     juce::String text;
 private:
@@ -54,12 +54,12 @@ class RotaryParamName : public ParamName
 //! Parameter
 {
 public:
-    RotaryParamName(juce::String name) : ParamName(name), fLift(0.05f)
+    RotaryParamName (juce::String name) : ParamName (name), fLift (0.05f)
     {
-        setJustificationType(juce::Justification::centredBottom);
+        setJustificationType (juce::Justification::centredBottom);
     }
-    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
-    void setLift(float value) {fLift = value; }
+    void componentMovedOrResized (juce::Component& comp, bool wasMoved, bool wasResized) override;
+    void setLift (float value) {fLift = value; }
 private:
     float fLift;
 };
@@ -67,12 +67,12 @@ private:
 class VerticalParamName : public ParamName
 {
 public:
-    VerticalParamName(juce::String name) : ParamName(name), fLift(0.02f)
+    VerticalParamName (juce::String name) : ParamName (name), fLift (0.02f)
     {
-        setJustificationType(juce::Justification::centredTop);
+        setJustificationType (juce::Justification::centredTop);
     }
-    void componentMovedOrResized(juce::Component& comp, bool wasMoved, bool wasResized) override;
-    void setLift(float value) {fLift = value; }
+    void componentMovedOrResized (juce::Component& comp, bool wasMoved, bool wasResized) override;
+    void setLift (float value) {fLift = value; }
 private:
     float fLift;
 };

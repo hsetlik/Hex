@@ -13,12 +13,12 @@
 HexAudioProcessorEditor::HexAudioProcessorEditor (HexAudioProcessor& p) :
 AudioProcessorEditor (&p),
 audioProcessor (p),
-mainEditor(&audioProcessor, &p.tree, &p.synth.graphParams, &p.synth.graphBuffer)
+mainEditor (&audioProcessor, &p.tree, &p.synth.graphParams, &p.synth.graphBuffer)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    addAndMakeVisible(&mainEditor);
-    setSize(1000, 800);
+    addAndMakeVisible (&mainEditor);
+    setSize (1000, 800);
 }
 
 HexAudioProcessorEditor::~HexAudioProcessorEditor()

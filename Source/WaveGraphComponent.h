@@ -21,11 +21,11 @@ public juce::OpenGLRenderer,
 public juce::Component
 {
 public:
-    WaveGraph(GraphParamSet* params, RingBuffer<float>* rBuffer);
+    WaveGraph (GraphParamSet* params, RingBuffer<float>* rBuffer);
     ~WaveGraph();
     GraphParamSet* const linkedParams;
     RingBuffer<float>* const ringBuffer;
-    void paint(juce::Graphics& g) override;
+    void paint (juce::Graphics& g) override;
     //! OpenGL overrides
     void newOpenGLContextCreated() override;
     void openGLContextClosing() override;
@@ -33,16 +33,16 @@ public:
 private:
     struct Uniforms
         {
-            Uniforms(juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram) :
-            resolution(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "resolution")),
-            audioSampleData(std::make_unique<juce::OpenGLShaderProgram::Uniform>(shaderProgram, "audioSampleData"))
+            Uniforms (juce::OpenGLContext& openGLContext, juce::OpenGLShaderProgram& shaderProgram) :
+            resolution(std::make_unique<juce::OpenGLShaderProgram::Uniform> (shaderProgram, "resolution")),
+            audioSampleData(std::make_unique<juce::OpenGLShaderProgram::Uniform> (shaderProgram, "audioSampleData"))
             {
-                resolution.reset (createUniform(openGLContext, shaderProgram, "resolution"));
+                resolution.reset (createUniform (openGLContext, shaderProgram, "resolution"));
                 auto rProgram = (int)resolution->uniformID;
-                printf("Resolution uniform: %d\n", rProgram);
-                audioSampleData.reset(createUniform (openGLContext, shaderProgram, "audioSampleData"));
+                printf ("Resolution uniform: %d\n", rProgram);
+                audioSampleData.reset (createUniform (openGLContext, shaderProgram, "audioSampleData"));
                 auto aProgram = (int)audioSampleData->uniformID;
-                printf("Audio Sample Data uniform: %d\n", aProgram);
+                printf ("Audio Sample Data uniform: %d\n", aProgram);
             }
             ~Uniforms()
             {
@@ -58,13 +58,13 @@ private:
             std::unique_ptr<juce::OpenGLShaderProgram::Uniform> resolution;
             std::unique_ptr<juce::OpenGLShaderProgram::Uniform> audioSampleData;
         private:
-            static juce::OpenGLShaderProgram::Uniform* createUniform(juce::OpenGLContext& openGLContext,
+            static juce::OpenGLShaderProgram::Uniform* createUniform (juce::OpenGLContext& openGLContext,
                                                                 juce::OpenGLShaderProgram& shaderProgram,
                                                                 const char* uniformName)
             {
                 if (openGLContext.extensions.glGetUniformLocation(shaderProgram.getProgramID(), uniformName) < 0)
                     return nullptr;
-                return new juce::OpenGLShaderProgram::Uniform(shaderProgram, uniformName);
+                return new juce::OpenGLShaderProgram::Uniform (shaderProgram, uniformName);
             }
         };
     void createShaders();
