@@ -15,6 +15,24 @@
 #include "LFO.h"
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
+struct TuningHolder
+{
+    TuningHolder() : pTuning (std::make_unique<tng::Tuning>())
+    {
+        
+    }
+    TuningHolder(const tng::Scale& scale) : pTuning(std::make_unique<tng::Tuning> (scale))
+    {
+        
+    }
+    double frequencyForMidiNote (int noteNum)
+    {
+        return pTuning->frequencyForMidiNote (noteNum);
+    }
+private:
+    std::unique_ptr<tng::Tuning> pTuning;
+};
+
 class HexSound : public juce::SynthesiserSound
 {
 public:
@@ -53,10 +71,11 @@ public:
 class HexVoice : public juce::SynthesiserVoice
 {
 public:
-    HexVoice (apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, int idx);
+    HexVoice (apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, TuningHolder* tuning,  int idx);
     apvts* const linkedTree;
     GraphParamSet* const linkedParams;
     RingBuffer<float>* const linkedBuffer;
+    TuningHolder* const linkedTuning;
     const int voiceIndex;
     void prepareBuffer (int blockSize)
     {
@@ -239,6 +258,7 @@ public:
     }
     GraphParamSet graphParams;
     RingBuffer<float> graphBuffer;
+    TuningHolder tuning;
 private:
     RoutingGrid grid;
     std::vector<HexVoice*> hexVoices;
@@ -246,4 +266,9 @@ private:
     float magnitude;
     float lastMagnitude;
     long numJumps;
+};
+
+struct ScaleGenerator
+{
+    static tng::Scale getDefaultScale();
 };
