@@ -60,8 +60,8 @@ std::array<float, TABLESIZE> WTArray::makeArray (WaveType type)
         }
         case Noise:
         {
-            auto rand = juce::Random(5);
-            fo r(int i = 0; i < TABLESIZE; ++i)
+            auto rand = juce::Random (5);
+            for (int i = 0; i < TABLESIZE; ++i)
             {
                 auto raw = rand.nextFloat();
                 arr[i] = (raw - 0.5f) * 2.0f;

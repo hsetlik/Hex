@@ -36,7 +36,7 @@ lastMagnitude (0.0f)
 void HexVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     voiceCleared = false;
-    fundamental = juce::MidiMessage::getMidiNoteInHertz (midiNoteNumber);
+    fundamental = MathUtil::midiToET(midiNoteNumber);
     linkedParams->lastTriggeredVoice.store (voiceIndex);
     ++linkedParams->voicesInUse;
     linkedParams->voiceFundamentals[voiceIndex].store ((float)fundamental);
@@ -45,8 +45,6 @@ void HexVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserS
     {
         op->trigger (true);
     }
-    debugPrinter.addMessage ("Voice " + juce::String (voiceIndex) + " triggered with fundamental " + juce::String (fundamental));
-    //debugPrinter.addMessage(juce::String(linkedParams->voicesInUse.load()) + " voices in use");
 }
 
 void HexVoice::stopNote (float velocity, bool allowTailOff)
@@ -121,7 +119,7 @@ void HexVoice::renderNextBlock (juce::AudioBuffer<float> &outputBuffer, int star
     {
         clearCurrentNote();
         voiceCleared = true;
-        debugPrinter.addMessage ("Voice " + juce::String (voiceIndex) + " cleared");
+        //debugPrinter.addMessage ("Voice " + juce::String (voiceIndex) + " cleared");
     }
 }
 //=====================================================================================================================
@@ -153,7 +151,7 @@ numJumps (0)
         hexVoices.push_back (voice);
     }
     addSound (new HexSound);
-    setNoteStealingEnabled (false);
+    setNoteStealingEnabled (true);
 }
 
 juce::SynthesiserVoice* HexSynth::findFreeVoice (juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
@@ -210,21 +208,12 @@ void HexSynth::noteOff (int midiChannel, int midiNoteNumber, float velocity, boo
 
 void HexSynth::renderVoices (juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
 {
-    //const juce::ScopedLock  sl(lock);
-    for (int i = 0; i < NUM_VOICES; ++i)
+    const juce::ScopedLock  sl (lock);
+    for(auto v : hexVoices)
     {
-        if (!hexVoices[i]->isVoiceCleared())
-        {
-            hexVoices[i]->renderNextBlock (buffer, startSample, numSamples);
-            magnitude = buffer.getMagnitude (startSample, numSamples);
-            if (std::abs (magnitude - lastMagnitude) > 0.6f)
-            {
-                printer.addMessage ("Level jumped after voice " + juce::String (i));
-            }
-            lastMagnitude = magnitude;
-        }
+        if (!v->isVoiceCleared())
+            v->renderNextBlock (buffer, startSample, numSamples);
     }
-    
 }
 //=====================================================================================================================
 void HexSynth::setRate (int idx, float value)

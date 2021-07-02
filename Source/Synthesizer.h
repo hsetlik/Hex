@@ -175,7 +175,7 @@ public:
     void setSampleRate (double newRate)
     {
         setCurrentPlaybackSampleRate (newRate);
-        for(auto voice : hexVoices)
+        for (auto voice : hexVoices)
         {
             voice->setSampleRate (newRate);
         }

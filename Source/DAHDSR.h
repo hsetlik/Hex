@@ -12,22 +12,22 @@
 #include <JuceHeader.h>
 
 #define DELAY_MIN 0.0f
-#define DELAY_MAX 20000.0f
+#define DELAY_MAX 8000.0f
 #define DELAY_DEFAULT 0.0f
 #define DELAY_CENTER 1000.0f
 
 #define ATTACK_MIN 0.0f
-#define ATTACK_MAX 20000.0f
+#define ATTACK_MAX 8000.0f
 #define ATTACK_DEFAULT 20.0f
 #define ATTACK_CENTER 1000.0f
 
 #define HOLD_MIN 0.0f
-#define HOLD_MAX 20000.0f
+#define HOLD_MAX 8000.0f
 #define HOLD_DEFAULT 0.0f
 #define HOLD_CENTER 1000.0f
 
 #define DECAY_MIN 0.0f
-#define DECAY_MAX 20000.0f
+#define DECAY_MAX 8000.0f
 #define DECAY_DEFAULT 40.0f
 #define DECAY_CENTER 1000.0f
 
@@ -36,7 +36,7 @@
 #define SUSTAIN_DEFAULT 0.6f
 
 #define RELEASE_MIN 0.0f
-#define RELEASE_MAX 20000.0f
+#define RELEASE_MAX 4000.0f
 #define RELEASE_DEFAULT 80.0f
 #define RELEASE_CENTER 1000.0f
 

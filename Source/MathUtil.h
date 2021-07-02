@@ -11,23 +11,27 @@
 #pragma once
 #include <JuceHeader.h>
 #include <regex>
+#include "tuning-library/include/Tunings.h"
 #define SEMITONE_RATIO 1.05946309436f
-class MathUtil
+namespace MathUtil
 {
-public:
-    static float fLerp (float lower, float upper, float t)
+    inline float fLerp (float lower, float upper, float t)
     {
         return lower + ((upper - lower) * t);
     }
-    static double dLerp (double lower, double upper, double t)
+    inline double dLerp (double lower, double upper, double t)
     {
         return lower + ((upper - lower) * t);
     }
-    static float hypot (float dX, float dY)
+    inline float hypot (float dX, float dY)
     {
         return std::sqrt (std::pow (dX, 2.0f) + std::pow (dY, 2.0f));
     }
-    static void fft (int N, float *ar, float *ai)
+    inline double midiToET(int midiNum)
+    {
+        return 440.0f * std::pow (SEMITONE_RATIO, (float)midiNum - 69);
+    }
+    inline void fft (int N, float *ar, float *ai)
     /*
      in-place complex fft
      
