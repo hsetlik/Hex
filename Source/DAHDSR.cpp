@@ -15,6 +15,16 @@ void DAHDSR::enterPhase (envPhase newPhase)
     samplesIntoPhase = 0;
     switch (newPhase)
     {
+        case retrigPhase:
+        {
+            const float retrigLength = 4.0f;
+            _startLevel = output;
+            _endLevel = minLevel;
+            samplesInPhase = retrigLength * (sampleRate / 1000);
+            factor = factorFor (_startLevel, _endLevel, retrigLength);
+            
+            break;
+        }
         case delayPhase:
         {
             _startLevel = minLevel;

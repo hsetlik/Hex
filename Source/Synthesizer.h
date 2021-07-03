@@ -204,6 +204,7 @@ public:
                                            int midiChannel,
                                            int midiNoteNum,
                                            bool stealIfNoneAvailible)const override;
+    juce::SynthesiserVoice* getFreeVoice(int midiChannel, int midiNum);
     void noteOn (int midiChannel, int midiNoteNumber, float velocity) override;
     void noteOff (int midiChannel, int midiNoteNumber, float velocity, bool allowTailOff) override;
     void renderVoices (juce::AudioBuffer<float>& buffer, int startSample, int numSamples) override;

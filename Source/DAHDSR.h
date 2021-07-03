@@ -45,6 +45,7 @@ class DAHDSR
 public:
     enum envPhase
     {
+        retrigPhase,
         delayPhase,
         attackPhase,
         holdPhase,
@@ -71,7 +72,10 @@ public:
     void triggerOn()
     {
         trigger = true;
-        enterPhase (delayPhase);
+        if (currentPhase != noteOff)
+            enterPhase (retrigPhase);
+        else
+            enterPhase (delayPhase);
     }
     float factorFor (float startLevel, float endLevel, float lengthMs)
     {
