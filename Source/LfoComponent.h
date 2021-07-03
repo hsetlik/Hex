@@ -113,8 +113,10 @@ private:
     juce::ComboBox targetBox;
     DualModeSlider rateSlider;
     DualModeLabel rateLabel;
+    RotaryParamName rateName;
     juce::Slider depthSlider;
     RotaryLabel depthLabel;
+    RotaryParamName depthName;
     PosInfo currentPos;
     WaveSelector waveSelect;
     pSliderAttach rateAttach;

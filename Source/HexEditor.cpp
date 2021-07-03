@@ -11,7 +11,11 @@
 #include "HexEditor.h"
 FilterPanel::FilterPanel (apvts* tree, GraphParamSet* graph) :
 linkedTree (tree),
-envComp (0, linkedTree, graph, true)
+envComp (0, linkedTree, graph, true),
+cutoffName ("Cutoff"),
+resName ("Resonance"),
+wetName ("Mix"),
+depthName("Env. depth")
 {
     cutoffAttach.reset (new sliderAttach (*linkedTree, "cutoffParam", cutoffSlider));
     resAttach.reset (new sliderAttach (*linkedTree, "resonanceParam", resSlider));
@@ -41,6 +45,16 @@ envComp (0, linkedTree, graph, true)
     resSlider.setLookAndFeel (&lnf);
     wetSlider.setLookAndFeel (&lnf);
     depthSlider.setLookAndFeel (&lnf);
+    
+    addAndMakeVisible (&cutoffName);
+    addAndMakeVisible (&resName);
+    addAndMakeVisible (&wetName);
+    addAndMakeVisible (&depthName);
+    
+    cutoffName.attachToComponent (&cutoffSlider, false);
+    resName.attachToComponent (&resSlider, false);
+    wetName.attachToComponent (&wetSlider, false);
+    depthName.attachToComponent (&depthSlider, false);
 }
 
 FilterPanel::~FilterPanel()
@@ -57,13 +71,13 @@ void FilterPanel::resized()
     auto sWidth = bounds.getWidth() / 4;
     auto upperBounds = bounds.removeFromTop(sWidth);
     auto midBounds = bounds.removeFromTop(sWidth);
-    auto cushion = midBounds.getHeight() / 5;
+    auto cushion = midBounds.getHeight() / 4;
     typeBox.setBounds(midBounds.reduced(cushion));
     cushion *= 0.5f;
-    cutoffSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
-    resSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
-    wetSlider.setBounds(upperBounds.removeFromLeft(sWidth).reduced(cushion));
-    depthSlider.setBounds(upperBounds.reduced(cushion));
+    cutoffSlider.setBounds (upperBounds.removeFromLeft (sWidth).reduced(cushion).withY (2 * cushion));
+    resSlider.setBounds (upperBounds.removeFromLeft (sWidth).reduced (cushion).withY (2 * cushion));
+    wetSlider.setBounds (upperBounds.removeFromLeft (sWidth).reduced (cushion).withY (2 * cushion));
+    depthSlider.setBounds (upperBounds.reduced (cushion).withY (2 * cushion));
     envComp.setBounds(bounds);
 }
 

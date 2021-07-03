@@ -30,6 +30,11 @@ private:
     juce::Slider wetSlider;
     juce::Slider depthSlider;
     
+    RotaryParamName cutoffName;
+    RotaryParamName resName;
+    RotaryParamName wetName;
+    RotaryParamName depthName;
+    
     juce::ComboBox typeBox;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment> typeAttach;
     

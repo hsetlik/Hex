@@ -170,7 +170,9 @@ linkedProcessor (proc),
 linkedParams (gParams),
 linkedTree (tree),
 rateLabel (&rateSlider),
+rateName ("Rate"),
 depthLabel (&depthSlider),
+depthName("Deppth"),
 waveSelect (i, tree, "lfoWaveParam")
 {
     auto iStr = juce::String(lfoIndex);
@@ -204,6 +206,12 @@ waveSelect (i, tree, "lfoWaveParam")
     
     depthLabel.attachToComponent (&depthSlider, false);
     rateLabel.attachToComponent (&rateSlider, false);
+    
+    addAndMakeVisible (&rateName);
+    addAndMakeVisible (&depthName);
+    
+    rateName.attachToComponent (&rateSlider, false);
+    depthName.attachToComponent (&depthSlider, false);
     
     addAndMakeVisible (&depthLabel);
     addAndMakeVisible (&waveSelect);
@@ -249,9 +257,9 @@ void LfoComponent::resized()
 {
     auto dX = getWidth() / 16;
     rateSlider.setBounds (dX, dX, 5 * dX, 5 * dX);
-    ComponentUtil::cushionByFraction (rateSlider, 8, 8);
+    ComponentUtil::cushionByFraction (rateSlider, 6, 6);
     depthSlider.setBounds (dX, 7 * dX, 5 * dX, 5 * dX);
-    ComponentUtil::cushionByFraction (depthSlider, 8, 8);
+    ComponentUtil::cushionByFraction (depthSlider, 6, 6);
     bpmToggle.setBounds (7 * dX, dX, 3 * dX, 1.5f * dX);
     targetBox.setBounds (8 * dX, 4 * dX, 8 * dX, 2 * dX);
     waveSelect.setBounds (6 * dX, 7 * dX, 10 * dX, 3 * dX);

@@ -564,7 +564,7 @@ tng::Scale ScaleGenerator::getDefaultScale()
     }
     else
         printf ("Tuning directory found\n");
-    auto scl = fldr.getChildFile ("ThaiRanat.scl");
+    auto scl = fldr.getChildFile ("DefaultTuning.scl");
     std::string data;
     
     if(scl.existsAsFile())

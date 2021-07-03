@@ -19,11 +19,12 @@ struct TuningHolder
 {
     TuningHolder() : pTuning (std::make_unique<tng::Tuning>())
     {
-        
     }
-    TuningHolder(const tng::Scale& scale) : pTuning(std::make_unique<tng::Tuning> (scale))
+    TuningHolder (const tng::Scale& scale) : pTuning (std::make_unique<tng::Tuning> (scale))
     {
-        
+    }
+    TuningHolder (const tng::KeyboardMapping& map) : pTuning (std::make_unique<tng::Tuning> (map))
+    {
     }
     double frequencyForMidiNote (int noteNum)
     {
