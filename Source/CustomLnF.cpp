@@ -9,7 +9,50 @@
 */
 
 #include "CustomLnF.h"
-
+void HexLookAndFeel::drawComboBox (juce::Graphics &g, int width, int height, bool isButtonDown, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox &box)
+{
+    auto stroke = juce::PathStrokeType (2.5f);
+    auto fBounds = juce::Rectangle<float> (0.0f, 0.0f, (float)width, (float)height);
+    //auto inset = fBounds.getHeight() / 5.0f;
+    //auto textBounds = fBounds.reduced(inset);
+    auto corner = fBounds.getHeight() / 6.0f;
+    //printf("Button is at: %d, %d, %d, %d\n", buttonX, buttonY, buttonW, buttonH);
+    auto buttonBounds = juce::Rectangle<float> ((float)buttonX, (float)buttonY, (float)buttonW, (float)buttonH);
+    buttonBounds = buttonBounds.reduced (fBounds.getHeight() / 6, fBounds.getHeight() / 4);
+    std::vector<float> startBounds{buttonBounds.getX(), buttonBounds.getY(), buttonBounds.getWidth(), buttonBounds.getHeight()};
+    auto newTop = startBounds[1] + (0.33f * startBounds[3]);
+    auto newHeight = startBounds[3] - (newTop - startBounds[1]);
+    buttonBounds = juce::Rectangle<float> (startBounds[0], newTop, startBounds[2], newHeight);
+    juce::Path path;
+    path.addRoundedRectangle (fBounds, corner);
+    g.setColour (UXPalette::darkGray);
+    g.fillPath (path);
+    g.setColour (UXPalette::darkBkgnd);
+    g.strokePath (path, stroke);
+    juce::Path tri;
+    tri.startNewSubPath (buttonBounds.getX(), buttonBounds.getY());
+    tri.lineTo (buttonBounds.getRight(), buttonBounds.getY());
+    tri.lineTo (buttonBounds.getX() + (buttonBounds.getWidth() / 2), buttonBounds.getY() + (buttonBounds.getHeight() / 2));
+    tri.closeSubPath();
+    g.fillPath (tri);
+}
+juce::Label* HexLookAndFeel::createComboBoxTextBox (juce::ComboBox &box)
+{
+    return new juce::Label (juce::String(), juce::String());
+}
+juce::Font HexLookAndFeel::getComboBoxFont (juce::ComboBox &box)
+{
+    auto height = (float)box.getHeight() * 0.35f;
+    return UXPalette::robotoLightItalic.withHeight (height);
+}
+void HexLookAndFeel::positionComboBoxText (juce::ComboBox &box, juce::Label &label)
+{
+    label.setBounds (1, 1,
+                     box.getWidth() - 30,
+                     box.getHeight() - 2);
+    label.setFont (getComboBoxFont(box));
+}
+//===========================================================================================
 juce::Font HexLookAndFeel::getLabelFont (juce::Label &label)
 {
     return UXPalette::robotoLightItalic.withHeight (10.0f);
@@ -27,6 +70,7 @@ void HexLookAndFeel::drawLabel (juce::Graphics &g, juce::Label &label)
                       1,
                       label.getMinimumHorizontalScale());
 }
+//===========================================================================================
 void HexLookAndFeel::drawRotarySlider (juce::Graphics &g,
                                       int x, int y, int width, int height,
                                       float sliderPosProportional,

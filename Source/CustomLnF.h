@@ -15,8 +15,15 @@
 class HexLookAndFeel : public juce::LookAndFeel_V4
 {
 public:
+    //! ComboBox
+    void drawComboBox (juce::Graphics & g, int width, int height, bool isButtonDown, int buttonX, int buttonY, int buttonW, int buttonH, juce::ComboBox &box) override;
+    juce::Label* createComboBoxTextBox (juce::ComboBox& box) override;
+    juce::Font getComboBoxFont (juce::ComboBox& box) override;
+    void positionComboBoxText (juce::ComboBox& box, juce::Label& label) override;
+    //! Label
     juce::Font getLabelFont (juce::Label& label) override;
     void drawLabel (juce::Graphics& g, juce::Label& label) override;
+    //! Slider
     void drawRotarySlider (juce::Graphics &g, int x, int y, int width, int height,
                            float sliderPosProportional,
                            float rotaryStartAngle,

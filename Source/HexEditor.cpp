@@ -45,6 +45,7 @@ depthName("Env. depth")
     resSlider.setLookAndFeel (&lnf);
     wetSlider.setLookAndFeel (&lnf);
     depthSlider.setLookAndFeel (&lnf);
+    typeBox.setLookAndFeel (&lnf);
     
     addAndMakeVisible (&cutoffName);
     addAndMakeVisible (&resName);
@@ -63,6 +64,7 @@ FilterPanel::~FilterPanel()
     resSlider.setLookAndFeel (nullptr);
     wetSlider.setLookAndFeel (nullptr);
     depthSlider.setLookAndFeel (nullptr);
+    typeBox.setLookAndFeel (nullptr);
 }
 
 void FilterPanel::resized()
