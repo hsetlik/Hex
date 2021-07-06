@@ -145,7 +145,8 @@ public:
 //===============================================================
 class WaveSelector :
 public juce::Component,
-public juce::Button::Listener
+public juce::Button::Listener,
+public juce::ComboBox::Listener
 {
 public:
     WaveSelector (int idx, apvts* tree, juce::String prefix);
@@ -153,6 +154,7 @@ public:
     apvts* const linkedTree;
     void resized() override;
     void buttonClicked (juce::Button* b) override;
+    void comboBoxChanged (juce::ComboBox* b) override;
 private:
     SineButton bSine;
     SquareButton bSquare;

@@ -226,6 +226,8 @@ waveSelect (i, tree, "lfoWaveParam")
     
     targetBox.setLookAndFeel (&lnf);
     
+    targetBox.setSelectedId (1);
+    
     prepare();
 }
 

@@ -146,6 +146,7 @@ void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     synth.updateFiltersForBlock();
     synth.updateLfosForBlock();
     magnitude = buffer.getMagnitude (0, buffer.getNumSamples());
+    /*
     if (magnitude > 1.0f)
     {
         buffer.applyGain (0.6f / magnitude);
@@ -154,6 +155,7 @@ void HexAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
     }
     else
         buffer.applyGain (0.6f);
+     */
 }
 
 //==============================================================================

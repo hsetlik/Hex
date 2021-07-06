@@ -16,6 +16,7 @@ linkedBuffer (buffer),
 linkedTuning (tuning),
 voiceIndex (idx),
 voiceFilter (voiceIndex),
+justKilled (false),
 internalBuffer (2, 512),
 sumL (0.0f),
 sumR (0.0f),
@@ -175,7 +176,7 @@ juce::SynthesiserVoice* HexSynth::getFreeVoice (int midiChannel, int midiNum)
     auto idx = 0;
     for (auto v : hexVoices)
     {
-        if (v->isVoiceCleared() && v->getCurrentlyPlayingNote() != midiNum)
+        if (v->isVoiceCleared() && v->getCurrentlyPlayingNote() != midiNum && !v->justKilled)
         {
             printer.addMessage ("Voice " + juce::String (idx) + " found free");
             return v;
@@ -194,12 +195,26 @@ void HexSynth::noteOn (int midiChannel, int midiNoteNumber, float velocity)
         if (sound->appliesToNote (midiNoteNumber) && sound->appliesToChannel (midiChannel))
         {
             //! if a voice is already playing this note, stop it
-            for (auto* voice : voices)
+            for (auto* voice : hexVoices)
+            {
                 if (voice->getCurrentlyPlayingNote() == midiNoteNumber && voice->isPlayingChannel (midiChannel))
+                {
                     stopVoice (voice, 1.0f, true);
+                    voice->justKilled = true;
+                }
+                else
+                    voice->justKilled = false;
+            }
             auto* freeVoice = getFreeVoice (midiChannel, midiNoteNumber);
             if (freeVoice != nullptr)
+            {
                 startVoice (freeVoice, sound, midiChannel, midiNoteNumber, velocity);
+            }
+            else
+            {
+                printer.addMessage("Free Voice is nullptr!");
+            }
+                
         }
     }
 }

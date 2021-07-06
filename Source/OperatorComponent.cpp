@@ -370,6 +370,8 @@ linkedTree (tree)
     bSaw.addListener (this);
     bTri.addListener (this);
     bNoise.addListener (this);
+    
+    hiddenBox.addListener (this);
 }
 
 void WaveSelector::resized()
@@ -394,6 +396,21 @@ void WaveSelector::buttonClicked (juce::Button *b)
         hiddenBox.setSelectedId (4);
     else if (b == &bNoise)
         hiddenBox.setSelectedId (5);
+}
+
+void WaveSelector::comboBoxChanged (juce::ComboBox *b)
+{
+    auto idx = b->getSelectedItemIndex();
+    if (idx == 0)
+        bSine.triggerClick();
+    else if (idx == 1)
+        bSquare.triggerClick();
+    else if (idx == 2)
+        bSaw.triggerClick();
+    else if (idx == 3)
+        bTri.triggerClick();
+    else if (idx == 4)
+        bNoise.triggerClick();
 }
 
 //=======================================================

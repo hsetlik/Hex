@@ -167,6 +167,7 @@ public:
         }
         return 0.0f;
     }
+    bool justKilled;
     int lfoTargets[NUM_LFOS];
     float lfoDepths[NUM_LFOS];
     float lfoValues[NUM_LFOS];
@@ -181,6 +182,7 @@ private:
     float magnitude;
     float lastMagnitude;
     float filterValue;
+   
     
 };
 
