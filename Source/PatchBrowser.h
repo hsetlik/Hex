@@ -230,6 +230,8 @@ public:
         }
         return output;
     }
+    void setAsDefaultPatch (juce::String presetName);
+    void loadDefaultPatch();
     void buttonClicked (juce::Button* button) override
     {
         auto totalItems = patchSelector.getNumItems();
@@ -283,6 +285,7 @@ public:
     }
     juce::TextButton savePatchButton;
     juce::TextButton cancelButton;
+    juce::TextButton setDefault;
     juce::ComboBox typeBox;
 private:
     PatchLoader* patchLoader;

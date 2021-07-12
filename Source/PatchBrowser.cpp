@@ -133,6 +133,7 @@ saveDialogComponent (patchDlg)
     lastPatchButton.setButtonText ("<");
     saveButton.setButtonText ("Save");
     
+    /*
     for (int i = 0; i < patchSelector.getNumItems(); ++i)
     {
         if (patchSelector.getItemText (i) == "Sine")
@@ -141,6 +142,8 @@ saveDialogComponent (patchDlg)
             break;
         }
     }
+     */
+    loadDefaultPatch();
 }
 
 PatchLoader::~PatchLoader()
@@ -176,6 +179,7 @@ void PatchLoader::savePreset (juce::String name, juce::String type)
         std::unique_ptr<juce::XmlElement> xml = state.createXml();
         xml->setAttribute ("HexPatchName", name);
         xml->setAttribute ("HexPatchType", type);
+        xml->setAttribute ("IsDefaultPatch", 0);
         xml->writeTo (file);
         patchSelector.reInitList();
     }
@@ -204,7 +208,60 @@ void PatchLoader::loadPreset (juce::String presetName)
         }
     }
 }
-    
+void PatchLoader::setAsDefaultPatch (juce::String presetName)
+{
+    auto presetFiles = presetFolder.findChildFiles (juce::File::findFiles, true);
+    if (presetFiles.size() > 0)
+    {
+        for (int i = 0; i < presetFiles.size(); ++i)
+        {
+            auto currentFile = presetFiles.getUnchecked (i);
+            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML (currentFile);
+            if (currentXml != nullptr)
+            {
+                bool alreadyDefault = currentXml->getBoolAttribute ("IsDefaultPatch");
+                if (currentXml->getStringAttribute ("HexPatchName") == presetName && !alreadyDefault)
+                {
+                    currentXml->setAttribute ("IsDefaultPatch", 1);
+                    currentXml->writeTo (currentFile);
+                }
+                else if (alreadyDefault)
+                {
+                    currentXml->setAttribute ("IsDefaultPatch", 0);
+                    currentXml->writeTo (currentFile);
+                }
+            }
+        }
+    }
+}
+void PatchLoader::loadDefaultPatch()
+{
+    auto presetFiles = presetFolder.findChildFiles (juce::File::findFiles, true);
+    if (presetFiles.size() > 0)
+    {
+        for (int i = 0; i < presetFiles.size(); ++i)
+        {
+            auto currentFile = presetFiles.getUnchecked (i);
+            std::unique_ptr<juce::XmlElement> currentXml = juce::parseXML (currentFile);
+            if (currentXml != nullptr && currentXml->hasAttribute ("IsDefaultPatch"))
+            {
+                if (currentXml->getBoolAttribute ("IsDefaultPatch"))
+                {
+                    auto name = currentXml->getStringAttribute ("HexPatchName");
+                    for (int i = 0; i < patchSelector.getNumItems(); ++i)
+                    {
+                        if (patchSelector.getItemText (i) == name)
+                        {
+                            patchSelector.setSelectedItemIndex (i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void PatchLoader::comboBoxChanged (juce::ComboBox* box)
 {
     if (box == &patchSelector)
@@ -219,6 +276,7 @@ PatchDialogBox::PatchDialogBox (PatchLoader* loader) : patchLoader (loader)
 {
     savePatchButton.addListener (this);
     cancelButton.addListener (this);
+    setDefault.addListener (this);
     addAndMakeVisible (&nameField);
     nameField.setMultiLine (false);
     nameField.setTextToShowWhenEmpty ("Patch Name", UXPalette::lightGray);
@@ -229,6 +287,9 @@ PatchDialogBox::PatchDialogBox (PatchLoader* loader) : patchLoader (loader)
     
     addAndMakeVisible (&cancelButton);
     cancelButton.setButtonText ("Cancel");
+    
+    addAndMakeVisible (&setDefault);
+    setDefault.setButtonText ("Set as default");
     
     addAndMakeVisible (&typeBox);
     int idx = 1;
@@ -261,9 +322,10 @@ void PatchDialogBox::resized()
     int h = getHeight() / 12;
     
     nameField.setBounds (w, 3.5 * h, 16 * w, h);
-    savePatchButton.setBounds (8.5 * w, 5 * h, 4 * w, 1.5 * h);
-    cancelButton.setBounds (13 * w, 5 * h, 3 * w, 1.5 * h);
+    savePatchButton.setBounds (10 * w, 5 * h, 4 * w, 1.5 * h);
+    cancelButton.setBounds (14 * w, 5 * h, 3 * w, 1.5 * h);
     typeBox.setBounds (w, 5 * h, 6 * w, 1.5 * h);
+    setDefault.setBounds (7 * w, 5 * h, 3 * w, 1.5 * h);
     auto name = patchLoader->getCurrentPresetName();
     auto type = patchLoader->getCurrentPresetType();
     nameField.setText (name);
@@ -280,6 +342,10 @@ void PatchDialogBox::buttonClicked (juce::Button *button)
     {
         auto patchName = nameField.getText();
         patchLoader->savePreset (patchName, typeBox.getText());
+    }
+    if (button == &setDefault)
+    {
+        patchLoader->setAsDefaultPatch (nameField.getText());
     }
         nameField.clear();
         setEnabled (false);
