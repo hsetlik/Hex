@@ -190,7 +190,7 @@ class PatchLoader : public juce::Component, juce::Button::Listener, juce::ComboB
 {
 public:
     PatchLoader (HexAudioProcessor* proc, juce::Component* patchDlg);
-    ~PatchLoader() {}
+    ~PatchLoader();
     void resized() override;
     void paint (juce::Graphics& g) override
     {
@@ -255,6 +255,7 @@ public:
     
     HexAudioProcessor* const processor;
 private:
+    HexLookAndFeel lnf;
     juce::File presetFolder;
     juce::StringArray patchNames;
     juce::Component* saveDialogComponent;

@@ -167,6 +167,7 @@ public:
     float processRight (float input, float modValue) {return MathUtil::fLerp (input, rFilter->processWithMod (input, modValue), wetLevel); }
     DAHDSR envelope;
     float getCutoff() {return cutoffVal; }
+    void filterBlock (juce::AudioBuffer<float>& buffer);
 private:
     float cutoffVal;
     float resonanceVal;

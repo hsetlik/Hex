@@ -60,3 +60,12 @@ void StereoFilter::handleAsyncUpdate()
     setCutoff (cutoffVal);
     setResonance (resonanceVal);
 }
+
+void StereoFilter::filterBlock (juce::AudioBuffer<float> &buffer)
+{
+    for (int i = 0; i < buffer.getNumSamples(); ++i)
+    {
+        buffer.setSample (0, i, processLeft (buffer.getSample (0, i)));
+        buffer.setSample (1, i, processRight (buffer.getSample (1, i)));
+    }
+}

@@ -114,6 +114,11 @@ saveDialogComponent (patchDlg)
     //auto fldr = presetFolder.getFileName().toUTF8();
     //printf("Presets are at: %s\n", fldr);
     
+    patchSelector.setLookAndFeel (&lnf);
+    nextPatchButton.setLookAndFeel (&lnf);
+    lastPatchButton.setLookAndFeel (&lnf);
+    saveButton.setLookAndFeel (&lnf);
+    
     addAndMakeVisible (&patchSelector);
     addAndMakeVisible (&nextPatchButton);
     addAndMakeVisible (&lastPatchButton);
@@ -127,6 +132,23 @@ saveDialogComponent (patchDlg)
     nextPatchButton.setButtonText (">");
     lastPatchButton.setButtonText ("<");
     saveButton.setButtonText ("Save");
+    
+    for (int i = 0; i < patchSelector.getNumItems(); ++i)
+    {
+        if (patchSelector.getItemText (i) == "Sine")
+        {
+            patchSelector.setSelectedItemIndex (i);
+            break;
+        }
+    }
+}
+
+PatchLoader::~PatchLoader()
+{
+    patchSelector.setLookAndFeel (nullptr);
+    nextPatchButton.setLookAndFeel (nullptr);
+    lastPatchButton.setLookAndFeel (nullptr);
+    saveButton.setLookAndFeel (nullptr);
 }
 
 void PatchLoader::resized()
@@ -190,6 +212,8 @@ void PatchLoader::comboBoxChanged (juce::ComboBox* box)
         loadPreset (patchSelector.getText());
     }
 }
+
+//=======================================================================================
 
 PatchDialogBox::PatchDialogBox (PatchLoader* loader) : patchLoader (loader)
 {

@@ -77,3 +77,14 @@ public:
 private:
     std::vector<juce::String> messages;
 };
+
+class BufferChecker
+{
+public:
+    BufferChecker() {}
+    ~BufferChecker() {}
+    void checkBuffer (juce::AudioBuffer<float>& buffer);
+private:
+    void addToLog (juce::AudioBuffer<float>& buffer);
+    AsyncDebugPrinter printer;
+};

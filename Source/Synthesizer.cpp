@@ -155,9 +155,10 @@ numJumps (0)
         hexVoices.push_back (voice);
     }
     addSound (new HexSound);
-    setNoteStealingEnabled (true);
+    setNoteStealingEnabled (false);
+    
 }
-
+/*
 juce::SynthesiserVoice* HexSynth::findFreeVoice (juce::SynthesiserSound *soundToPlay, int midiChannel, int midiNoteNum, bool stealIfNoneAvailible) const
 {
     auto idx = 0;
@@ -171,21 +172,7 @@ juce::SynthesiserVoice* HexSynth::findFreeVoice (juce::SynthesiserSound *soundTo
     }
     return nullptr;
 }
-juce::SynthesiserVoice* HexSynth::getFreeVoice (int midiChannel, int midiNum)
-{
-    auto idx = 0;
-    for (auto v : hexVoices)
-    {
-        if (v->isVoiceCleared() && v->getCurrentlyPlayingNote() != midiNum && !v->justKilled)
-        {
-            printer.addMessage ("Voice " + juce::String (idx) + " found free");
-            return v;
-        }
-        ++idx;
-    }
-    printer.addMessage ("No free voice found!");
-    return nullptr;
-}
+
 
 void HexSynth::noteOn (int midiChannel, int midiNoteNumber, float velocity)
 {
@@ -239,7 +226,7 @@ void HexSynth::noteOff (int midiChannel, int midiNoteNumber, float velocity, boo
         }
     }
 }
-
+*/
 void HexSynth::renderVoices (juce::AudioBuffer<float> &buffer, int startSample, int numSamples)
 {
     const juce::ScopedLock  sl (lock);
@@ -248,6 +235,12 @@ void HexSynth::renderVoices (juce::AudioBuffer<float> &buffer, int startSample, 
         if (!v->isVoiceCleared())
             v->renderNextBlock (buffer, startSample, numSamples);
     }
+}
+
+void HexSynth::handleBlock (juce::AudioBuffer<float> &buffer, const juce::MidiBuffer &midi, int startSample, int numSamples)
+{
+    
+    
 }
 //=====================================================================================================================
 void HexSynth::setRate (int idx, float value)
