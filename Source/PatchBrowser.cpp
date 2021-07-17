@@ -129,8 +129,6 @@ saveDialogComponent (patchDlg)
     saveButton.addListener (this);
     patchSelector.addListener (this);
     
-    nextPatchButton.setButtonText (">");
-    lastPatchButton.setButtonText ("<");
     saveButton.setButtonText ("Save");
     
     /*
@@ -282,6 +280,13 @@ PatchDialogBox::PatchDialogBox (PatchLoader* loader) : patchLoader (loader)
     nameField.setTextToShowWhenEmpty ("Patch Name", UXPalette::lightGray);
     nameField.setPopupMenuEnabled (false);
     
+    
+    savePatchButton.setLookAndFeel (&lnf);
+    cancelButton.setLookAndFeel (&lnf);
+    setDefault.setLookAndFeel (&lnf);
+    typeBox.setLookAndFeel (&lnf);
+    nameField.setLookAndFeel (&lnf);
+    
     addAndMakeVisible (&savePatchButton);
     savePatchButton.setButtonText ("Save patch");
     
@@ -301,6 +306,15 @@ PatchDialogBox::PatchDialogBox (PatchLoader* loader) : patchLoader (loader)
     typeBox.setSelectedId (1);
 }
 
+PatchDialogBox::~PatchDialogBox()
+{
+    savePatchButton.setLookAndFeel (nullptr);
+    cancelButton.setLookAndFeel (nullptr);
+    setDefault.setLookAndFeel (nullptr);
+    typeBox.setLookAndFeel (nullptr);
+    nameField.setLookAndFeel (nullptr);
+}
+
 void PatchDialogBox::paint (juce::Graphics &g)
 {
     g.fillAll (UXPalette::darkBkgnd);
@@ -308,7 +322,7 @@ void PatchDialogBox::paint (juce::Graphics &g)
     auto lightArea = getLocalBounds().toFloat().reduced (cushion);
     g.setColour (UXPalette::darkGray);
     g.fillRect (lightArea);
-    g.setColour(juce::Colours::white);
+    g.setColour (juce::Colours::white);
     int w = getWidth() / 18;
     int h = getHeight() / 8;
     auto textBox = juce::Rectangle<int> {w, h, 8 * w, 2 * h};

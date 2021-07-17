@@ -262,8 +262,8 @@ private:
     juce::StringArray patchNames;
     juce::Component* saveDialogComponent;
     juce::TextButton saveButton;
-    juce::TextButton nextPatchButton;
-    juce::TextButton lastPatchButton;
+    RightButton nextPatchButton;
+    LeftButton lastPatchButton;
     juce::StringArray displayPatchNames;
 };
 
@@ -271,7 +271,7 @@ class PatchDialogBox : public juce::Component, juce::Button::Listener
 {
 public:
     PatchDialogBox (PatchLoader* loader);
-    ~PatchDialogBox() {}
+    ~PatchDialogBox();
     void resized() override;
     void buttonClicked (juce::Button* button) override;
     void paint (juce::Graphics& g) override;
@@ -288,6 +288,7 @@ public:
     juce::TextButton setDefault;
     juce::ComboBox typeBox;
 private:
+    HexLookAndFeel lnf;
     PatchLoader* patchLoader;
     juce::TextEditor nameField;
 };

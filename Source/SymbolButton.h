@@ -120,3 +120,27 @@ private:
     Color litText;
     Color unlitText;
 };
+
+class ArrowButton : public juce::ShapeButton
+{
+public:
+    ArrowButton (juce::String name="arrow_button", juce::Colour bkgnd= UXPalette::lightGray, juce::Colour sColour= UXPalette::highlight);
+    virtual juce::Path symbolPath()=0;
+    void paintButton (juce::Graphics& g, bool highlighted, bool down) override;
+private:
+    Color bkgndColor;
+    Color symbolColor;
+};
+
+class LeftButton : public ArrowButton
+{
+public:
+    juce::Path symbolPath() override;
+};
+
+class RightButton : public ArrowButton
+{
+public:
+    juce::Path symbolPath() override;
+};
+

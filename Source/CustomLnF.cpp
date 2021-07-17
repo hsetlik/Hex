@@ -13,17 +13,17 @@ void HexLookAndFeel::drawComboBox (juce::Graphics &g, int width, int height, boo
 {
     auto stroke = juce::PathStrokeType (2.5f);
     auto boxBounds = juce::Rectangle<int> (0, 0, width, height);
-    auto corner = (float)(height / 3);
-    juce::Path boxBorder;
-    boxBorder.addRoundedRectangle (boxBounds, corner);
+    auto corner = (float)(height / 8);
+    g.setColour (UXPalette::lightGray);
+    g.fillRoundedRectangle (boxBounds.toFloat(), corner);
     g.setColour (UXPalette::darkGray);
-    g.fillPath (boxBorder);
-    g.setColour (juce::Colours::black);
-    //g.strokePath (boxBorder, stroke);
-    
+    boxBounds = boxBounds.reduced ((int)corner);
+    corner = (float)(boxBounds.getHeight() / 8);
+    g.fillRoundedRectangle (boxBounds.toFloat(), corner);
+    g.setColour (UXPalette::lightGray);
     juce::Path button;
     auto buttonBounds = juce::Rectangle<float> ((float)buttonX, (float)buttonY, (float)buttonW, (float)buttonH);
-    buttonBounds = buttonBounds.reduced ((float)buttonW / 4);
+    buttonBounds = buttonBounds.reduced ((float)buttonW / 3.5f);
     button.startNewSubPath (buttonBounds.getX(), buttonBounds.getY());
     button.lineTo (buttonBounds.getRight(), buttonBounds.getY());
     button.lineTo (buttonBounds.getCentreX(), buttonBounds.getBottom());
@@ -123,4 +123,47 @@ void HexLookAndFeel::drawLinearSlider (juce::Graphics &g, int x, int y, int widt
                            thumbHeight,
                            thumbHeight / 2.0f);
     
+}
+//======================================================================================
+
+void HexLookAndFeel::drawButtonBackground (juce::Graphics &g, juce::Button &b, const juce::Colour &bColor, bool isHighlighted, bool isDown)
+{
+    auto bBounds = b.getLocalBounds();
+    auto corner = bBounds.getHeight() / 8;
+    g.setColour (UXPalette::lightGray);
+    g.fillRoundedRectangle(bBounds.toFloat(), (float)corner);
+    bBounds = bBounds.reduced (corner);
+    corner = bBounds.getHeight() / 8;
+    g.setColour (UXPalette::darkGray);
+    g.fillRoundedRectangle(bBounds.toFloat(), (float)corner);
+}
+
+void HexLookAndFeel::drawButtonText (juce::Graphics &g, juce::TextButton &b, bool isHighlighted, bool isDown)
+{
+    auto fBounds = b.getLocalBounds().toFloat();
+    auto textHeight = (int)fBounds.getHeight() * 0.8f;
+    auto font = getTextButtonFont (b, textHeight);
+    g.setColour (juce::Colours::white);
+    g.setFont(font);
+    auto iBounds = b.getLocalBounds();
+    auto iX = iBounds.getX();
+    auto iY = iBounds.getY();
+    auto iWidth = iBounds.getWidth();
+    auto dX = iWidth / 11;
+    auto textBox = juce::Rectangle<int> (iX + dX, iY, 8 * dX, iBounds.getHeight());
+    g.drawFittedText (b.getButtonText(), textBox, juce::Justification::centred, 1);
+}
+
+int HexLookAndFeel::getTextButtonWidthToFitText (juce::TextButton &b, int height)
+{
+    auto font = getTextButtonFont (b, height);
+    auto str = b.getButtonText();
+    auto textWidth = font.getStringWidth (str);
+    auto dX = (float)textWidth / 8.0f;
+    return (int)(10 * dX);
+}
+
+juce::Font HexLookAndFeel::getTextButtonFont (juce::TextButton &b, int height)
+{
+    return UXPalette::robotoLightItalic.withHeight ((float)height * 0.8f);
 }

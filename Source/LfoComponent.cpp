@@ -172,7 +172,7 @@ linkedTree (tree),
 rateLabel (&rateSlider),
 rateName ("Rate"),
 depthLabel (&depthSlider),
-depthName("Deppth"),
+depthName ("Depth"),
 waveSelect (i, tree, "lfoWaveParam")
 {
     auto iStr = juce::String(lfoIndex);
