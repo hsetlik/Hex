@@ -14,12 +14,13 @@
 #include "Filter.h"
 #include "LfoComponent.h"
 #include "LFO.h"
+using fRange = juce::NormalisableRange<float>;
 class HexParameters
 {
 public:
     static apvts::ParameterLayout createLayout()
     {
-        using fRange = juce::NormalisableRange<float>;
+       
         apvts::ParameterLayout layout;
         auto delayId = "filterDelayParam";
         auto delayName = "Filter Delay";
@@ -44,12 +45,12 @@ public:
         fRange sustainRange (SUSTAIN_MIN, SUSTAIN_MAX);
         fRange releaseRange (RELEASE_MIN, RELEASE_MAX);
         releaseRange.setSkewForCentre (RELEASE_CENTER);
-        layout.add (std::make_unique<juce::AudioParameterFloat> (delayId, delayName, delayRange, DELAY_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (attackId, attackName, attackRange, ATTACK_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (holdId, holdName, holdRange, HOLD_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (decayId, decayName, decayRange, DECAY_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (sustainId, sustainName, sustainRange, SUSTAIN_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (releaseId, releaseName, releaseRange, RELEASE_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {delayId, 1}, delayName, delayRange, DELAY_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {attackId, 1}, attackName, attackRange, ATTACK_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {holdId, 1}, holdName, holdRange, HOLD_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {decayId, 1}, decayName, decayRange, DECAY_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {sustainId, 1}, sustainName, sustainRange, SUSTAIN_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {releaseId, 1}, releaseName, releaseRange, RELEASE_DEFAULT));
         
         auto cutoffId = "cutoffParam";
         auto cutoffName = "Filter Cutoff";
@@ -63,25 +64,27 @@ public:
         cutoffRange.setSkewForCentre (CUTOFF_CENTER);
         fRange resRange (RESONANCE_MIN, RESONANCE_MAX);
         resRange.setSkewForCentre (RESONANCE_CENTER);
-        layout.add (std::make_unique<juce::AudioParameterFloat> (cutoffId, cutoffName, cutoffRange, CUTOFF_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (resId, resName, resRange, RESONANCE_DEFAULT));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (wetId, wetName, 0.0f, 1.0f, 1.0f));
-        layout.add (std::make_unique<juce::AudioParameterFloat> (depthId, depthName, 0.0f, 1.0f, 0.5f));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {cutoffId, 1}, cutoffName, cutoffRange, CUTOFF_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {resId, 1}, resName, resRange, RESONANCE_DEFAULT));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {wetId, 1}, wetName, 0.0f, 1.0f, 1.0f));
+        layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {depthId, 1}, depthName, 0.0f, 1.0f, 0.5f));
         juce::StringArray filterTypes;
         filterTypes.add ("Low Pass");
         filterTypes.add ("High Pass");
         filterTypes.add ("Band Pass");
-        layout.add (std::make_unique<juce::AudioParameterChoice> ("filterTypeParam", "Filter Type", filterTypes, 0));
+        layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {"filterTypeParam", 1}, "Filter Type", filterTypes, 0));
         
         fRange rateRange (RATE_MIN, RATE_MAX);
         for (int i = 0; i < NUM_LFOS; ++i)
         {
             auto iStr = juce::String (i);
             auto rateId = "lfoRateParam" + iStr;
+            auto depthId = "lfoDepthParam" + iStr;
+            auto syncId = "lfoSyncParam" + iStr;
             auto rateName = "LFO " + iStr + " rate";
-            layout.add (std::make_unique<juce::AudioParameterFloat> (rateId, rateName, rateRange, RATE_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> ("lfoDepthParam" + iStr, "LFO " + iStr + " depth", 0.0f, 1.0f, 0.0f));
-            layout.add (std::make_unique<juce::AudioParameterBool> ("lfoSyncParam" + iStr, "LFO " + iStr + " sync", false));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {rateId, 1}, rateName, rateRange, RATE_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {depthId, 1}, "LFO " + iStr + " depth", 0.0f, 1.0f, 0.0f));
+            layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID {syncId, 1}, "LFO " + iStr + " sync", false));
             juce::StringArray waves;
             waves.add ("Sine");
             waves.add ("Square");
@@ -90,11 +93,11 @@ public:
             waves.add ("Noise");
             auto waveId = "lfoWaveParam" + iStr;
             auto waveName = "LFO " + iStr + " wave";
-            layout.add (std::make_unique<juce::AudioParameterChoice> (waveId, waveName, waves, 0));
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {waveId, 1}, waveName, waves, 0));
             auto targets = LfoComponent::getTargetStrings();
             auto targetId = "lfoTargetParam" + iStr;
             auto targetName = "LFO " + iStr + " target";
-            layout.add (std::make_unique<juce::AudioParameterChoice> (targetId, targetName, targets, 0));
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {targetId, 1}, targetName, targets, 0));
         }
         
         
@@ -117,11 +120,11 @@ public:
             fRange modIndexRange (MODINDEX_MIN, MODINDEX_MAX);
             modIndexRange.setSkewForCentre (MODINDEX_CENTER);
             ratioRange.setSkewForCentre (RATIO_CENTER);
-            layout.add (std::make_unique<juce::AudioParameterFloat> (ratioId, ratioName, ratioRange, RATIO_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (levelId, levelName, 0.0f, 1.0f, 1.0f));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (indexId, indexName, modIndexRange, MODINDEX_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (panId, panName, PAN_MIN, PAN_MAX, PAN_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterBool> (outputId, outputName, false));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {ratioId, 1}, ratioName, ratioRange, RATIO_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {levelId, 1}, levelName, 0.0f, 1.0f, 1.0f));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {indexId, 1}, indexName, modIndexRange, MODINDEX_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {panId, 1}, panName, PAN_MIN, PAN_MAX, PAN_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID {outputId, 1}, outputName, false));
             //! on to envelope parameters
             auto delayId = "delayParam" + iStr;
             auto delayName = "Operator " + iStr + " delay";
@@ -135,12 +138,12 @@ public:
             auto sustainName = "Operator " + iStr + " sustain";
             auto releaseId = "releaseParam" + iStr;
             auto releaseName = "Operator " + iStr + " release";
-            layout.add (std::make_unique<juce::AudioParameterFloat> (delayId, delayName, delayRange, DELAY_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (attackId, attackName, attackRange, ATTACK_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (holdId, holdName, holdRange, HOLD_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (decayId, decayName, decayRange, DECAY_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (sustainId, sustainName, sustainRange, SUSTAIN_DEFAULT));
-            layout.add (std::make_unique<juce::AudioParameterFloat> (releaseId, releaseName, releaseRange, RELEASE_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {delayId, 1}, delayName, delayRange, DELAY_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {attackId, 1}, attackName, attackRange, ATTACK_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {holdId, 1}, holdName, holdRange, HOLD_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {decayId, 1}, decayName, decayRange, DECAY_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {sustainId, 1}, sustainName, sustainRange, SUSTAIN_DEFAULT));
+            layout.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID {releaseId, 1}, releaseName, releaseRange, RELEASE_DEFAULT));
             //! wave selection parameter
             juce::StringArray waves;
             waves.add ("Sine");
@@ -150,14 +153,14 @@ public:
             waves.add ("Noise");
             auto waveId = "waveParam" + iStr;
             auto waveName = "Operator " + iStr + " wave";
-            layout.add (std::make_unique<juce::AudioParameterChoice> (waveId, waveName, waves, 0));
+            layout.add (std::make_unique<juce::AudioParameterChoice> (juce::ParameterID {waveId, 1}, waveName, waves, 0));
             //! and onto the routing parameters
             for (int n = 0; n < NUM_OPERATORS; ++n)
             {
                 juce::String nStr = juce::String (n);
                 auto modId = iStr + "to" + nStr + "Param";
                 auto modName = "Operator " + iStr + " to " + nStr;
-                layout.add (std::make_unique<juce::AudioParameterBool> (modId, modName, false));
+                layout.add (std::make_unique<juce::AudioParameterBool> (juce::ParameterID {modId, 1}, modName, false));
             }
         }
         return layout;

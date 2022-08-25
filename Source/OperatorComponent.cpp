@@ -236,7 +236,7 @@ void EnvelopeComponent::resized()
     auto mBounds = upper.removeFromRight (dX);
     meter.setBounds (mBounds);
     graph.setBounds (upper);
-    auto lBounds = bounds.removeFromBottom (bounds.getHeight() / 8);
+    //auto lBounds = bounds.removeFromBottom (bounds.getHeight() / 8);
     dX = bounds.getWidth() / 6;
     delaySlider.setBounds (bounds.removeFromLeft (dX));
     attackSlider.setBounds (bounds.removeFromLeft (dX));

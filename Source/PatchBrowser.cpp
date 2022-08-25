@@ -326,6 +326,7 @@ void PatchDialogBox::paint (juce::Graphics &g)
     int w = getWidth() / 18;
     int h = getHeight() / 8;
     auto textBox = juce::Rectangle<int> {w, h, 8 * w, 2 * h};
+    g.setFont (UXPalette::robotoLightItalic.withHeight ((float)0.5f * h));
     g.drawText ("Patch Name:", textBox, juce::Justification::left);
 }
 
@@ -338,8 +339,8 @@ void PatchDialogBox::resized()
     nameField.setBounds (w, 3.5 * h, 16 * w, h);
     savePatchButton.setBounds (10 * w, 5 * h, 4 * w, 1.5 * h);
     cancelButton.setBounds (14 * w, 5 * h, 3 * w, 1.5 * h);
-    typeBox.setBounds (w, 5 * h, 6 * w, 1.5 * h);
-    setDefault.setBounds (7 * w, 5 * h, 3 * w, 1.5 * h);
+    typeBox.setBounds (w, 5 * h, 3.5 * w, 1.5 * h);
+    setDefault.setBounds (4.5 * w, 5 * h, 5.5 * w, 1.5 * h);
     auto name = patchLoader->getCurrentPresetName();
     auto type = patchLoader->getCurrentPresetType();
     nameField.setText (name);

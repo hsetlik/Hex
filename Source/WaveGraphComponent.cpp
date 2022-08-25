@@ -64,14 +64,14 @@ void WaveGraph::renderOpenGL()
         fundamental = 1.0f;
     // Setup Viewport
     const float renderingScale = (float) openGLContext.getRenderingScale();
-    glViewport (0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt (renderingScale * getHeight()));
+    juce::gl::glViewport(0, 0, juce::roundToInt(renderingScale * getWidth()), juce::roundToInt (renderingScale * getHeight()));
             
     // Set background Color
     juce::OpenGLHelpers::clear (UXPalette::darkGray);
             
             // Enable Alpha Blending
-    glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    juce::gl::glEnable (juce::gl::GL_BLEND);
+    juce::gl::glBlendFunc (juce::gl::GL_SRC_ALPHA, juce::gl::GL_ONE_MINUS_SRC_ALPHA);
             
     // Use Shader Program that's been defined
     shader->use();
@@ -131,26 +131,26 @@ void WaveGraph::renderOpenGL()
             };
             
             // VBO (Vertex Buffer Object) - Bind and Write to Buffer
-            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
-            openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_DYNAMIC_DRAW);
+    openGLContext.extensions.glBindBuffer (juce::gl::GL_ARRAY_BUFFER, VBO);
+    openGLContext.extensions.glBufferData (juce::gl::GL_ARRAY_BUFFER, sizeof(vertices), vertices, juce::gl::GL_DYNAMIC_DRAW);
             
             // EBO (Element Buffer Object) - Bind and Write to Buffer
-            openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO);
-            openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+    openGLContext.extensions.glBindBuffer (juce::gl::GL_ELEMENT_ARRAY_BUFFER, EBO);
+    openGLContext.extensions.glBufferData (juce::gl::GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, juce::gl::GL_DYNAMIC_DRAW);
                                                                         
             
             // Setup Vertex Attributes
-            openGLContext.extensions.glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+    openGLContext.extensions.glVertexAttribPointer (0, 3, juce::gl::GL_FLOAT, juce::gl::GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             openGLContext.extensions.glEnableVertexAttribArray (0);
         
             // Draw Vertices
-            glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
+    juce::gl::glDrawElements (juce::gl::GL_TRIANGLES, 6, juce::gl::GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
             
         
             
             // Reset the element buffers so child Components draw correctly
-            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
-            openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
+    openGLContext.extensions.glBindBuffer (juce::gl::GL_ARRAY_BUFFER, 0);
+    openGLContext.extensions.glBindBuffer (juce::gl::GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void WaveGraph::createShaders()
