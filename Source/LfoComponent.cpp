@@ -250,7 +250,7 @@ void LfoComponent::buttonClicked (juce::Button *b)
 
 void LfoComponent::prepare()
 {
-    linkedProcessor->getPlayHead()->getCurrentPosition (currentPos);
+    //linkedProcessor->getPlayHead()->getCurrentPosition (currentPos);
     bpm = (float)currentPos.bpm;
     rateLabel.setBpm (bpm);
 }

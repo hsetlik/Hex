@@ -11,7 +11,7 @@
 
 //==============================================================================
 HexAudioProcessor::HexAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
+//#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
                       #if ! JucePlugin_IsSynth
@@ -20,10 +20,10 @@ HexAudioProcessor::HexAudioProcessor()
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
                        ),
+//#endif
 tree (*this, nullptr, "SynthParams", HexParameters::createLayout()),
 synth (&tree),
 createdEditor (nullptr)
-#endif
 {
 }
 

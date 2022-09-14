@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="t5LtwG" name="Hex" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
-              pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              headerPath="/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Builds/MacOSX/1.9.0/include&#10;/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Source/tuning-library/include">
+<JUCERPROJECT id="t5LtwG" name="Hex" projectType="audioplug" addUsingNamespaceToJuceHeader="0"
+              displaySplashScreen="1" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              headerPath="/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Builds/MacOSX/1.9.0/include&#10;/Users/hayden/Desktop/Programming/JUCEProjects/Hex/Source/tuning-library/include"
+              companyName="yourcompany" companyCopyright="HexCopyright" companyWebsite="https://hsetlik.github.io/portfolio"
+              companyEmail="haydensetlik@gmail.com" pluginManufacturerCode="Stlk"
+              pluginCode="Hexf" pluginFormats="buildAU,buildVST3">
   <MAINGROUP id="ahJN9s" name="Hex">
     <GROUP id="{734444FD-2777-1503-F6CB-62ACCACDD09C}" name="Fonts">
       <FILE id="JYGVYn" name="Roboto-LightItalic.ttf" compile="0" resource="1"
@@ -85,7 +87,7 @@
     <XCODE_MAC targetFolder="Builds/MacOSX" extraCompilerFlags="-I${PROJECT_DIR}/1.9.0/include&#10;-I${PROJECT_DIR}/tuning-library/include"
                extraLinkerFlags="-L${PROJECT_DIR}/1.9.0/lib" externalLibraries="iir">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug" targetName="Hex"/>
+        <CONFIGURATION isDebug="1" name="Debug" targetName="Hex" osxArchitecture="Native"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="Hex"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
