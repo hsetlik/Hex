@@ -51,5 +51,12 @@ The oscilloscope sits below the modulation grid and shows a real-time representa
 
 ### Filter
 
-The multi-mode filter has controls for cutoff, resonance, envelope depth, and the wet/dry mix. Like the operators, it has a set of sliders and a graph to control the DAHDSR envelope.
+The multi-mode filter has controls for cutoff, resonance, envelope depth, and the wet/dry mix. Like the operators, it has a set of sliders and a graph to control the DAHDSR envelope. The filter cutoff can also be modulated by any one of the four low frequency oscillators.
 
+### Low Frequency Oscillators (LFOs)
+
+Below the operator panels on the left side of the screen are the four LFO control panels. Like the operators, a set of buttons switch between the LFO's five possible wave shapes. Two knobs control the depth of modulation and the LFO's frequency. A "sync" button toggles between frequency control in hertz and frequecy control based on the tempo provided by the plugin host software.
+
+## Design process and programming solutions
+
+Several design considerations and
