@@ -59,4 +59,29 @@ Below the operator panels on the left side of the screen are the four LFO contro
 
 ## Design process and programming solutions
 
-Several design considerations and
+Several design considerations and implementation questions went into the development of Hex. These are a few I thought were worth mentioning.
+
+### Oscillator band-limiting
+
+The use of wave shapes other than the pure sine means that we have to consider the upper-frequency harmonic content of the wave. The waves are produced using a wavetable technique, where each sample value is determined by the value at some phase of an array representing the wave shape. When that wave shape has upper harmonics, they too get reproduced relative to the fundamental pitch. When those upper harmonic frequencies get too high, we enounter aliasing. Aliasing occurs when a wavetable is played back at a frequency high enough that some of its harmonics exceed the [Nyquist frequency](https://en.wikipedia.org/wiki/Nyquist_frequency)- which is equal to one half the oscillator's sample rate. For example, if we have a standard 44.1kHz sample rate, any harmonics above 22,050Hz will be reproduced *below* the fundamental frequency rather than above it. This creates the unpleasant distortion we call aliasing.
+
+To combat this, we need to ensure that, at any frequency, no oscillator has harmonics above the Nyquist frequency. Each oscillator has a a set of 10 wavetables; each of which has had all its harmonics above some frequency removed.
+The process of generating these tables is the core of the bandlimiting algorithm. Each table goes through this process with its own maximum frequecy.
+
+1. The original wavetable is represented as an array of complex numbers. The imaginary part of the array stores the wave data, while the real part values are all set to zero to start.
+2. The complex number arrays are put into a Fast Fourier Transform algorithm to convert the wave from the time domain to the frequency domain.
+3. The array members which represent harmonics above the wavetable's designated maximum frequency are set to zero.
+4. The complex number arrays are again put into the FFT algorithm to convert the frequency domain representation of the wave back into a discrete time representation.
+5. The maximum frequency is divided by two and the next table is created.
+
+Based on its spectral content, each table has a designated frequency range. The function to get the next sample from the oscillator requires a frequency parameter which is needed to determine which table should be used to calculate the output sample.
+
+### Real-time oscilloscope
+
+The oscilloscope in the lower right part of the display is designed to continuously display the waveform at such a scale that individual wave cycles are visible. The OpenGL uniforms which allow the shaders to render the audio data are of a fixed size. The uniform is passed values from a ring buffer owned by the `juce::AudioProcessor` instance. This data is passed from the audio processor to the component-side function that calls the OpenGL instance, we use the `std::atomic` template within a `GraphParamSet` class instance owned by the AudioProcessor. The parameter set contains data for
+
+1. The last level of each operator for each synth voice
+2. The index of the last triggered synth voice
+3. The number of voices currently active
+
+The function which writes data to the oscilloscope shaders takes a pointer to a `GraphParamSet` and a pointer to the ring buffer.
