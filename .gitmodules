@@ -1,3 +1,9 @@
 [submodule "tuning-library"]
 	path = tuning-library
 	url = https://github.com/hsetlik/tuning-library.git
+[submodule "JUCE"]
+	path = JUCE
+	url = https://github.com/juce-framework/JUCE.git
+[submodule "FRUT"]
+	path = FRUT
+	url = https://github.com/McMartin/FRUT.git
