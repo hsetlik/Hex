@@ -12,6 +12,7 @@
 #include <JuceHeader.h>
 #include <regex>
 #define SEMITONE_RATIO 1.05946309436f
+#define PI_CONST 3.14159265358979323846264338327950288f
 namespace MathUtil
 {
     inline float fLerp (float lower, float upper, float t)
@@ -81,8 +82,8 @@ namespace MathUtil
             LE *= 2;                          // (LE = 2^L)
             Ur = 1.0f;
             Ui = 0.0f;
-            Wr = cos(M_PI/(float)LE1);
-            Wi = -sin(M_PI/(float)LE1); // Cooley, Lewis, and Welch have "+" here
+            Wr = cos(PI_CONST/(float)LE1);
+            Wi = -sin(PI_CONST/(float)LE1); // Cooley, Lewis, and Welch have "+" here
             for (j = 1; j <= LE1; j++)
             {
                 for (i = j; i <= N; i += LE)
