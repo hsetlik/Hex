@@ -119,35 +119,35 @@ AntiAliasOsc::AntiAliasOsc (WaveType type) : phase (0.0f), tablesAdded (0)
     createTables (TABLESIZE, fReal, fImag);
 }
 
-void AntiAliasOsc::createTables (int size, float *real, float *imag)
+void AntiAliasOsc::createTables (int tableSize, float *real, float *imag)
 {
     int idx;
     // zero DC offset and Nyquist (set first and last samples of each array to zero, in other words)
     real[0] = imag[0] = 0.0f;
-    real[size >> 1] = imag[size >> 1] = 0.0f;
-    int maxHarmonic = size >> 1;
+    real[tableSize >> 1] = imag[tableSize >> 1] = 0.0f;
+    int maxHarmonic = tableSize >> 1;
     const double minVal = 0.000001f;
     while ((fabs (real[maxHarmonic]) + fabs (imag[maxHarmonic]) < minVal) && maxHarmonic)
         --maxHarmonic;
     float topFreq = (float)(2.0f / 3.0f / maxHarmonic); //note:: topFreq is in units of phase fraction per sample, not Hz
-    float ar[size];
-    float ai[size];
+    float ar[tableSize];
+    float ai[tableSize];
     float scale = 0.0f;
     float lastMinFreq = 0.0f;
     while (maxHarmonic)
     {
         // fill the table in with the needed harmonics
-        for (idx = 0; idx < size; idx++)
+        for (idx = 0; idx < tableSize; idx++)
             ar[idx] = ai[idx] = 0.0f;
         for (idx = 1; idx <= maxHarmonic; idx++)
         {
             ar[idx] = real[idx];
             ai[idx] = imag[idx];
-            ar[size - idx] = real[size - idx];
-            ai[size - idx] = imag[size - idx];
+            ar[tableSize - idx] = real[tableSize - idx];
+            ai[tableSize - idx] = imag[tableSize - idx];
         }
         // make the wavetable
-        scale = makeTable(ar, ai, size, scale, lastMinFreq, topFreq);
+        scale = makeTable(ar, ai, tableSize, scale, lastMinFreq, topFreq);
         lastMinFreq = topFreq;
         topFreq *= 2.0f;
         maxHarmonic >>= 1;
