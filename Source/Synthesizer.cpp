@@ -9,11 +9,10 @@
 */
 
 #include "Synthesizer.h"
-HexVoice::HexVoice (apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, TuningHolder* tuning, int idx) :
+HexVoice::HexVoice (apvts* tree, GraphParamSet* gParams, RingBuffer<float>* buffer, int idx) :
 linkedTree (tree),
 linkedParams (gParams),
 linkedBuffer (buffer),
-linkedTuning (tuning),
 voiceIndex (idx),
 voiceFilter (voiceIndex),
 justKilled (false),
@@ -38,7 +37,7 @@ lastMagnitude (0.0f)
 void HexVoice::startNote (int midiNoteNumber, float velocity, juce::SynthesiserSound *sound, int currentPitchWheelPosition)
 {
     voiceCleared = false;
-    fundamental = linkedTuning->frequencyForMidiNote (midiNoteNumber);
+    fundamental = MathUtil::midiToET (midiNoteNumber);
     linkedParams->lastTriggeredVoice.store (voiceIndex);
     ++linkedParams->voicesInUse;
     linkedParams->voiceFundamentals[voiceIndex].store ((float)fundamental);
@@ -143,14 +142,13 @@ void HexVoice::tickModulation()
 HexSynth::HexSynth (apvts* tree) :
 linkedTree (tree),
 graphBuffer (2, 256 * 10),
-tuning (ScaleGenerator::getDefaultScale()),
 magnitude (0.0f),
 lastMagnitude (0.0f),
 numJumps (0)
 {
     for (int i = 0; i < NUM_VOICES; ++i)
     {
-        addVoice (new HexVoice (linkedTree, &graphParams, &graphBuffer, &tuning, i));
+        addVoice (new HexVoice (linkedTree, &graphParams, &graphBuffer, i));
         auto* voice = dynamic_cast<HexVoice*> (voices.getLast());
         hexVoices.push_back (voice);
     }
@@ -575,33 +573,4 @@ void HexSynth::updateLfosForBlock()
         setTarget (i, target);
         setLfoWave (i, wave);
     }
-}
-//=====================================================================================================================
-
-tng::Scale ScaleGenerator::getDefaultScale()
-{
-    auto fldr = juce::File::getSpecialLocation (juce::File::userApplicationDataDirectory).getChildFile ("HexTuningData");
-    if (!fldr.exists())
-    {
-        fldr.createDirectory();
-        printf ("Tuning Directory Created\n");
-    }
-    else
-        printf ("Tuning directory found\n");
-    auto scl = fldr.getChildFile ("DefaultTuning.scl");
-    std::string data;
-    
-    if(scl.existsAsFile())
-    {
-        data = scl.loadFileAsString().toStdString();
-        printf ("Tuning File Exists\n");
-        return tng::parseSCLData(data);
-    }
-    else
-    {
-        printf ("No tuning file!\n");
-        return tng::evenTemperament12NoteScale();
-    }
-    
-   
 }

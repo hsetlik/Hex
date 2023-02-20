@@ -11,7 +11,6 @@
 #pragma once
 #include <JuceHeader.h>
 #include <regex>
-#include "tuning-library/include/Tunings.h"
 #define SEMITONE_RATIO 1.05946309436f
 namespace MathUtil
 {

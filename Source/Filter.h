@@ -9,7 +9,6 @@
 */
 
 #pragma once
-//#include "1.9.0/include/Iir.h"
 #include <JuceHeader.h>
 #include "DAHDSR.h"
 #include "MathUtil.h"
