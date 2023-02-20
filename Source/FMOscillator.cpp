@@ -130,8 +130,8 @@ void AntiAliasOsc::createTables (int tableSize, float *real, float *imag)
     while ((fabs (real[maxHarmonic]) + fabs (imag[maxHarmonic]) < minVal) && maxHarmonic)
         --maxHarmonic;
     float topFreq = (float)(2.0f / 3.0f / maxHarmonic); //note:: topFreq is in units of phase fraction per sample, not Hz
-    float ar[tableSize];
-    float ai[tableSize];
+    float* ar = new float[tableSize];
+    float* ai = new float[tableSize];
     float scale = 0.0f;
     float lastMinFreq = 0.0f;
     while (maxHarmonic)
@@ -152,6 +152,8 @@ void AntiAliasOsc::createTables (int tableSize, float *real, float *imag)
         topFreq *= 2.0f;
         maxHarmonic >>= 1;
     }
+    delete ar;
+    delete ai;
 }
 
 float AntiAliasOsc::makeTable (float *waveReal, float *waveImag, int numSamples, float scale, float bottomFreq, float topFreq)
