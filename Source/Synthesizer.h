@@ -86,7 +86,7 @@ public:
     {
         return dynamic_cast<HexSound*> (sound) != nullptr;
     }
-    void setSampleRate (double newRate)
+    void setSampleRate (double newRate, int blockSize=512)
     {
         setCurrentPlaybackSampleRate (newRate);
         voiceFilter.setSampleRate (newRate);
@@ -194,12 +194,12 @@ public:
     {
     }
     apvts* const linkedTree;
-    void setSampleRate (double newRate)
+    void setSampleRate (double newRate, int blockSize=512)
     {
         setCurrentPlaybackSampleRate (newRate);
         for (auto voice : hexVoices)
         {
-            voice->setSampleRate (newRate);
+            voice->setSampleRate (newRate, blockSize);
         }
     }
     /*

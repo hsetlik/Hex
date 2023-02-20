@@ -9,17 +9,17 @@
 */
 
 #pragma once
-#include "1.9.0/include/Iir.h"
+//#include "1.9.0/include/Iir.h"
 #include <JuceHeader.h>
 #include "DAHDSR.h"
 #include "MathUtil.h"
 #define CUTOFF_MIN 20.0f
-#define CUTOFF_MAX 8000.0f
-#define CUTOFF_DEFAULT 2500.0f
-#define CUTOFF_CENTER 600.0f
+#define CUTOFF_MAX 20000.0f
+#define CUTOFF_DEFAULT 4000.0f
+#define CUTOFF_CENTER 100.0f
 
 #define RESONANCE_MIN 0.1f
-#define RESONANCE_MAX 20.0f
+#define RESONANCE_MAX 35.0f
 #define RESONANCE_DEFAULT 1.0f
 #define RESONANCE_CENTER 5.0f
 enum FilterType
@@ -35,7 +35,8 @@ public:
     FilterCore() :
     sampleRate (44100.0f),
     cutoff (2500.0f),
-    resonance (1.0f)
+    resonance (1.0f),
+    blockSize (512)
     {
         setup();
     }
@@ -58,15 +59,17 @@ public:
         cutoff = value;
         setup();
     }
-    virtual void setSampleRate (double rate)
+    virtual void setSampleRate (double rate, int block=512)
     {
         sampleRate = rate;
+        blockSize = block;
         setup();
     }
 protected:
     double sampleRate;
     float cutoff;
     float resonance;
+    int blockSize;
 };
 
 class LibLowPass : public FilterCore
@@ -74,18 +77,36 @@ class LibLowPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff);
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::lowpass);
     }
     void setup (float modValue) override
     {
-        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff + ((CUTOFF_MAX - cutoff) * modValue));
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::lowpass);
     }
     float process (float input) override
     {
-        return filter.filter (input);
+        return jFilter.processSample (0, input);
     }
 private:
-    Iir::RBJ::LowPass filter;
+    //Iir::RBJ::LowPass filter;
+    juce::dsp::StateVariableTPTFilter<float> jFilter;
+
 };
 
 class LibHiPass : public FilterCore
@@ -93,18 +114,35 @@ class LibHiPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff);
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::highpass);
     }
     float process (float input) override
     {
-        return filter.filter (input);
+        return jFilter.processSample (0, input);
     }
     void setup (float modValue) override
     {
-        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff + ((CUTOFF_MAX - cutoff) * modValue));
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::highpass);
     }
 private:
-    Iir::RBJ::HighPass filter;
+    //Iir::RBJ::HighPass filter;
+    juce::dsp::StateVariableTPTFilter<float> jFilter;
 };
 
 class LibBandPass : public FilterCore
@@ -112,18 +150,37 @@ class LibBandPass : public FilterCore
 public:
     void setup() override
     {
-        filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff, (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff);
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::bandpass);
     }
+    
     void setup (float modValue) override
     {
-        filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        //filter.setup (sampleRate, (double)cutoff + ((CUTOFF_MAX - cutoff) * modValue), (double)resonance);
+        juce::dsp::ProcessSpec spec;
+        spec.sampleRate = sampleRate;
+        spec.maximumBlockSize = blockSize;
+        spec.numChannels = 1;
+        jFilter.prepare (spec);
+        jFilter.setCutoffFrequency (cutoff + ((CUTOFF_MAX - cutoff) * modValue));
+        jFilter.setResonance (resonance);
+        jFilter.setType (juce::dsp::StateVariableTPTFilterType::bandpass);
     }
+    
     float process (float input) override
     {
-        return filter.filter (input);
+        return jFilter.processSample (0, input);
     }
 private:
-    Iir::RBJ::BandPass1 filter;
+    //Iir::RBJ::BandPass1 filter;
+    juce::dsp::StateVariableTPTFilter<float> jFilter;
 };
 
 class StereoFilter :
@@ -131,7 +188,7 @@ public juce::AsyncUpdater
 {
 public:
     StereoFilter (int voiceIdx);
-    void setSampleRate (double rate)
+    void setSampleRate (double rate, int blockSize=512)
     {
         rateVal = rate;
         envelope.setSampleRate (rate);
