@@ -32,9 +32,6 @@ jucer_project_settings(
   PROJECT_TYPE "Audio Plug-in"
   BUNDLE_IDENTIFIER "com.yourcompany.Hex"
   CXX_LANGUAGE_STANDARD "C++17"
-  HEADER_SEARCH_PATHS
-    "${CMAKE_CURRENT_LIST_DIR}/Source/1.9.0/include"
-    "${CMAKE_CURRENT_LIST_DIR}/Source/tuning-library/include"
 )
 
 jucer_audio_plugin_settings(
@@ -223,6 +220,16 @@ jucer_project_module(
 )
 
 jucer_project_module(
+  juce_dsp
+  PATH "JUCE/modules"
+  # JUCE_ASSERTION_FIRFILTER
+  # JUCE_DSP_USE_INTEL_MKL
+  # JUCE_DSP_USE_SHARED_FFTW
+  # JUCE_DSP_USE_STATIC_FFTW
+  # JUCE_DSP_ENABLE_SNAP_TO_ZERO
+)
+
+jucer_project_module(
   juce_events
   PATH "JUCE/modules"
   # JUCE_EXECUTE_APP_SUSPEND_ON_BACKGROUND_TASK
@@ -263,15 +270,7 @@ jucer_project_module(
 
 jucer_export_target(
   "Xcode (macOS)"
-  TARGET_PROJECT_FOLDER "Builds/MacOSX" # used by HEADER_SEARCH_PATHS
   # VST3_SDK_FOLDER
-  EXTRA_COMPILER_FLAGS
-    "-I${PROJECT_DIR}/1.9.0/include"
-    "-I${PROJECT_DIR}/tuning-library/include"
-  EXTRA_LINKER_FLAGS
-    "-L${PROJECT_DIR}/Source/1.9.0/lib"
-  EXTERNAL_LIBRARIES_TO_LINK
-    "iir"
 )
 
 jucer_export_target_configuration(
@@ -287,6 +286,23 @@ jucer_export_target_configuration(
   NAME "Release"
   DEBUG_MODE OFF
   BINARY_NAME "Hex"
+)
+
+jucer_export_target(
+  "Visual Studio 2019"
+  # VST3_SDK_FOLDER
+)
+
+jucer_export_target_configuration(
+  "Visual Studio 2019"
+  NAME "Debug"
+  DEBUG_MODE ON
+)
+
+jucer_export_target_configuration(
+  "Visual Studio 2019"
+  NAME "Release"
+  DEBUG_MODE OFF
 )
 
 jucer_project_end()
