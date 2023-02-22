@@ -28,6 +28,7 @@ private:
     HexAudioProcessor& audioProcessor;
     
     HexEditor mainEditor;
+    juce::TooltipWindow tWindow;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HexAudioProcessorEditor)
 };

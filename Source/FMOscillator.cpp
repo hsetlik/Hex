@@ -130,8 +130,8 @@ void AntiAliasOsc::createTables (int tableSize, float *real, float *imag)
     while ((fabs (real[maxHarmonic]) + fabs (imag[maxHarmonic]) < minVal) && maxHarmonic)
         --maxHarmonic;
     float topFreq = (float)(2.0f / 3.0f / maxHarmonic); //note:: topFreq is in units of phase fraction per sample, not Hz
-    float* ar = new float[tableSize];
-    float* ai = new float[tableSize];
+    std::vector<float> ar (tableSize);
+    std::vector<float> ai (tableSize);
     float scale = 0.0f;
     float lastMinFreq = 0.0f;
     while (maxHarmonic)
@@ -147,13 +147,11 @@ void AntiAliasOsc::createTables (int tableSize, float *real, float *imag)
             ai[tableSize - idx] = imag[tableSize - idx];
         }
         // make the wavetable
-        scale = makeTable(ar, ai, tableSize, scale, lastMinFreq, topFreq);
+        scale = makeTable(ar.data(), ai.data(), tableSize, scale, lastMinFreq, topFreq);
         lastMinFreq = topFreq;
         topFreq *= 2.0f;
         maxHarmonic >>= 1;
     }
-    delete ar;
-    delete ai;
 }
 
 float AntiAliasOsc::makeTable (float *waveReal, float *waveImag, int numSamples, float scale, float bottomFreq, float topFreq)

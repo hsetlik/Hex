@@ -23,14 +23,14 @@ jucer_project_begin(
 jucer_project_settings(
   PROJECT_NAME "Hex"
   PROJECT_VERSION "1.0.0"
-  COMPANY_NAME "yourcompany"
+  COMPANY_NAME "SetlikAudio"
   COMPANY_COPYRIGHT "HexCopyright"
   COMPANY_WEBSITE "https://hsetlik.github.io/portfolio"
   COMPANY_EMAIL "haydensetlik@gmail.com"
   ADD_USING_NAMESPACE_JUCE_TO_JUCE_HEADER OFF
-  DISPLAY_THE_JUCE_SPLASH_SCREEN ON # Required for closed source applications without an Indie or Pro JUCE license
+  DISPLAY_THE_JUCE_SPLASH_SCREEN OFF # Required for closed source applications without an Indie or Pro JUCE license
   PROJECT_TYPE "Audio Plug-in"
-  BUNDLE_IDENTIFIER "com.yourcompany.Hex"
+  BUNDLE_IDENTIFIER "com.SetlikAudio.Hex"
   CXX_LANGUAGE_STANDARD "C++17"
 )
 
@@ -43,11 +43,11 @@ jucer_audio_plugin_settings(
     "Plugin MIDI Input"
   PLUGIN_NAME "Hex"
   PLUGIN_DESCRIPTION "Hex"
-  PLUGIN_MANUFACTURER "yourcompany"
+  PLUGIN_MANUFACTURER "SetlikAudio"
   PLUGIN_MANUFACTURER_CODE "Stlk"
   PLUGIN_CODE "Hexf"
   # PLUGIN_CHANNEL_CONFIGURATIONS
-  PLUGIN_AAX_IDENTIFIER "com.yourcompany.Hex"
+  PLUGIN_AAX_IDENTIFIER "com.SetlikAudio.Hex"
   PLUGIN_AU_EXPORT_PREFIX "HexAU"
   PLUGIN_AU_MAIN_TYPE "kAudioUnitType_MusicDevice"
   PLUGIN_VST_NUM_MIDI_INPUTS "16"
