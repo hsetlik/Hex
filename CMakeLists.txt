@@ -22,7 +22,7 @@ jucer_project_begin(
 
 jucer_project_settings(
   PROJECT_NAME "Hex"
-  PROJECT_VERSION "1.0.0"
+  PROJECT_VERSION "1.0.1"
   COMPANY_NAME "SetlikAudio"
   COMPANY_COPYRIGHT "HexCopyright"
   COMPANY_WEBSITE "https://hsetlik.github.io/portfolio"

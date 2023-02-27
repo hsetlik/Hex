@@ -40,31 +40,37 @@ void EnvelopeComponent::DAHDSRGraph::sliderValueChanged (juce::Slider *slider)
     if (slider == pDelay)
     {
         delayVal = slider->getValue();
+        slider->setTooltip (juce::String (delayVal));
         needsRepaint = true;
     }
     else if (slider == pAttack)
     {
         attackVal = slider->getValue();
+        slider->setTooltip (juce::String (attackVal));
         needsRepaint = true;
     }
     else if (slider == pHold)
     {
         holdVal = slider->getValue();
+        slider->setTooltip (juce::String (holdVal));
         needsRepaint = true;
     }
     else if (slider == pDecay)
     {
         decayVal = slider->getValue();
+        slider->setTooltip (juce::String (decayVal));
         needsRepaint = true;
     }
     else if (slider == pSustain)
     {
         sustainVal = slider->getValue();
+        slider->setTooltip (juce::String (sustainVal));
         needsRepaint = true;
     }
     else if (slider == pRelease)
     {
         releaseVal = slider->getValue();
+        slider->setTooltip (juce::String (releaseVal));
         needsRepaint = true;
     }
 }
@@ -238,12 +244,31 @@ void EnvelopeComponent::resized()
     graph.setBounds (upper);
     //auto lBounds = bounds.removeFromBottom (bounds.getHeight() / 8);
     dX = bounds.getWidth() / 6;
-    delaySlider.setBounds (bounds.removeFromLeft (dX));
-    attackSlider.setBounds (bounds.removeFromLeft (dX));
-    holdSlider.setBounds (bounds.removeFromLeft (dX));
-    decaySlider.setBounds (bounds.removeFromLeft (dX));
-    sustainSlider.setBounds (bounds.removeFromLeft (dX));
-    releaseSlider.setBounds (bounds);
+    auto labelHeight = bounds.getHeight() / 8;
+
+    auto delBounds = bounds.removeFromLeft (dX);
+    delayName.setBounds (delBounds.removeFromBottom (labelHeight));
+    delaySlider.setBounds (delBounds);
+    
+    auto aBounds = bounds.removeFromLeft (dX);
+    attackName.setBounds (aBounds.removeFromBottom (labelHeight));
+    attackSlider.setBounds (aBounds);
+
+    auto hBounds = bounds.removeFromLeft (dX);
+    holdName.setBounds (hBounds.removeFromBottom (labelHeight));
+    holdSlider.setBounds (hBounds);
+
+    auto dBounds = bounds.removeFromLeft (dX);
+    decayName.setBounds (dBounds.removeFromBottom (labelHeight));
+    decaySlider.setBounds (dBounds);
+
+    auto sBounds = bounds.removeFromLeft (dX);
+    sustainName.setBounds (sBounds.removeFromBottom (labelHeight));
+    sustainSlider.setBounds (sBounds);
+
+    auto rBounds = bounds;
+    releaseName.setBounds (rBounds.removeFromBottom (labelHeight));
+    releaseSlider.setBounds (rBounds);
 }
 //==============================================================================
 void SineButton::setSymbol()

@@ -1,6 +1,10 @@
 # Hex- FM Synthesis for the Plugin Era
 
-## What is FM synthesis?
+## Download for free
+
+Hex is available in VST3 and AU versions for macOS and VST3 for Windows. Just pick the relevant download under the "releases" tab on the right of this page and the installer will set up Hex for your system.
+
+## Background- What is FM synthesis?
 
 [Frequency modulation synthesis](https://en.wikipedia.org/wiki/Frequency_modulation_synthesis) is an audio synthesis technique first developed by John Chowning in the 1960s at Stanford. The technology struggled to garner much interest in the United States until Yamaha licensed Chowning's invention in 1973.
 Yamaha's investment in FM would pay off ten years later when 1983's DX7 became one of the most iconic instruments of the decade.
