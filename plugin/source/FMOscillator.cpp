@@ -9,6 +9,7 @@
 */
 
 #include "FMOscillator.h"
+#include "MathUtil.h"
 
 std::array<float, TABLESIZE> WTArray::makeArray (WaveType type)
 {

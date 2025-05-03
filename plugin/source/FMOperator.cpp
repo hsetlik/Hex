@@ -9,6 +9,7 @@
 */
 
 #include "FMOperator.h"
+#include "MathUtil.h"
 
 FMOperator::FMOperator (int opIndex) :
 audible (false),
