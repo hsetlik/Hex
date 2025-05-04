@@ -36,10 +36,10 @@ protected:
   double sampleRate;
 };
 
-class WaveLfo : public LfoBase {
+class WaveLfo {
 public:
   WaveLfo(WaveType type) : data(WaveArray::arrayForType(type)), phase(0.0f) {}
-  float tick() override {
+  float tick() {
     phaseDelta = rate / (float)sampleRate;
     phase += phaseDelta;
     if (phase > 1.0f)
@@ -50,8 +50,12 @@ public:
     return MathUtil::fLerp(data[(size_t)lowerIdx], data[(size_t)upperIdx],
                            skew);
   }
+  void setRate(float speedHz) { rate = speedHz; }
+  void setSampleRate(double sr) { sampleRate = sr; }
 
 private:
+  float rate;
+  double sampleRate;
   LfoArray data;
   float phase;
   float phaseDelta;

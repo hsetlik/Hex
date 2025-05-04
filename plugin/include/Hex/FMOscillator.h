@@ -21,10 +21,9 @@ struct Wavetable {
   float maxFreq;
 };
 
-class WTArray {
-public:
-  static std::array<float, TABLESIZE> makeArray(WaveType type);
-};
+namespace WTArray {
+std::array<float, TABLESIZE> makeArray(WaveType type);
+}
 
 class OscBase {
 public:
@@ -44,12 +43,18 @@ protected:
   double nyquist;
 };
 
-class SineOsc : public OscBase {
+class SineOsc {
 public:
   SineOsc();
-  float getSample(double hz) override;
+  float getSample(double hz);
+  void setSampleRate(double rate) {
+    sampleRate = rate;
+    nyquist = sampleRate / 2.0f;
+  }
 
 private:
+  double sampleRate;
+  double nyquist;
   float phase;
   float phaseDelta;
   float skew;
@@ -58,10 +63,10 @@ private:
   float sineData[TABLESIZE];
 };
 
-class AntiAliasOsc : public OscBase {
+class AntiAliasOsc {
 public:
-  AntiAliasOsc(WaveType type);
-  float getSample(double hz) override;
+  AntiAliasOsc(WaveType type = WaveType::Square);
+  float getSample(double hz);
   void createTables(int size, float* real, float* imag);
   float makeTable(float* waveReal,
                   float* waveImag,
@@ -70,8 +75,14 @@ public:
                   float bottomFreq,
                   float topFreq);
   Wavetable* tableForHz(double hz);
+  void setSampleRate(double rate) {
+    sampleRate = rate;
+    nyquist = sampleRate / 2.0f;
+  }
 
 private:
+  double sampleRate = 44100.0;
+  double nyquist = sampleRate / 2.0;
   juce::OwnedArray<Wavetable> tables;
   float phase;
   float phaseDelta;
@@ -82,24 +93,37 @@ private:
   float skew;
 };
 
-class NoiseOsc : public OscBase {
+class NoiseOsc {
 public:
   NoiseOsc() : rGen(2341) {}
-  float getSample(double) override { return (rGen.nextFloat() * 2.0f) - 1.0f; }
+  float getSample(double) { return (rGen.nextFloat() * 2.0f) - 1.0f; }
+  void setSampleRate(double rate) {
+    sampleRate = rate;
+    nyquist = sampleRate / 2.0f;
+  }
 
 private:
+  double sampleRate = 44100.0;
+  double nyquist = sampleRate / 2.0;
+
   juce::Random rGen;
 };
 
 class HexOsc : public juce::AsyncUpdater {
+private:
+  enum OscModeE { mSine, mWave, mNoise };
+  OscModeE oMode = OscModeE::mSine;
+
 public:
   HexOsc();
   void handleAsyncUpdate() override;
   void setType(WaveType type);
-  void setSampleRate(double rate) { pOsc->setSampleRate(rate); }
-  float getSample(double hz) { return pOsc->getSample(hz); }
+  void setSampleRate(double rate);
+  float getSample(double hz);
 
 private:
-  std::unique_ptr<OscBase> pOsc;
   WaveType currentType;
+  SineOsc sineOsc;
+  std::unique_ptr<AntiAliasOsc> waveOsc;
+  NoiseOsc nOsc;
 };

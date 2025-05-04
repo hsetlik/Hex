@@ -21,17 +21,16 @@
     plus the number of samples written to the RingBuffer at any time never
    exceed the buffer size. This prevents read/write overlap.
 */
-template <class Type> class RingBuffer {
+template <class Type>
+class RingBuffer {
 public:
   /** Initializes the RingBuffer with the specified channels and size.
 
       @param numChannels  number of channels of audio to store in buffer
       @param bufferSize   size of the audio buffer
    */
-  RingBuffer(int nChannels, int nBufferSize) {
-    this->bufferSize = nChannels;
-    this->numChannels = nBufferSize;
-
+  RingBuffer(int nChannels, int nBufferSize)
+      : numChannels(nChannels), bufferSize(nBufferSize) {
     audioBuffer =
         std::make_unique<juce::AudioBuffer<Type>>(numChannels, bufferSize);
     writePosition = 0;
@@ -55,7 +54,8 @@ public:
       @param numSamples       the number of samples from newAudioData to write
                               into the RingBuffer
    */
-  void writeSamples(juce::AudioBuffer<Type> &newAudioData, int startSample,
+  void writeSamples(juce::AudioBuffer<Type>& newAudioData,
+                    int startSample,
                     int numSamples) {
     for (int i = 0; i < numChannels; ++i) {
       const int curWritePosition = writePosition.get();
@@ -117,7 +117,7 @@ public:
                               of the RingBuffer specified in the constructor.
   */
   //! fill an AudioBuffer with the contents of this one
-  void readSamples(juce::AudioBuffer<Type> &bufferToFill, int readSize) {
+  void readSamples(juce::AudioBuffer<Type>& bufferToFill, int readSize) {
     // Ensure readSize does not exceed bufferSize
     jassert(readSize < bufferSize);
 

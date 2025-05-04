@@ -501,16 +501,19 @@ void OperatorComponent::buttonClicked(juce::Button* b) {
 
 void OperatorComponent::resized() {
   auto fBounds = getLocalBounds().toFloat();
+  fBounds = fBounds.reduced(4.0f);
+  const float x0 = fBounds.getX();
+  const float y0 = fBounds.getY();
   auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2.0f);
   envComponent.setBounds(envBounds.toNearestInt());
   auto dX = fBounds.getWidth() / 25.0f;
   auto dY = fBounds.getHeight() / 16.0f;
-  frect_t ratioBox = {dX, dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t modBounds = {dX * 6.0f, dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t levelBounds = {dX * 11.0f, dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t panBounds = {dX * 16.0f, dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t outBounds = {dX * 16.0f, dX, dX * 6.0f, dX * 2.0f};
-  frect_t selectBounds = {dX, dY * 12.0f, dX * 16.0f, dY * 3.0f};
+  frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
+  frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
+  frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
+  frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
+  frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
+  frect_t selectBounds = {x0 + dX, y0 + dY * 12.0f, dX * 16.0f, dY * 3.0f};
 
   ratioSlider.setBounds(ratioBox.toNearestInt());
   modSlider.setBounds(modBounds.toNearestInt());
