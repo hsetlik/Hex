@@ -14,20 +14,6 @@ juce_add_binary_data(
   SOURCES
   "${FONTFILES}")
 
-set(SHADERFILES
-"${CMAKE_CURRENT_LIST_DIR}/shaders/BasicFragment.glsl"
-"${CMAKE_CURRENT_LIST_DIR}/shaders/BasicVertex.glsl"
-)
-
-
-juce_add_binary_data(shaderBinaries
-HEADER_NAME
-"Shaders.h"
-NAMESPACE
-"ShaderData"
-SOURCES
-"${SHADERFILES}")
-
 set(INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/include/Hex")
 
 juce_add_plugin(${PROJECT_NAME}
@@ -84,8 +70,8 @@ PRIVATE
   source/SymbolButton.cpp
   ${INCLUDE_DIR}/Synthesizer.h
   source/Synthesizer.cpp
-  ${INCLUDE_DIR}/WaveGraphComponent.h
-  source/WaveGraphComponent.cpp
+  ${INCLUDE_DIR}/BitmapWaveGraph.h
+  source/BitmapWaveGraph.cpp
 )
 
 
@@ -102,12 +88,10 @@ target_link_libraries(${PROJECT_NAME}
         juce::juce_audio_utils
     PUBLIC
     fontBinaries
-    shaderBinaries
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
         juce::juce_dsp
-        juce::juce_opengl
 )
 
 target_compile_definitions(${PROJECT_NAME}

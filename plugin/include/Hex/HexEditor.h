@@ -9,9 +9,9 @@
 */
 
 #pragma once
+#include "BitmapWaveGraph.h"
 #include "OperatorComponent.h"
 #include "ModulationGrid.h"
-#include "WaveGraphComponent.h"
 #include "PatchBrowser.h"
 #include "LfoComponent.h"
 
@@ -51,7 +51,7 @@ public:
   HexEditor(HexAudioProcessor* proc,
             apvts* tree,
             GraphParamSet* params,
-            RingBuffer<GLfloat>* buffer);
+            RingBuffer<float>* buffer);
   apvts* const linkedTree;
   void resized() override;
   void paint(juce::Graphics& g) override;
@@ -60,7 +60,7 @@ private:
   juce::OwnedArray<OperatorComponent> opComponents;
   juce::OwnedArray<LfoComponent> lfoComponents;
   ModulationGrid modGrid;
-  WaveGraph graph;
+  BitmapWaveGraph graph;
   FilterPanel fPanel;
   PatchLoader loader;
   PatchDialogBox saveDialog;
