@@ -11,7 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #define TABLES_PER_FRAME 10
-#define TABLESIZE 1024
+#define TABLESIZE 2048
 
 enum WaveType { Sine, Square, Saw, Tri, Noise };
 
@@ -24,24 +24,6 @@ struct Wavetable {
 namespace WTArray {
 std::array<float, TABLESIZE> makeArray(WaveType type);
 }
-
-class OscBase {
-public:
-  OscBase() : sampleRate(44100.0f), nyquist(sampleRate / 2.0f) {}
-  virtual ~OscBase() {}
-  virtual void setSampleRate(double rate) {
-    sampleRate = rate;
-    nyquist = sampleRate / 2.0f;
-  }
-  virtual float getSample(double hz) {
-    juce::ignoreUnused(hz);
-    return 0.0f;
-  }
-
-protected:
-  double sampleRate;
-  double nyquist;
-};
 
 class SineOsc {
 public:

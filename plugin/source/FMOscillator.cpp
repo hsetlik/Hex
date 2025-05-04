@@ -74,13 +74,9 @@ float SineOsc::getSample(double hz) {
   if (hz < 10.0f)
     hz = 10.0f;
   phaseDelta = (float)(hz / sampleRate);
-  phase += phaseDelta;
-  if (phase >= 1.0f)
-    phase -= 1.0f;
-  lowerIdx = (int)(phase * (float)(TABLESIZE - 1));
-  skew = (phase * (float)(TABLESIZE - 1)) - (float)lowerIdx;
-  upperIdx = (lowerIdx == TABLESIZE - 1) ? 0 : lowerIdx + 1;
-  return MathUtil::fLerp(sineData[lowerIdx], sineData[upperIdx], skew);
+  phase = fmod(phase + phaseDelta, 1.0f);
+  auto idx = (size_t)(phase * (float)(TABLESIZE - 1));
+  return sineData[idx];
 }
 //==============================================================================
 AntiAliasOsc::AntiAliasOsc(WaveType type) : phase(0.0f), tablesAdded(0) {
@@ -196,16 +192,10 @@ float AntiAliasOsc::getSample(double hz) {
   if (hz < 10.0f)
     hz = 10.0f;
   phaseDelta = (float)(hz / sampleRate);
-  phase += phaseDelta;
-  if (phase > 1.0f)
-    phase -= 1.0f;
+  phase = std::fmod(phase + phaseDelta, 1.0f);
   auto table = tableForHz(hz);
   bottomIndex = (int)(phase * (float)(TABLESIZE - 1));
-  skew = (phase * TABLESIZE) - (float)bottomIndex;
-  bSample = table->table[bottomIndex];
-  tSample = (bottomIndex == TABLESIZE - 1) ? table->table[0]
-                                           : table->table[bottomIndex + 1];
-  return MathUtil::fLerp(bSample, tSample, skew);
+  return table->table[bottomIndex];
 }
 //==============================================================================================
 HexOsc::HexOsc()
