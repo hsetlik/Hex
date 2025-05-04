@@ -64,10 +64,10 @@ private:
   float skew;
 };
 
-class NoiseLfo : public LfoBase {
+class NoiseLfo {
 public:
   NoiseLfo() : phase(0.0f), rGen(12) { output = rGen.nextFloat(); }
-  float tick() override {
+  float tick() {
     phaseDelta = rate / (float)sampleRate;
     phase += phaseDelta;
     if (phase > 1.0f) {
@@ -76,8 +76,12 @@ public:
     }
     return output;
   }
+  void setRate(float speedHz) { rate = speedHz; }
+  void setSampleRate(double sr) { sampleRate = sr; }
 
 private:
+  float rate;
+  double sampleRate;
   float phase;
   float phaseDelta;
   juce::Random rGen;
@@ -98,6 +102,8 @@ public:
 private:
   WaveType currentType;
   std::unique_ptr<LfoBase> pOsc;
+  std::unique_ptr<WaveLfo> waveOsc;
+  NoiseLfo noiseOsc;
   double sampleRate;
-  float rate;
+  float currentRate = 0.0f;
 };
