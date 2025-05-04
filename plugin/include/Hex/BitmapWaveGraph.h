@@ -15,24 +15,23 @@ class BitmapWaveGraph : public juce::Component,
                         public juce::Timer,
                         private juce::AsyncUpdater {
 private:
-  bool waveDataReady = false;
   RingBuffer<float>* const ringBuf;
   GraphParamSet* const params;
   juce::AudioBuffer<float> readBuffer;
   std::array<float, WAVE_GRAPH_PTS> wavePoints;
+  double fundamental = 0.0f;
+  double sampleRate = 44100.0;
+
   juce::Image imgA;
   juce::Image imgB;
   juce::Image* activeImg = &imgA;
   juce::Image* idleImg = &imgB;
-  double fundamental = 0.0;
-  double sampleRate = 44100.0;
 
   juce::CriticalSection critSection;
+  int firstRisingEdge() const;
+  void computeWavePoints(int zCrossing);
 
   void handleAsyncUpdate() override;
-
-  int firstRisingEdge() const;
-  void computeWavePoints(int zCrossingIdx);
 
 public:
   BitmapWaveGraph(GraphParamSet* gp, RingBuffer<float>* rBuf);

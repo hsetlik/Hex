@@ -29,60 +29,54 @@
 #define PAN_MAX 1.0f
 #define PAN_DEFAULT 0.5f
 
-
 using RoutingGrid = std::array<std::array<bool, NUM_OPERATORS>, NUM_OPERATORS>;
 using apvts = juce::AudioProcessorValueTreeState;
-class FMOperator
-{
+class FMOperator {
 public:
-    FMOperator (int opIndex);
-    void trigger (bool on)
-    {
-        if (on)
-            envelope.triggerOn();
-        else
-            envelope.triggerOff();
-    }
-    void setSampleRate (double rate);
-    //! functions to set private variables
-    void setRatio (float value) {baseRatio = value; }
-    void setModIndex (float value) {modIndex = value; }
-    void setPan (float value) {pan = value; }
-    void setLevel (float value) {level = value; }
-    void setAudible (bool shouldBeAudible) {audible = shouldBeAudible; }
-    void clearOffset() {modOffset = 0.0f; }
-    float getLevel() {return level; }
+  FMOperator(int opIndex);
+  void trigger(bool on) {
+    if (on)
+      envelope.triggerOn();
+    else
+      envelope.triggerOff();
+  }
+  void setSampleRate(double rate);
+  //! functions to set private variables
+  void setRatio(float value) { baseRatio = value; }
+  void setModIndex(float value) { modIndex = value; }
+  void setPan(float value) { pan = value; }
+  void setLevel(float value) { level = value; }
+  void setAudible(bool shouldBeAudible) { audible = shouldBeAudible; }
+  void clearOffset() { modOffset = 0.0f; }
+  float getLevel() const { return level; }
+
 private:
-    bool audible;
+  bool audible;
+
 public:
-    const int index;
-    //! access to variables
-    bool isAudible() {return audible; }
-    float lastMono() {return lastOutMono; }
-    float lastLeft() {return lastOutL; }
-    float lastRight() {return lastOutR; }
-    //! where the magic happens
-    void addModFrom (FMOperator& source)
-    {
-        modOffset += source.lastMono();
-    }
-    void tick (double fundamental);
-    void tick (double fundamental, float modValue);
-    void setWave (int type)
-    {
-        oscillator.setType ((WaveType)type);
-    }
-    HexOsc oscillator;
-    DAHDSR envelope;
+  const int index;
+  //! access to variables
+  bool isAudible() const { return audible; }
+  float lastMono() const { return lastOutMono; }
+  float lastLeft() const { return lastOutL; }
+  float lastRight() const { return lastOutR; }
+  //! where the magic happens
+  void addModFrom(const FMOperator& source) { modOffset += source.lastMono(); }
+  void tick(double fundamental);
+  void tick(double fundamental, float modValue);
+  void setWave(int type) { oscillator.setType((WaveType)type); }
+  HexOsc oscillator;
+  DAHDSR envelope;
+
 private:
-    //! Settable parameters stored down here
-    float modIndex;
-    float baseRatio;
-    float modOffset;
-    float pan;
-    float level;
-    //!  output variables
-    float lastOutMono;
-    float lastOutL;
-    float lastOutR;
+  //! Settable parameters stored down here
+  float modIndex;
+  float baseRatio;
+  float modOffset;
+  float pan;
+  float level;
+  //!  output variables
+  float lastOutMono;
+  float lastOutL;
+  float lastOutR;
 };

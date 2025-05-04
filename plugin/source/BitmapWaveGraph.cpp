@@ -16,7 +16,7 @@ int BitmapWaveGraph::firstRisingEdge() const {
 
 static float s_levelToYPos(float level) {
   static const float y0 = (float)GRAPH_PX_HEIGHT / 2.0f;
-  static const float amplitude = y0 * juce::Decibels::decibelsToGain(-3.0f);
+  static const float amplitude = y0;
   return y0 + (level * amplitude);
 }
 
@@ -24,7 +24,7 @@ void BitmapWaveGraph::computeWavePoints(int zCrossingIdx) {
   static const float y0 = (float)GRAPH_PX_HEIGHT / 2.0f;
   auto* data = readBuffer.getReadPointer(0);
   const double samplesPerCycle = sampleRate / fundamental;
-  const double dSample = (samplesPerCycle * 3.0) / (double)WAVE_GRAPH_PTS;
+  const double dSample = (samplesPerCycle * 2.0) / (double)WAVE_GRAPH_PTS;
   double fSample = (double)zCrossingIdx;
   if (zCrossingIdx != -1) {
     for (int i = 0; i < WAVE_GRAPH_PTS; ++i) {
