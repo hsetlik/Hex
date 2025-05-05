@@ -10,6 +10,7 @@
 
 #include "OperatorComponent.h"
 #include "Color.h"
+#include "Identifiers.h"
 #include "MathUtil.h"
 
 EnvelopeComponent::DAHDSRGraph::DAHDSRGraph(EnvelopeComponent* env)
@@ -189,19 +190,19 @@ EnvelopeComponent::EnvelopeComponent(int idx,
   addAndMakeVisible(&meter);
 
   auto iStr = juce::String(opIndex);
-  auto delayId = "delayParam" + iStr;
-  auto attackId = "attackParam" + iStr;
-  auto holdId = "holdParam" + iStr;
-  auto decayId = "decayParam" + iStr;
-  auto sustainId = "sustainParam" + iStr;
-  auto releaseId = "releaseParam" + iStr;
+  String delayId = ID::envDelay + iStr;
+  String attackId = ID::envAttack + iStr;
+  String holdId = ID::envHold + iStr;
+  String decayId = ID::envDecay + iStr;
+  String sustainId = ID::envSustain + iStr;
+  String releaseId = ID::envRelease + iStr;
   if (isFilter) {
-    delayId = "filterDelayParam";
-    attackId = "filterAttackParam";
-    holdId = "filterHoldParam";
-    decayId = "filterDecayParam";
-    sustainId = "filterSustainParam";
-    releaseId = "filterReleaseParam";
+    delayId = ID::filterEnvDelay.toString();
+    attackId = ID::filterEnvAttack.toString();
+    holdId = ID::filterEnvHold.toString();
+    decayId = ID::filterEnvDecay.toString();
+    sustainId = ID::filterEnvSustain.toString();
+    releaseId = ID::filterEnvRelease.toString();
   }
 
   delayAttach.reset(new sliderAttach(*linkedTree, delayId, delaySlider));
@@ -422,7 +423,7 @@ OperatorComponent::OperatorComponent(int idx,
     : opIndex(idx),
       linkedTree(tree),
       envComponent(idx, tree, gParams),
-      waveSelect(idx, tree, "waveParam"),
+      waveSelect(idx, tree, ID::operatorWaveShape.toString()),
       ratioName("Ratio"),
       modName("Mod Index"),
       panName("Pan"),
@@ -468,11 +469,11 @@ OperatorComponent::OperatorComponent(int idx,
   levelLabel.attachToComponent(&levelSlider, false);
 
   auto iStr = juce::String(opIndex);
-  auto ratioId = "ratioParam" + iStr;
-  auto indexId = "indexParam" + iStr;
-  auto panId = "panParam" + iStr;
-  auto levelId = "levelParam" + iStr;
-  auto outputId = "audibleParam" + iStr;
+  auto ratioId = ID::operatorRatio + iStr;
+  auto indexId = ID::operatorModIndex + iStr;
+  auto panId = ID::operatorPan + iStr;
+  auto levelId = ID::operatorLevel + iStr;
+  auto outputId = ID::operatorAudible + iStr;
 
   ratioAttach.reset(new sliderAttach(*linkedTree, ratioId, ratioSlider));
   modAttach.reset(new sliderAttach(*linkedTree, indexId, modSlider));

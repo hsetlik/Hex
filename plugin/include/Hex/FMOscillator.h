@@ -9,11 +9,9 @@
 */
 
 #pragma once
-#include <JuceHeader.h>
+#include "HexHeader.h"
 #define TABLES_PER_FRAME 10
 #define TABLESIZE 2048
-
-enum WaveType { Sine, Square, Saw, Tri, Noise };
 
 struct Wavetable {
   float table[TABLESIZE];

@@ -31,6 +31,8 @@ juce_add_plugin(${PROJECT_NAME}
 target_sources(${PROJECT_NAME}
 PRIVATE
   ${INCLUDE_DIR}/Color.h
+  ${INCLUDE_DIR}/Identifiers.h
+  ${INCLUDE_DIR}/HexHeader.h
   ${INCLUDE_DIR}/ComponentUtil.h
   ${INCLUDE_DIR}/CustomLnF.h
   source/CustomLnF.cpp

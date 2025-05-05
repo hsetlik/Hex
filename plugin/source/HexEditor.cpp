@@ -9,6 +9,8 @@
 */
 
 #include "HexEditor.h"
+#include "Identifiers.h"
+#include "juce_core/juce_core.h"
 FilterPanel::FilterPanel(apvts* tree, GraphParamSet* graph)
     : linkedTree(tree),
       envComp(0, linkedTree, graph, true),
@@ -17,13 +19,16 @@ FilterPanel::FilterPanel(apvts* tree, GraphParamSet* graph)
       wetName("Mix"),
       depthName("Env. depth") {
   cutoffAttach.reset(
-      new sliderAttach(*linkedTree, "cutoffParam", cutoffSlider));
-  resAttach.reset(new sliderAttach(*linkedTree, "resonanceParam", resSlider));
-  wetAttach.reset(new sliderAttach(*linkedTree, "wetDryParam", wetSlider));
-  depthAttach.reset(new sliderAttach(*linkedTree, "depthParam", depthSlider));
+      new sliderAttach(*linkedTree, ID::filterCutoff.toString(), cutoffSlider));
+  resAttach.reset(
+      new sliderAttach(*linkedTree, ID::filterResonance.toString(), resSlider));
+  wetAttach.reset(
+      new sliderAttach(*linkedTree, ID::filterWetDry.toString(), wetSlider));
+  depthAttach.reset(new sliderAttach(*linkedTree, ID::filterEnvDepth.toString(),
+                                     depthSlider));
 
   typeAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
-      *linkedTree, "filterTypeParam", typeBox));
+      *linkedTree, ID::filterType.toString(), typeBox));
   typeBox.addItem("Low Pass", 1);
   typeBox.addItem("High Pass", 2);
   typeBox.addItem("Band Pass", 3);
@@ -85,7 +90,9 @@ void FilterPanel::resized() {
   envComp.setBounds(bounds);
 }
 
-void FilterPanel::paint(juce::Graphics& g) {}
+void FilterPanel::paint(juce::Graphics& g) {
+  juce::ignoreUnused(g);
+}
 
 //==============================================================================
 HexEditor::HexEditor(HexAudioProcessor* proc,

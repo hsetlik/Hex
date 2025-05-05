@@ -14,11 +14,11 @@
 #include "PluginProcessor.h"
 #include "SymbolButton.h"
 
-enum class PatchType { bass, lead, chord, pad };
+enum PatchType { bass, lead, chord, pad };
 // keep both of these in the same order so strings can be accessed by int
 // casting the enum value
-static const std::vector<juce::String> PatchTypeStrings{"Bass", "Lead", "Chord",
-                                                        "Pad"};
+static const std::vector<String> PatchTypeStrings{"Bass", "Lead", "Chord",
+                                                  "Pad"};
 
 struct PatchInfo {
   juce::String name;
@@ -203,22 +203,22 @@ private:
   HexLookAndFeel lnf;
   juce::File presetFolder;
   juce::StringArray patchNames;
-  juce::Component* saveDialogComponent;
+  Component* saveDialogComponent;
   juce::TextButton saveButton;
   RightButton nextPatchButton;
   LeftButton lastPatchButton;
   juce::StringArray displayPatchNames;
 };
 
-class PatchDialogBox : public juce::Component, juce::Button::Listener {
+class PatchDialogBox : public Component, juce::Button::Listener {
 public:
   PatchDialogBox(PatchLoader* loader);
   ~PatchDialogBox() override;
   void resized() override;
   void buttonClicked(juce::Button* button) override;
   void paint(juce::Graphics& g) override;
-  juce::String getNewPatchName() { return nameField.getText(); }
-  juce::String getNewPatchType() { return typeBox.getText(); }
+  String getNewPatchName() { return nameField.getText(); }
+  String getNewPatchType() { return typeBox.getText(); }
   juce::TextButton savePatchButton;
   juce::TextButton cancelButton;
   juce::TextButton setDefault;
