@@ -23,19 +23,12 @@ public:
   static LfoArray arrayForType(WaveType type);
 };
 
-class LfoBase {
-public:
-  LfoBase() : rate(1.0f), sampleRate(44100.0f) {}
-  virtual ~LfoBase() {}
-  virtual void setSampleRate(double sr) { sampleRate = sr; }
-  virtual void setRate(float speedHz) { rate = speedHz; }
-  virtual float tick() { return 0.0f; }
+namespace VelTracking {
+void setTrackingAmount(float amt);
+float gainForVelocity(float vel);
+}  // namespace VelTracking
 
-protected:
-  float rate;
-  double sampleRate;
-};
-
+//==============================================================
 class WaveLfo {
 public:
   WaveLfo(WaveType type) : data(WaveArray::arrayForType(type)), phase(0.0f) {}
@@ -101,7 +94,6 @@ public:
 
 private:
   WaveType currentType;
-  std::unique_ptr<LfoBase> pOsc;
   std::unique_ptr<WaveLfo> waveOsc;
   NoiseLfo noiseOsc;
   double sampleRate;

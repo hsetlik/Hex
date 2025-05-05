@@ -20,6 +20,15 @@ class HexParameters {
 public:
   static apvts::ParameterLayout createLayout() {
     apvts::ParameterLayout layout;
+    String vTrackID = ID::velocityTracking.toString();
+    String vTrackName = "Velocity sensitivity";
+    layout.add(std::make_unique<AudioParamFloat>(juce::ParameterID{vTrackID, 1},
+                                                 vTrackName, 0.0f, 1.0f, 1.0f));
+    String susPedalID = ID::useSustainPedal.toString();
+    String susPedalName = "Use sustain pedal";
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        juce::ParameterID{susPedalID, 1}, susPedalName, false));
+
     auto delName = "Filter Delay";
     auto aName = "Filter Attack";
     auto hName = "Filter Hold";

@@ -87,7 +87,7 @@ void FilterPanel::resized() {
   wetSlider.setBounds(
       upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
   depthSlider.setBounds(upperBounds.reduced(cushion).withY(2 * cushion));
-  envComp.setBounds(bounds);
+  envComp.setBounds(bounds.reduced(4));
 }
 
 void FilterPanel::paint(juce::Graphics& g) {

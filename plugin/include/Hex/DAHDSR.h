@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "LFO.h"
 
 #define DELAY_MIN 0.0f
 #define DELAY_MAX 8000.0f
@@ -66,8 +67,9 @@ public:
     else
       return noteOff;
   }
-  void triggerOn() {
+  void triggerOn(float velocity = 1.0f) {
     trigger = true;
+    vGain = VelTracking::gainForVelocity(velocity);
     if (currentPhase != noteOff)
       enterPhase(retrigPhase);
     else
@@ -112,8 +114,8 @@ public:
 private:
   // data
   envPhase currentPhase;
-  unsigned long long samplesIntoPhase;
-  unsigned long long samplesInPhase;
+  size_t samplesIntoPhase;
+  size_t samplesInPhase;
   double factor;
   float minLevel = 0.00001f;
   double sampleRate;
@@ -127,4 +129,5 @@ private:
   float releaseTime = RELEASE_DEFAULT;
   float _startLevel;
   float _endLevel;
+  float vGain = 1.0f;
 };

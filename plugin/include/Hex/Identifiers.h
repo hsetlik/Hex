@@ -6,9 +6,13 @@
 typedef juce::AudioParameterFloat AudioParamFloat;
 typedef juce::AudioParameterChoice AudioParamChoice;
 typedef juce::AudioParameterBool AudioParamBool;
+typedef juce::NormalisableRange<float> frange_t;
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 namespace ID {
+// global params-----------------------
+DECLARE_ID(velocityTracking)
+DECLARE_ID(useSustainPedal)
 // Filter params ----------------------
 DECLARE_ID(filterEnvDelay)
 DECLARE_ID(filterEnvAttack)

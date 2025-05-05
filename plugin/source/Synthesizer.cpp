@@ -10,6 +10,7 @@
 
 #include "Synthesizer.h"
 #include "Identifiers.h"
+#include "LFO.h"
 #include "juce_core/juce_core.h"
 HexVoice::HexVoice(apvts* tree,
                    GraphParamSet* gParams,
@@ -45,7 +46,7 @@ void HexVoice::startNote(int midiNoteNumber,
   linkedParams->lastTriggeredVoice.store(voiceIndex);
   ++linkedParams->voicesInUse;
   linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
-  voiceFilter.envelope.triggerOn();
+  voiceFilter.envelope.triggerOn(velocity);
   for (auto op : operators) {
     op->trigger(true);
   }
@@ -418,6 +419,9 @@ void HexSynth::updateRoutingForBlock() {
 }
 
 void HexSynth::updateEnvelopesForBlock() {
+  const float vTracking =
+      linkedTree->getRawParameterValue(ID::velocityTracking.toString())->load();
+  VelTracking::setTrackingAmount(vTracking);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
     auto iStr = juce::String(i);
     auto delayId = ID::envDelay + iStr;
