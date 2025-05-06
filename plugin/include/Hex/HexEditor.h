@@ -10,12 +10,15 @@
 
 #pragma once
 #include "BitmapWaveGraph.h"
+#include "CustomLnF.h"
 #include "OperatorComponent.h"
 #include "ModulationGrid.h"
 #include "PatchBrowser.h"
 #include "LfoComponent.h"
+#include "juce_audio_basics/juce_audio_basics.h"
+#include "juce_audio_utils/juce_audio_utils.h"
 
-class FilterPanel : public juce::Component {
+class FilterPanel : public Component {
 public:
   FilterPanel(apvts* tree, GraphParamSet* params);
   ~FilterPanel() override;
@@ -45,18 +48,34 @@ private:
   pSliderAttach depthAttach;
   HexLookAndFeel lnf;
 };
+//========================================================
+class BottomBar : public Component {
+private:
+  RotaryParamName velName;
+  juce::Slider velSlider;
+  pSliderAttach velAttach;
+  juce::MidiKeyboardComponent kbdComp;
 
-class HexEditor : public juce::Component {
+public:
+  BottomBar(apvts* tree, juce::MidiKeyboardState& kbdState);
+  void resized() override;
+  void paint(juce::Graphics& g) override;
+};
+//========================================================
+class HexEditor : public Component {
 public:
   HexEditor(HexAudioProcessor* proc,
             apvts* tree,
             GraphParamSet* params,
-            RingBuffer<float>* buffer);
+            RingBuffer<float>* buffer,
+            juce::MidiKeyboardState& kbdState);
+  ~HexEditor() override;
   apvts* const linkedTree;
   void resized() override;
   void paint(juce::Graphics& g) override;
 
 private:
+  HexLookAndFeel lnf;
   juce::OwnedArray<OperatorComponent> opComponents;
   juce::OwnedArray<LfoComponent> lfoComponents;
   ModulationGrid modGrid;
@@ -64,4 +83,5 @@ private:
   FilterPanel fPanel;
   PatchLoader loader;
   PatchDialogBox saveDialog;
+  BottomBar kbdBar;
 };

@@ -124,6 +124,8 @@ bool HexAudioProcessor::isBusesLayoutSupported(
 
 void HexAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                      juce::MidiBuffer& midiMessages) {
+  masterKbdState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(),
+                                       true);
   buffer.clear();
   synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
   synth.updateRoutingForBlock();
@@ -131,17 +133,6 @@ void HexAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   synth.updateEnvelopesForBlock();
   synth.updateFiltersForBlock();
   synth.updateLfosForBlock();
-  magnitude = buffer.getMagnitude(0, buffer.getNumSamples());
-  /*
-  if (magnitude > 1.0f)
-  {
-      buffer.applyGain (0.6f / magnitude);
-      //! Note: apparently this is almost never an issue
-      printer.addMessage ("Over-magnitude buffer: " + juce::String (magnitude));
-  }
-  else
-      buffer.applyGain (0.6f);
-   */
 }
 
 //==============================================================================

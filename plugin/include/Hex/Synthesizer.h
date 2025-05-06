@@ -193,10 +193,7 @@ public:
   void renderVoices(juce::AudioBuffer<float>& buffer,
                     int startSample,
                     int numSamples) override;
-  void handleBlock(juce::AudioBuffer<float>& buffer,
-                   const juce::MidiBuffer& midi,
-                   int startSample,
-                   int numSamples);
+
   //===============================================
   void updateRoutingForBlock();
   void updateEnvelopesForBlock();

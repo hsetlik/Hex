@@ -241,11 +241,13 @@ void LfoComponent::prepare() {
 void LfoComponent::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float dX = fBounds.getWidth() / 16.0f;
-  frect_t rateBox = {dX, dX, 5.0f * dX, 5.0f * dX};
-  frect_t depthBounds = {dX, 7.0f * dX, 5.0f * dX, 5.0f * dX};
-  frect_t bpmBounds = {7.0f * dX, dX, 3.0f * dX, 1.5f * dX};
-  frect_t targetBounds = {8.0f * dX, 4.0f * dX, 8.0f * dX, 2.0f * dX};
-  frect_t waveBounds = {6.0f * dX, 7.0f * dX, 10.0f * dX, 3.0f * dX};
+  const float dY = fBounds.getHeight() / 16.0f;
+  const float sWidth = std::min(dX, dY);
+  frect_t rateBox = {dX, dY, 5.0f * sWidth, 5.0f * sWidth};
+  frect_t depthBounds = {dX, 8.5f * dY, 5.0f * sWidth, 5.0f * sWidth};
+  frect_t bpmBounds = {7.0f * dX, dY, 3.0f * dX, 1.5f * dY};
+  frect_t targetBounds = {8.0f * dX, 4.0f * dY, 8.0f * dX, 2.0f * dY};
+  frect_t waveBounds = {6.0f * dX, 7.0f * dY, 10.0f * dX, 3.0f * dY};
   rateSlider.setBounds(rateBox.reduced(3.0f).toNearestInt());
   depthSlider.setBounds(depthBounds.reduced(3.0f).toNearestInt());
   bpmToggle.setBounds(bpmBounds.toNearestInt());

@@ -509,12 +509,16 @@ void OperatorComponent::resized() {
   envComponent.setBounds(envBounds.toNearestInt());
   auto dX = fBounds.getWidth() / 25.0f;
   auto dY = fBounds.getHeight() / 16.0f;
-  frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
-  frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * 4.5f, dX * 4.5f};
+  const float sRatio = 3.5f;
+  frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * sRatio, dX * sRatio};
+  frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * sRatio,
+                       dX * sRatio};
+  frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * sRatio,
+                         dX * sRatio};
+  frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * sRatio,
+                       dX * sRatio};
   frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
-  frect_t selectBounds = {x0 + dX, y0 + dY * 12.0f, dX * 16.0f, dY * 3.0f};
+  frect_t selectBounds = {x0 + dX, y0 + dY * 12.0f, dX * 16.0f, dY * 2.0f};
 
   ratioSlider.setBounds(ratioBox.toNearestInt());
   modSlider.setBounds(modBounds.toNearestInt());

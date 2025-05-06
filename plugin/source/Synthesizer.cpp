@@ -50,7 +50,7 @@ void HexVoice::startNote(int midiNoteNumber,
   for (auto op : operators) {
     op->trigger(true);
   }
-  debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " started");
+  // debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " started");
 }
 
 void HexVoice::stopNote(float velocity, bool allowTailOff) {
@@ -122,10 +122,10 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
 }
 //=====================================================================================================================
 void HexVoice::tickModulation() {
-  for (int o = 0; o < NUM_OPERATORS; ++o) {
-    for (int i = 0; i < NUM_OPERATORS; ++i) {
+  for (size_t o = 0; o < NUM_OPERATORS; ++o) {
+    for (size_t i = 0; i < NUM_OPERATORS; ++i) {
       if (grid[o][i]) {
-        operators[i]->addModFrom(*operators[o]);
+        operators[(int)i]->addModFrom(*operators[(int)o]);
       }
     }
   }
@@ -229,10 +229,6 @@ void HexSynth::renderVoices(juce::AudioBuffer<float>& buffer,
   }
 }
 
-void HexSynth::handleBlock(juce::AudioBuffer<float>& buffer,
-                           const juce::MidiBuffer& midi,
-                           int startSample,
-                           int numSamples) {}
 //=====================================================================================================================
 void HexSynth::setRate(int idx, float value) {
   const juce::ScopedLock sl(lock);
@@ -249,7 +245,7 @@ void HexSynth::setDepth(int idx, float value) {
 void HexSynth::setTarget(int idx, float value) {
   const juce::ScopedLock sl(lock);
   for (auto v : hexVoices) {
-    v->lfoTargets[idx] = value;
+    v->lfoTargets[(size_t)idx] = (int)value;
   }
 }
 void HexSynth::setLfoWave(int idx, float value) {

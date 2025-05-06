@@ -11,6 +11,7 @@
 #include <JuceHeader.h>
 #include "DebugUtil.h"
 #include "Synthesizer.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 //==============================================================================
 /**
  */
@@ -52,12 +53,12 @@ public:
   //==============================================================================
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
+  juce::MidiKeyboardState masterKbdState;
   apvts tree;
   HexSynth synth;
 
 private:
   AsyncDebugPrinter printer;
-  float magnitude;
   juce::AudioProcessorEditor* createdEditor;
   //==============================================================================
   JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(HexAudioProcessor)

@@ -9,6 +9,7 @@
 */
 
 #include "HexEditor.h"
+#include "Color.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
 FilterPanel::FilterPanel(apvts* tree, GraphParamSet* graph)
@@ -93,23 +94,53 @@ void FilterPanel::resized() {
 void FilterPanel::paint(juce::Graphics& g) {
   juce::ignoreUnused(g);
 }
+//==============================================================================
+
+BottomBar::BottomBar(apvts* tree, juce::MidiKeyboardState& kbdState)
+    : velName("Velocity tracking"),
+      kbdComp(kbdState, juce::KeyboardComponentBase::horizontalKeyboard) {
+  addAndMakeVisible(velSlider);
+  addAndMakeVisible(velName);
+  addAndMakeVisible(kbdComp);
+  velName.attachToComponent(&velSlider, false);
+  SliderUtil::setRotaryNoBox(velSlider);
+  velAttach.reset(
+      new sliderAttach(*tree, ID::velocityTracking.toString(), velSlider));
+}
+
+void BottomBar::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  auto vBounds = fBounds.removeFromLeft(fBounds.getHeight());
+  velSlider.setBounds(vBounds.reduced(18.0f).toNearestInt());
+  kbdComp.setBounds(fBounds.toNearestInt());
+}
+
+void BottomBar::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::lightGray);
+  g.fillRect(fBounds);
+}
 
 //==============================================================================
 HexEditor::HexEditor(HexAudioProcessor* proc,
                      apvts* tree,
                      GraphParamSet* params,
-                     RingBuffer<float>* buffer)
+                     RingBuffer<float>* buffer,
+                     juce::MidiKeyboardState& kbdState)
     : linkedTree(tree),
       modGrid(tree),
       graph(params, buffer),
       fPanel(tree, params),
       loader(proc, &saveDialog),
-      saveDialog(&loader) {
+      saveDialog(&loader),
+      kbdBar(tree, kbdState) {
+  setLookAndFeel(&lnf);
   addAndMakeVisible(&modGrid);
   addAndMakeVisible(&graph);
   addAndMakeVisible(&fPanel);
   addAndMakeVisible(&loader);
   addAndMakeVisible(&saveDialog);
+  addAndMakeVisible(&kbdBar);
   saveDialog.setEnabled(false);
   saveDialog.setVisible(false);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
@@ -122,18 +153,25 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
   }
 }
 
+HexEditor::~HexEditor() {
+  setLookAndFeel(nullptr);
+}
+
 void HexEditor::resized() {
   auto gridWidth = (float)getWidth() / 4.5f;
   auto bounds = getLocalBounds();
+  auto kBounds = bounds.removeFromBottom(100);
+  kbdBar.setBounds(kBounds);
   auto rightColumn = bounds.removeFromRight((int)gridWidth);
   auto loaderHeight = rightColumn.getWidth() / 3;
   auto loaderBounds = rightColumn.removeFromTop(loaderHeight);
   loader.setBounds(loaderBounds);
   modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
-  auto gBounds = rightColumn.removeFromTop((int)gridWidth);
+  int gHeight = (int)(gridWidth * 0.65f);
+  auto gBounds = rightColumn.removeFromTop((int)gHeight);
   auto cushion = gBounds.getWidth() / 15;
   graph.setBounds(gBounds.reduced(cushion));
-  fPanel.setBounds(rightColumn);
+  fPanel.setBounds(rightColumn.reduced(cushion));
 
   auto lfoBounds = bounds.removeFromBottom(bounds.getHeight() / 5);
   auto lfoWidth = lfoBounds.getWidth() / NUM_LFOS;
