@@ -36,6 +36,7 @@ PRIVATE
   ${INCLUDE_DIR}/ComponentUtil.h
   ${INCLUDE_DIR}/CustomLnF.h
   source/CustomLnF.cpp
+  source/HexHeader.cpp
   ${INCLUDE_DIR}/DAHDSR.h
   source/DAHDSR.cpp
   ${INCLUDE_DIR}/DebugUtil.h

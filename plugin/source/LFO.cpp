@@ -13,31 +13,6 @@
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_audio_basics/juce_audio_basics.h"
-
-namespace VelTracking {
-static std::atomic<float> trackingAmt;
-
-void setTrackingAmount(float amt) {
-  trackingAmt.store(amt);
-}
-static frange_t getGainRange() {
-  auto minGain = juce::Decibels::decibelsToGain(-10.0f);
-  auto midGain = juce::Decibels::decibelsToGain(-6.0f);
-  frange_t range(minGain, 1.0f);
-  range.setSkewForCentre(midGain);
-  return range;
-}
-
-float gainForVelocity(float vel) {
-  static frange_t nRange = getGainRange();
-  float fullDepth = nRange.convertFrom0to1(vel);
-  auto value = MathUtil::fLerp(1.0f, fullDepth, trackingAmt.load());
-  DBG("Velocity of " + String(vel) + " has gain " + String(value));
-  return value;
-}
-
-}  // namespace VelTracking
-
 //====================================================================================
 LfoArray WaveArray::arrayForType(WaveType type) {
   LfoArray array;

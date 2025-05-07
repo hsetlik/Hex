@@ -86,6 +86,7 @@ void HexAudioProcessor::changeProgramName(int index,
 void HexAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   // Use this method as the place to do any pre-playback
   // initialisation that you need..
+  SampleRate::set(sampleRate);
   synth.setSampleRate(sampleRate, samplesPerBlock);
   synth.prepareRingBuffer(samplesPerBlock);
   // synth.prepareRingBuffer (samplesPerBlock);

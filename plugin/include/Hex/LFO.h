@@ -22,12 +22,6 @@ class WaveArray {
 public:
   static LfoArray arrayForType(WaveType type);
 };
-
-namespace VelTracking {
-void setTrackingAmount(float amt);
-float gainForVelocity(float vel);
-}  // namespace VelTracking
-
 //==============================================================
 class WaveLfo {
 public:
