@@ -67,7 +67,7 @@ public:
     else
       return noteOff;
   }
-  void triggerOn(float velocity = 1.0f) {
+  void triggerOn(float velocity) {
     trigger = true;
     vGain = VelTracking::gainForVelocity(velocity);
     if (currentPhase != noteOff)
@@ -75,6 +75,7 @@ public:
     else
       enterPhase(delayPhase);
   }
+
   float factorFor(float startLevel, float endLevel, float lengthMs) {
     if (startLevel == 0.0f)
       startLevel = minLevel;
@@ -88,6 +89,7 @@ public:
     trigger = false;
     enterPhase(releasePhase);
   }
+
   void updatePhase() {
     if (samplesIntoPhase > samplesInPhase || samplesInPhase < 1) {
       enterPhase(nextPhase(currentPhase));
@@ -117,7 +119,7 @@ private:
   size_t samplesIntoPhase;
   size_t samplesInPhase;
   double factor;
-  float minLevel = 0.00001f;
+  const float minLevel = 0.00001f;
   double sampleRate;
   int index;
   bool trigger;

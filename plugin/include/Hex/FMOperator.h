@@ -34,9 +34,9 @@ using apvts = juce::AudioProcessorValueTreeState;
 class FMOperator {
 public:
   FMOperator(int opIndex);
-  void trigger(bool on) {
+  void trigger(bool on, float velocity = 1.0f) {
     if (on)
-      envelope.triggerOn();
+      envelope.triggerOn(velocity);
     else
       envelope.triggerOff();
   }

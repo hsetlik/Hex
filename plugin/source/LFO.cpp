@@ -9,6 +9,7 @@
 */
 
 #include "LFO.h"
+#include "HexHeader.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_audio_basics/juce_audio_basics.h"
@@ -30,7 +31,9 @@ static frange_t getGainRange() {
 float gainForVelocity(float vel) {
   static frange_t nRange = getGainRange();
   float fullDepth = nRange.convertFrom0to1(vel);
-  return MathUtil::fLerp(1.0f, fullDepth, trackingAmt.load());
+  auto value = MathUtil::fLerp(1.0f, fullDepth, trackingAmt.load());
+  DBG("Velocity of " + String(vel) + " has gain " + String(value));
+  return value;
 }
 
 }  // namespace VelTracking

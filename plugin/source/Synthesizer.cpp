@@ -48,8 +48,9 @@ void HexVoice::startNote(int midiNoteNumber,
   linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
   voiceFilter.envelope.triggerOn(velocity);
   for (auto op : operators) {
-    op->trigger(true);
+    op->trigger(true, velocity);
   }
+
   // debugPrinter.addMessage("Voice " + juce::String(voiceIndex) + " started");
 }
 
@@ -463,6 +464,7 @@ void HexSynth::updateOscillatorsForBlock() {
     setWave(i, wave);
   }
 }
+
 void HexSynth::updateFiltersForBlock() {
   float delay = *linkedTree->getRawParameterValue(ID::filterEnvDelay);
   float attack = *linkedTree->getRawParameterValue(ID::filterEnvAttack);
