@@ -11,7 +11,6 @@
 #pragma once
 #include "FMOscillator.h"
 #include "DAHDSR.h"
-#define NUM_OPERATORS 6
 #define NUM_VOICES 18
 #define NUM_LFOS 4
 //! macros for use in parameter layout
@@ -33,12 +32,12 @@ using RoutingGrid = std::array<std::array<bool, NUM_OPERATORS>, NUM_OPERATORS>;
 using apvts = juce::AudioProcessorValueTreeState;
 class FMOperator {
 public:
-  FMOperator(int opIndex);
+  FMOperator(int opIndex, EnvelopeLUTGroup* luts);
   void trigger(bool on, float velocity = 1.0f) {
     if (on)
-      envelope.triggerOn(velocity);
+      vEnv.triggerOn(velocity);
     else
-      envelope.triggerOff();
+      vEnv.triggerOff();
   }
   void setSampleRate(double rate);
   //! functions to set private variables
@@ -66,7 +65,7 @@ public:
   void tick(double fundamental, float modValue);
   void setWave(int type) { oscillator.setType((WaveType)type); }
   HexOsc oscillator;
-  DAHDSR envelope;
+  VoiceEnvelope vEnv;
 
 private:
   //! Settable parameters stored down here

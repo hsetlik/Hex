@@ -9,11 +9,13 @@
 */
 
 #include "FMOperator.h"
+#include "DAHDSR.h"
 #include "MathUtil.h"
 
-FMOperator::FMOperator(int opIndex)
+FMOperator::FMOperator(int opIndex, EnvelopeLUTGroup* luts)
     : audible(false),
       index(opIndex),
+      vEnv(&luts->operatorEnv[opIndex]),
       modIndex(0.0f),
       modOffset(0.0f),
       pan(0.5f),
@@ -24,11 +26,10 @@ FMOperator::FMOperator(int opIndex)
 
 void FMOperator::setSampleRate(double rate) {
   oscillator.setSampleRate(rate);
-  envelope.setSampleRate(rate);
 }
 
 void FMOperator::tick(double fundamental) {
-  lastOutMono = envelope.process(
+  lastOutMono = vEnv.process(
       oscillator.getSample((fundamental * baseRatio) + (modIndex * modOffset)) *
       level);
   lastOutL = lastOutMono * pan;
@@ -36,7 +37,7 @@ void FMOperator::tick(double fundamental) {
 }
 
 void FMOperator::tick(double fundamental, float modValue) {
-  lastOutMono = envelope.process(
+  lastOutMono = vEnv.process(
       oscillator.getSample((fundamental * baseRatio) + (modIndex * modOffset)) *
       MathUtil::fLerp(level, 1.0f, modValue));
   lastOutL = lastOutMono * pan;

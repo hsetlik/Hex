@@ -9,18 +9,20 @@
 */
 
 #include "Synthesizer.h"
+#include "DAHDSR.h"
 #include "Identifiers.h"
 #include "LFO.h"
 #include "juce_core/juce_core.h"
 HexVoice::HexVoice(apvts* tree,
                    GraphParamSet* gParams,
                    RingBuffer<float>* buffer,
-                   int idx)
+                   int idx,
+                   EnvelopeLUTGroup* luts)
     : linkedTree(tree),
       linkedParams(gParams),
       linkedBuffer(buffer),
       voiceIndex(idx),
-      voiceFilter(voiceIndex),
+      voiceFilter(luts, voiceIndex),
       justKilled(false),
       internalBuffer(2, 512),
       sumL(0.0f),
@@ -30,7 +32,7 @@ HexVoice::HexVoice(apvts* tree,
       magnitude(0.0f),
       lastMagnitude(0.0f) {
   for (int i = 0; i < NUM_OPERATORS; ++i) {
-    operators.add(new FMOperator(i));
+    operators.add(new FMOperator(i, luts));
   }
   for (int i = 0; i < NUM_LFOS; ++i) {
     lfos.add(new HexLfo(i));
@@ -46,7 +48,7 @@ void HexVoice::startNote(int midiNoteNumber,
   linkedParams->lastTriggeredVoice.store(voiceIndex);
   ++linkedParams->voicesInUse;
   linkedParams->voiceFundamentals[voiceIndex].store((float)fundamental);
-  voiceFilter.envelope.triggerOn(velocity);
+  voiceFilter.env.triggerOn(velocity);
   for (auto op : operators) {
     op->trigger(true, velocity);
   }
@@ -56,7 +58,7 @@ void HexVoice::startNote(int midiNoteNumber,
 
 void HexVoice::stopNote(float velocity, bool allowTailOff) {
   juce::ignoreUnused(velocity);
-  voiceFilter.envelope.triggerOff();
+  voiceFilter.env.triggerOff();
   for (auto op : operators) {
     op->trigger(false);
   }
@@ -108,9 +110,9 @@ void HexVoice::renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
   //! handle sending data to the graphing stuff
   for (int op = 0; op < NUM_OPERATORS; ++op) {
     linkedParams->levels[voiceIndex][op].store(
-        operators[op]->envelope.getLastLevel());
+        operators[op]->vEnv.getLastLevel());
     linkedParams->filterLevels[voiceIndex].store(
-        voiceFilter.envelope.getLastLevel());
+        voiceFilter.env.getLastLevel());
   }
   if (linkedParams->lastTriggeredVoice == voiceIndex) {
     linkedBuffer->writeSamples(internalBuffer, startSample, numSamples);
@@ -139,7 +141,8 @@ HexSynth::HexSynth(apvts* tree)
       lastMagnitude(0.0f),
       numJumps(0) {
   for (int i = 0; i < NUM_VOICES; ++i) {
-    addVoice(new HexVoice(linkedTree, &graphParams, &graphBuffer, i));
+    addVoice(
+        new HexVoice(linkedTree, &graphParams, &graphBuffer, i, &envelopeData));
     auto* voice = dynamic_cast<HexVoice*>(voices.getLast());
     hexVoices.push_back(voice);
   }
@@ -253,79 +256,8 @@ void HexSynth::setLfoWave(int idx, float value) {
   for (auto v : hexVoices)
     v->lfos[idx]->setType((int)value);
 }
-//=====================================================================================================================
-void HexSynth::setDelay(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setDelay(idx, value);
-  }
-}
-void HexSynth::setAttack(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setAttack(idx, value);
-  }
-}
-void HexSynth::setHold(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setHold(idx, value);
-  }
-}
-void HexSynth::setDecay(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setDecay(idx, value);
-  }
-}
-void HexSynth::setSustain(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setSustain(idx, value);
-  }
-}
-void HexSynth::setRelease(int idx, float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->setRelease(idx, value);
-  }
-}
-void HexSynth::setDelayF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setDelay(value);
-  }
-}
-void HexSynth::setAttackF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setAttack(value);
-  }
-}
-void HexSynth::setHoldF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setHold(value);
-  }
-}
-void HexSynth::setDecayF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setDecay(value);
-  }
-}
-void HexSynth::setSustainF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setSustain(value);
-  }
-}
-void HexSynth::setReleaseF(float value) {
-  const juce::ScopedLock sl(lock);
-  for (auto voice : hexVoices) {
-    voice->voiceFilter.envelope.setRelease(value);
-  }
-}
+//==============================================================================================
+
 void HexSynth::setCutoff(float value) {
   const juce::ScopedLock sl(lock);
   for (auto voice : hexVoices) {
@@ -419,7 +351,7 @@ void HexSynth::updateEnvelopesForBlock() {
   const float vTracking =
       linkedTree->getRawParameterValue(ID::velocityTracking.toString())->load();
   VelTracking::setTrackingAmount(vTracking);
-  for (int i = 0; i < NUM_OPERATORS; ++i) {
+  for (size_t i = 0; i < NUM_OPERATORS; ++i) {
     auto iStr = juce::String(i);
     auto delayId = ID::envDelay + iStr;
     auto attackId = ID::envAttack + iStr;
@@ -427,18 +359,18 @@ void HexSynth::updateEnvelopesForBlock() {
     auto decayId = ID::envDecay + iStr;
     auto sustainId = ID::envSustain + iStr;
     auto releaseId = ID::envRelease + iStr;
-    float delay = *linkedTree->getRawParameterValue(delayId);
-    float attack = *linkedTree->getRawParameterValue(attackId);
-    float hold = *linkedTree->getRawParameterValue(holdId);
-    float decay = *linkedTree->getRawParameterValue(decayId);
-    float sustain = *linkedTree->getRawParameterValue(sustainId);
-    float release = *linkedTree->getRawParameterValue(releaseId);
-    setDelay(i, delay);
-    setAttack(i, attack);
-    setHold(i, hold);
-    setDecay(i, decay);
-    setSustain(i, sustain);
-    setRelease(i, release);
+    const float delay = *linkedTree->getRawParameterValue(delayId);
+    const float attack = *linkedTree->getRawParameterValue(attackId);
+    const float hold = *linkedTree->getRawParameterValue(holdId);
+    const float decay = *linkedTree->getRawParameterValue(decayId);
+    const float sustain = *linkedTree->getRawParameterValue(sustainId);
+    const float release = *linkedTree->getRawParameterValue(releaseId);
+    envelopeData.operatorEnv[i].setDelay(delay);
+    envelopeData.operatorEnv[i].setAttack(attack);
+    envelopeData.operatorEnv[i].setHold(hold);
+    envelopeData.operatorEnv[i].setDecay(decay);
+    envelopeData.operatorEnv[i].setSustain(sustain);
+    envelopeData.operatorEnv[i].setRelease(release);
   }
 }
 void HexSynth::updateOscillatorsForBlock() {
@@ -472,12 +404,12 @@ void HexSynth::updateFiltersForBlock() {
   float decay = *linkedTree->getRawParameterValue(ID::filterEnvDecay);
   float sustain = *linkedTree->getRawParameterValue(ID::filterEnvSustain);
   float release = *linkedTree->getRawParameterValue(ID::filterEnvRelease);
-  setDelayF(delay);
-  setAttackF(attack);
-  setHoldF(hold);
-  setDecayF(decay);
-  setSustainF(sustain);
-  setReleaseF(release);
+  envelopeData.filterEnv.setDelay(delay);
+  envelopeData.filterEnv.setAttack(attack);
+  envelopeData.filterEnv.setHold(hold);
+  envelopeData.filterEnv.setDecay(decay);
+  envelopeData.filterEnv.setSustain(sustain);
+  envelopeData.filterEnv.setRelease(release);
 
   float cutoff = *linkedTree->getRawParameterValue(ID::filterCutoff);
   float resonance = *linkedTree->getRawParameterValue(ID::filterResonance);

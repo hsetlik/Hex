@@ -9,6 +9,7 @@
 */
 
 #pragma once
+#include "DAHDSR.h"
 #include "DebugUtil.h"
 #include "FMOperator.h"
 #include "Filter.h"
@@ -55,7 +56,8 @@ public:
   HexVoice(apvts* tree,
            GraphParamSet* gParams,
            RingBuffer<float>* buffer,
-           int idx);
+           int idx,
+           EnvelopeLUTGroup* envLuts);
   apvts* const linkedTree;
   GraphParamSet* const linkedParams;
   RingBuffer<float>* const linkedBuffer;
@@ -98,25 +100,7 @@ public:
   //! function to make sure each operator has the appropriate offset before
   //! calculating samples
   void tickModulation();
-  //! functions for setting parameters inside the operators
-  void setDelay(int idx, float value) {
-    operators[idx]->envelope.setDelay(value);
-  }
-  void setAttack(int idx, float value) {
-    operators[idx]->envelope.setAttack(value);
-  }
-  void setHold(int idx, float value) {
-    operators[idx]->envelope.setHold(value);
-  }
-  void setDecay(int idx, float value) {
-    operators[idx]->envelope.setDecay(value);
-  }
-  void setSustain(int idx, float value) {
-    operators[idx]->envelope.setSustain(value);
-  }
-  void setRelease(int idx, float value) {
-    operators[idx]->envelope.setRelease(value);
-  }
+
   //===============================================
   void setRatio(int idx, float value) { operators[idx]->setRatio(value); }
   void setModIndex(int idx, float value) { operators[idx]->setModIndex(value); }
@@ -126,16 +110,16 @@ public:
   void setWave(int idx, float value) { operators[idx]->setWave((int)value); }
   bool anyEnvsActive() {
     for (auto op : operators) {
-      if (op->envelope.isActive())
+      if (op->vEnv.isActive())
         return true;
     }
     return false;
   }
   void killQuick() {
     for (auto op : operators) {
-      op->envelope.killQuick();
+      op->vEnv.killQuick();
     }
-    voiceFilter.envelope.killQuick();
+    voiceFilter.env.killQuick();
   }
   bool isVoiceCleared() { return voiceCleared; }
   float filterMod() {
@@ -205,21 +189,8 @@ public:
   void setDepth(int idx, float value);
   void setLfoWave(int idx, float value);
   void setTarget(int idx, float value);
-  //! fucnitons for updating the voices based on parameter changes
-  void setDelay(int idx, float value);
-  void setAttack(int idx, float value);
-  void setHold(int idx, float value);
-  void setDecay(int idx, float value);
-  void setSustain(int idx, float value);
-  void setRelease(int idx, float value);
   //=================================================
   //! Filter Parameters
-  void setDelayF(float value);
-  void setAttackF(float value);
-  void setHoldF(float value);
-  void setDecayF(float value);
-  void setSustainF(float value);
-  void setReleaseF(float value);
   void setCutoff(float value);
   void setResonance(float value);
   void setWetDry(float value);
@@ -247,6 +218,7 @@ public:
 
 private:
   RoutingGrid grid;
+  EnvelopeLUTGroup envelopeData;
   std::vector<HexVoice*> hexVoices;
   AsyncDebugPrinter printer;
   float magnitude;

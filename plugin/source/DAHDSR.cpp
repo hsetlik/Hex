@@ -22,7 +22,7 @@ float gainForVelocity(float vel) {
   static frange_t nRange = getGainRange();
   float fullDepth = nRange.convertFrom0to1(vel);
   auto value = MathUtil::fLerp(1.0f, fullDepth, trackingAmt.load());
-  DBG("Velocity of " + String(vel) + " has gain " + String(value));
+  // DBG("Velocity of " + String(vel) + " has gain " + String(value));
   return value;
 }
 
@@ -198,89 +198,20 @@ void VoiceEnvelope::triggerOff() {
   sampleIdx = 0;
 }
 
+void VoiceEnvelope::killQuick() {
+  inKillQuick = true;
+  auto lengthSamples = SampleRate::get() * (5.0 / 1000.0);
+  KQdelta = lastLevel / (float)lengthSamples;
+}
+
 float VoiceEnvelope::process(float input) {
-  lastLevel = envData->nextValue(currentPhase, sampleIdx) * vGain;
+  if (inKillQuick) {
+    lastLevel -= KQdelta;
+    inKillQuick = lastLevel > 0.0f;
+  } else {
+    lastLevel = envData->nextValue(currentPhase, sampleIdx) * vGain;
+  }
   return input * lastLevel;
 }
 
 //=========================================================================
-void DAHDSR::enterPhase(EnvPhase newPhase) {
-  currentPhase = newPhase;
-  samplesIntoPhase = 0;
-  switch (newPhase) {
-    case delayPhase: {
-      _startLevel = minLevel;
-      _endLevel = minLevel;
-
-      samplesInPhase = (size_t)((double)delayTime * sampleRate / 1000.0);
-      factor = factorFor(_startLevel, _endLevel, delayTime);
-      break;
-    }
-    case attackPhase: {
-      _startLevel = minLevel;
-      _endLevel = 1.0f;
-      samplesInPhase = (size_t)((double)attackTime * sampleRate / 1000.0);
-      factor = factorFor(_startLevel, _endLevel, attackTime);
-      break;
-    }
-    case holdPhase: {
-      _startLevel = 1.0f;
-      _endLevel = 1.0f;
-      samplesInPhase = (size_t)((double)holdTime * sampleRate / 1000.0);
-      factor = factorFor(_startLevel, _endLevel, holdTime);
-      break;
-    }
-    case decayPhase: {
-      _startLevel = 1.0f;
-      _endLevel = sustainLevel;
-      samplesInPhase = (size_t)((double)decayTime * sampleRate / 1000.0);
-      factor = factorFor(_startLevel, _endLevel, decayTime);
-      break;
-    }
-    case sustainPhase: {
-      _startLevel = sustainLevel;
-      _endLevel = sustainLevel;
-      samplesInPhase = 1000000;
-      factor = 1.0f;
-      break;
-    }
-    case releasePhase: {
-      _startLevel = sustainLevel;
-      _endLevel = minLevel;
-      samplesInPhase = (size_t)((double)releaseTime * sampleRate / 1000.0);
-      factor = factorFor(_startLevel, _endLevel, releaseTime);
-      break;
-    }
-    case noteOff: {
-      _startLevel = minLevel;
-      _endLevel = minLevel;
-      samplesInPhase = 100000000;
-      factor = 0.0f;
-      break;
-    }
-  }
-  output = _startLevel;
-  updatePhase();
-}
-float DAHDSR::process(float input) {
-  lastOutput = output;
-  updatePhase();
-  ++samplesIntoPhase;
-  output *= (float)factor;
-  return input * output * vGain;
-}
-
-void DAHDSR::killQuick(float msFade) {
-  //! function to bring down the envelope output very quickly (but not
-  //! immediately) for voice stealing
-  currentPhase = releasePhase;
-  _startLevel = output;
-  _endLevel = minLevel;
-  samplesInPhase = (size_t)((double)msFade * sampleRate / 1000.0);
-  factor = factorFor(_startLevel, _endLevel, msFade);
-}
-
-void DAHDSR::printDebug() {
-  printf("This output: %f\n", output);
-  printf("Last output: %f\n", lastOutput);
-}

@@ -169,11 +169,10 @@ private:
 
 class StereoFilter : public juce::AsyncUpdater {
 public:
-  StereoFilter(int voiceIdx);
+  StereoFilter(EnvelopeLUTGroup* luts, int voiceIdx);
   void setSampleRate(double rate, int blockSize = 512) {
     juce::ignoreUnused(blockSize);
     rateVal = rate;
-    envelope.setSampleRate(rate);
     lFilter->setSampleRate(rateVal);
     rFilter->setSampleRate(rateVal);
   }
@@ -190,7 +189,7 @@ public:
   void setDepth(float value) { envDepth = value; }
   void setWetLevel(float value) { wetLevel = value; }
   void tick() {
-    auto modVal = envelope.process(envDepth);
+    auto modVal = env.process(envDepth);
     auto inc = (CUTOFF_MAX - cutoffVal) * modVal;
     lFilter->setCutoff(cutoffVal + inc);
     rFilter->setCutoff(cutoffVal + inc);
@@ -211,9 +210,8 @@ public:
     return MathUtil::fLerp(input, rFilter->processWithMod(input, modValue),
                            wetLevel);
   }
-  DAHDSR envelope;
-  float getCutoff() { return cutoffVal; }
-  void filterBlock(juce::AudioBuffer<float>& buffer);
+  VoiceEnvelope env;
+  float getCutoff() const { return cutoffVal; }
 
 private:
   float cutoffVal;

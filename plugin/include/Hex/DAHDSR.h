@@ -1,6 +1,6 @@
 
 #pragma once
-#include <JuceHeader.h>
+#include "HexHeader.h"
 #include "juce_events/juce_events.h"
 
 #define DELAY_MIN 0.0f
@@ -93,6 +93,11 @@ public:
   void handleAsyncUpdate() override { computeLUTs(); }
 };
 
+struct EnvelopeLUTGroup {
+  SharedEnvData operatorEnv[NUM_OPERATORS];
+  SharedEnvData filterEnv;
+};
+
 // the per-voice objects for the envelope implementations
 class VoiceEnvelope {
 private:
@@ -101,6 +106,8 @@ private:
   size_t sampleIdx = 0;
   float vGain = 1.0f;
   float lastLevel = 0.0f;
+  bool inKillQuick = false;
+  float KQdelta = 0.0f;
 
 public:
   VoiceEnvelope(SharedEnvData* d);
@@ -109,84 +116,7 @@ public:
   float process(float input);
   float getLastLevel() const { return lastLevel; }
   bool isActive() const { return !(currentPhase == noteOff); }
+  void killQuick();
 };
 
 //===============================================================
-class DAHDSR {
-public:
-  // functions
-  DAHDSR(int ind = 0)
-      : lastOutput(0.0f), factor(1.0f), sampleRate(44100), index(ind) {
-    trigger = false;
-    samplesIntoPhase = 0;
-    currentPhase = noteOff;
-  }
-  ~DAHDSR() {}
-  static EnvPhase nextPhase(EnvPhase input) {
-    if (input != noteOff)
-      return (EnvPhase)(input + 1);
-    else
-      return noteOff;
-  }
-  void triggerOn(float velocity) {
-    trigger = true;
-    vGain = VelTracking::gainForVelocity(velocity);
-    enterPhase(delayPhase);
-  }
-
-  float factorFor(float startLevel, float endLevel, float lengthMs) {
-    if (startLevel == 0.0f)
-      startLevel = minLevel;
-    if (endLevel == 0.0f)
-      endLevel = minLevel;
-    unsigned long phaseLengthSamples =
-        (unsigned long)(lengthMs * (float)(sampleRate / 1000.0));
-    return exp((log(endLevel) - log(startLevel)) / (float)phaseLengthSamples);
-  }
-  void triggerOff() {
-    trigger = false;
-    enterPhase(releasePhase);
-  }
-
-  void updatePhase() {
-    if (samplesIntoPhase > samplesInPhase || samplesInPhase < 1) {
-      enterPhase(nextPhase(currentPhase));
-    }
-  }
-  void enterPhase(EnvPhase newPhase);
-  void killQuick(float msFade = 10.0f);
-  void setSampleRate(double value) { sampleRate = value; }
-  float process(float input);
-  bool isActive() { return !(currentPhase == noteOff); }
-  EnvPhase getPhase() { return currentPhase; }
-  float output;
-  float lastOutput;
-  void setDelay(float val) { delayTime = val; }
-  void setAttack(float val) { attackTime = val; }
-  void setHold(float val) { holdTime = val; }
-  void setDecay(float val) { decayTime = val; }
-  void setSustain(float val) { sustainLevel = val; }
-  void setRelease(float val) { releaseTime = val; }
-  float getLastLevel() const { return output; }
-  void printDebug();
-
-private:
-  // data
-  EnvPhase currentPhase;
-  size_t samplesIntoPhase;
-  size_t samplesInPhase;
-  double factor;
-  const float minLevel = 0.00001f;
-  double sampleRate;
-  int index;
-  bool trigger;
-  float delayTime = DELAY_DEFAULT;
-  float attackTime = ATTACK_DEFAULT;
-  float holdTime = HOLD_DEFAULT;
-  float decayTime = DECAY_DEFAULT;
-  float sustainLevel = SUSTAIN_DEFAULT;
-  float releaseTime = RELEASE_DEFAULT;
-  float _startLevel;
-  float _endLevel;
-  float vGain = 1.0f;
-};
