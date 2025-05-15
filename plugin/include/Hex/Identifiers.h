@@ -10,6 +10,8 @@ typedef juce::NormalisableRange<float> frange_t;
 
 #define DECLARE_ID(name) const juce::Identifier name(#name);
 namespace ID {
+// top level tree type
+DECLARE_ID(HEX_STATE_TREE)
 // global params-----------------------
 DECLARE_ID(velocityTracking)
 DECLARE_ID(useSustainPedal)
@@ -49,5 +51,10 @@ DECLARE_ID(envHold)
 DECLARE_ID(envDecay)
 DECLARE_ID(envSustain)
 DECLARE_ID(envRelease)
+// child tree that contains the patch info------
+DECLARE_ID(HEX_PATCH_INFO)
+DECLARE_ID(patchName)
+DECLARE_ID(patchAuthor)
+DECLARE_ID(patchType)
 }  // namespace ID
 #undef DECLARE_ID

@@ -131,18 +131,12 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
       modGrid(tree),
       graph(params, buffer),
       fPanel(tree, params),
-      loader(proc, &saveDialog),
-      saveDialog(&loader),
       kbdBar(tree, kbdState) {
   setLookAndFeel(&lnf);
   addAndMakeVisible(&modGrid);
   addAndMakeVisible(&graph);
   addAndMakeVisible(&fPanel);
-  addAndMakeVisible(&loader);
-  addAndMakeVisible(&saveDialog);
   addAndMakeVisible(&kbdBar);
-  saveDialog.setEnabled(false);
-  saveDialog.setVisible(false);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
     addAndMakeVisible(
         opComponents.add(new OperatorComponent(i, linkedTree, params)));
@@ -165,7 +159,6 @@ void HexEditor::resized() {
   auto rightColumn = bounds.removeFromRight((int)gridWidth);
   auto loaderHeight = rightColumn.getWidth() / 3;
   auto loaderBounds = rightColumn.removeFromTop(loaderHeight);
-  loader.setBounds(loaderBounds);
   modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
   int gHeight = (int)(gridWidth * 0.65f);
   auto gBounds = rightColumn.removeFromTop((int)gHeight);
@@ -192,7 +185,6 @@ void HexEditor::resized() {
   auto xCushion = getWidth() / 3.5;
   auto yCushion = getHeight() / 3.0;
   auto saveBounds = getLocalBounds().reduced((int)xCushion, (int)yCushion);
-  saveDialog.setBounds(saveBounds);
 }
 
 void HexEditor::paint(juce::Graphics& g) {

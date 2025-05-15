@@ -23,7 +23,7 @@ HexAudioProcessor::HexAudioProcessor()
 #endif
               ),
       // #endif
-      tree(*this, nullptr, "SynthParams", HexParameters::createLayout()),
+      tree(this),
       synth(&tree),
       createdEditor(nullptr) {
 }

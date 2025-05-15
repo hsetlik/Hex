@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "DebugUtil.h"
+#include "HexState.h"
 #include "Synthesizer.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 //==============================================================================
@@ -54,7 +55,7 @@ public:
   void getStateInformation(juce::MemoryBlock& destData) override;
   void setStateInformation(const void* data, int sizeInBytes) override;
   juce::MidiKeyboardState masterKbdState;
-  apvts tree;
+  HexState tree;
   HexSynth synth;
 
 private:

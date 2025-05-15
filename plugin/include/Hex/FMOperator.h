@@ -29,7 +29,6 @@
 #define PAN_DEFAULT 0.5f
 
 using RoutingGrid = std::array<std::array<bool, NUM_OPERATORS>, NUM_OPERATORS>;
-using apvts = juce::AudioProcessorValueTreeState;
 class FMOperator {
 public:
   FMOperator(int opIndex, EnvelopeLUTGroup* luts);

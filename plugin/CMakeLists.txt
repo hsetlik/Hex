@@ -39,6 +39,8 @@ PRIVATE
   source/HexHeader.cpp
   ${INCLUDE_DIR}/DAHDSR.h
   source/DAHDSR.cpp
+  ${INCLUDE_DIR}/HexState.h
+  source/HexState.cpp
   ${INCLUDE_DIR}/DebugUtil.h
   source/DebugUtil.cpp
   ${INCLUDE_DIR}/Filter.h

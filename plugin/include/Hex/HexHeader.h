@@ -2,6 +2,9 @@
 #include <JuceHeader.h>
 typedef juce::String String;
 typedef juce::Component Component;
+typedef juce::File File;
+typedef juce::ValueTree ValueTree;
+using apvts = juce::AudioProcessorValueTreeState;
 
 #define NUM_OPERATORS 6
 

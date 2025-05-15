@@ -81,7 +81,5 @@ private:
   ModulationGrid modGrid;
   BitmapWaveGraph graph;
   FilterPanel fPanel;
-  PatchLoader loader;
-  PatchDialogBox saveDialog;
   BottomBar kbdBar;
 };
