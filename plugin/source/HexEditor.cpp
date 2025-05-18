@@ -12,7 +12,7 @@
 #include "Color.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
-FilterPanel::FilterPanel(apvts* tree, GraphParamSet* graph)
+FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
     : linkedTree(tree),
       envComp(0, linkedTree, graph, true),
       cutoffName("Cutoff"),
@@ -123,7 +123,7 @@ void BottomBar::paint(juce::Graphics& g) {
 
 //==============================================================================
 HexEditor::HexEditor(HexAudioProcessor* proc,
-                     apvts* tree,
+                     HexState* tree,
                      GraphParamSet* params,
                      RingBuffer<float>* buffer,
                      juce::MidiKeyboardState& kbdState)

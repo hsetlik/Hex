@@ -15,7 +15,9 @@
 #include "LfoComponent.h"
 #include "LFO.h"
 #include "Identifiers.h"
+#include "juce_audio_processors/juce_audio_processors.h"
 using fRange = juce::NormalisableRange<float>;
+
 class HexParameters {
 public:
   static apvts::ParameterLayout createLayout() {
@@ -29,6 +31,12 @@ public:
     layout.add(std::make_unique<juce::AudioParameterBool>(
         juce::ParameterID{susPedalID, 1}, susPedalName, false));
 
+    static const int minPatchIdx = -1;
+    static const int maxPatchIdx = 512;
+    juce::ParameterID patchNumID{ID::selectedPatchIndex, 1};
+    String patchNumName = "Selected patch";
+    layout.add(std::make_unique<juce::AudioParameterInt>(
+        patchNumID, patchNumName, minPatchIdx, maxPatchIdx, minPatchIdx));
     auto delName = "Filter Delay";
     auto aName = "Filter Attack";
     auto hName = "Filter Hold";

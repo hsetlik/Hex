@@ -11,16 +11,17 @@
 #pragma once
 #include "BitmapWaveGraph.h"
 #include "CustomLnF.h"
+#include "HexState.h"
 #include "OperatorComponent.h"
 #include "ModulationGrid.h"
-#include "PatchBrowser.h"
 #include "LfoComponent.h"
+#include "PluginProcessor.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 
 class FilterPanel : public Component {
 public:
-  FilterPanel(apvts* tree, GraphParamSet* params);
+  FilterPanel(HexState* tree, GraphParamSet* params);
   ~FilterPanel() override;
   apvts* const linkedTree;
   void resized() override;
@@ -65,7 +66,7 @@ public:
 class HexEditor : public Component {
 public:
   HexEditor(HexAudioProcessor* proc,
-            apvts* tree,
+            HexState* tree,
             GraphParamSet* params,
             RingBuffer<float>* buffer,
             juce::MidiKeyboardState& kbdState);

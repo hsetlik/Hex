@@ -1,5 +1,6 @@
 #include "FileSystem.h"
 #include "Identifiers.h"
+#include "juce_core/juce_core.h"
 
 namespace UserFiles {
 static const String patchFileExtension = ".hxp";

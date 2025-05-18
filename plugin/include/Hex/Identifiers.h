@@ -12,6 +12,7 @@ typedef juce::NormalisableRange<float> frange_t;
 namespace ID {
 // top level tree type
 DECLARE_ID(HEX_STATE_TREE)
+DECLARE_ID(selectedPatchIndex)
 // global params-----------------------
 DECLARE_ID(velocityTracking)
 DECLARE_ID(useSustainPedal)

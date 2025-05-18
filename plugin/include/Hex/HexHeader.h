@@ -4,6 +4,7 @@ typedef juce::String String;
 typedef juce::Component Component;
 typedef juce::File File;
 typedef juce::ValueTree ValueTree;
+typedef juce::Identifier Identifier;
 using apvts = juce::AudioProcessorValueTreeState;
 
 #define NUM_OPERATORS 6
