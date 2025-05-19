@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include <JuceHeader.h>
+#include "HexHeader.h"
 
 class HexLookAndFeel : public juce::LookAndFeel_V4 {
 public:

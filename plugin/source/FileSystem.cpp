@@ -22,6 +22,15 @@ ValueTree loadStateForPatch(const String& name) {
   return vt;
 }
 
+File getPatchFile(const String& patchName) {
+  auto fileName = patchName + patchFileExtension;
+  auto patchFolder = getPatchFolder();
+  auto file = patchFolder.getChildFile(fileName);
+  if (!file.existsAsFile())
+    file.create();
+  return file;
+}
+
 }  // namespace UserFiles
 
 PatchLibrary::PatchLibrary() {
@@ -72,4 +81,43 @@ bool PatchLibrary::isNameLegal(const String& name) const {
   String rawName = name + UserFiles::patchFileExtension;
   String legalName = File::createLegalFileName(rawName);
   return rawName == legalName;
+}
+
+void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {
+  auto parent = state->copyState();
+  auto patchTree = parent.getChildWithName(ID::HEX_PATCH_INFO);
+  jassert(patchTree.isValid());
+  patchTree.setProperty(ID::patchName, patch.name, nullptr);
+  patchTree.setProperty(ID::patchAuthor, patch.author, nullptr);
+  patchTree.setProperty(ID::patchType, patch.type, nullptr);
+
+  auto xmlString = parent.toXmlString();
+  auto file = UserFiles::getPatchFile(patch.name);
+  jassert(file.replaceWithText(xmlString));
+
+  auto status = validatePatch(patch);
+  if (status == PatchStatusE::Available) {
+    patches.push_back(patch);
+    for (auto l : listeners) {
+      l->newPatchSaved(patch.name);
+    }
+  }
+  if (status == PatchStatusE::Existing) {
+    for (auto l : listeners) {
+      l->existingPatchSaved(patch.name);
+    }
+  }
+}
+
+void PatchLibrary::addListener(Listener* l) {
+  listeners.push_back(l);
+}
+
+void PatchLibrary::removeListener(Listener* l) {
+  for (auto it = listeners.begin(); it != listeners.end(); ++it) {
+    if (*it == l) {
+      listeners.erase(it);
+      return;
+    }
+  }
 }

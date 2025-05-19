@@ -9,7 +9,7 @@
 */
 
 #pragma once
-#include "Color.h"
 #include "CustomLnF.h"
-#include "PluginProcessor.h"
 #include "SymbolButton.h"
+
+class
