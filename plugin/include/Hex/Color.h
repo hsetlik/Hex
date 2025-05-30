@@ -9,9 +9,8 @@
 */
 
 #pragma once
-#include <JuceHeader.h>
+#include "HexHeader.h"
 #include "FontData.h"
-using Color = juce::Colour;
 namespace UXPalette {
 static Color thumbYellow = Color(255, 236, 95);
 static Color thumbBlue = Color(32, 139, 181);

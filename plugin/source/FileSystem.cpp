@@ -83,6 +83,11 @@ bool PatchLibrary::isNameLegal(const String& name) const {
   return rawName == legalName;
 }
 
+void PatchLibrary::loadPatch(apvts* state, const String& name) {
+  auto newTree = UserFiles::loadStateForPatch(name);
+  state->replaceState(newTree);
+}
+
 void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {
   auto parent = state->copyState();
   auto patchTree = parent.getChildWithName(ID::HEX_PATCH_INFO);
@@ -107,6 +112,22 @@ void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {
       l->existingPatchSaved(patch.name);
     }
   }
+}
+
+String PatchLibrary::nameAtIndex(int idx) const {
+  jassert(idx < getNumPatches());
+  auto names = availablePatchNames();
+  return names[idx];
+}
+
+int PatchLibrary::indexForName(const String& name) const {
+  auto patchNames = availablePatchNames();
+  for (int i = 0; i < patchNames.size(); ++i) {
+    if (patchNames[i] == name)
+      return i;
+  }
+  jassert(false);
+  return -1;
 }
 
 void PatchLibrary::addListener(Listener* l) {

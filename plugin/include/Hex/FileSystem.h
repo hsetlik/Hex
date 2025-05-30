@@ -20,14 +20,18 @@ enum PatchStatusE { Available, Existing, Illegal };
 class PatchLibrary {
 private:
   std::vector<patch_info_t> patches;
+  String selectedPatchName = "Untitled";
 
 public:
   PatchLibrary();
   juce::StringArray availablePatchNames() const;
   int getNumPatches() const { return (int)patches.size(); }
+  String nameAtIndex(int idx) const;
+  int indexForName(const String& name) const;
   PatchStatusE validatePatch(const patch_info_t& info) const;
   // actual saving/loading work happens here
   void savePatch(apvts* state, const patch_info_t& patch);
+  void loadPatch(apvts* state, const String& name);
   //----------------------------
   struct Listener {
     Listener() = default;
