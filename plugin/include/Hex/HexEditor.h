@@ -15,6 +15,7 @@
 #include "OperatorComponent.h"
 #include "ModulationGrid.h"
 #include "LfoComponent.h"
+#include "PatchBrowser.h"
 #include "PluginProcessor.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_utils/juce_audio_utils.h"
@@ -83,4 +84,5 @@ private:
   BitmapWaveGraph graph;
   FilterPanel fPanel;
   BottomBar kbdBar;
+  PatchLoader loader;
 };

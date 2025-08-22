@@ -36,8 +36,8 @@ public:
   struct Listener {
     Listener() = default;
     virtual ~Listener() {}
-    virtual void newPatchSaved(const String& patchName);
-    virtual void existingPatchSaved(const String& patchName);
+    virtual void newPatchSaved(const String& patchName) = 0;
+    virtual void existingPatchSaved(const String& patchName) = 0;
   };
   void addListener(Listener* l);
   void removeListener(Listener* l);

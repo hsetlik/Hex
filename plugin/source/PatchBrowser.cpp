@@ -2,7 +2,7 @@
 #include "PatchBrowser.h"
 #include "Identifiers.h"
 
-PatchComboBox::PatchComboBox(HexState* s) : state(s) {
+PatchComboBox::PatchComboBox(HexState* s) : PatchLibrary::Listener(), state(s) {
   // 1. set up ComboBox and listener
   cb.setTextWhenNoChoicesAvailable("Untitled");
   cb.setTextWhenNothingSelected("Untitled");
@@ -44,7 +44,9 @@ PatchComboBox::~PatchComboBox() {
 
 void PatchComboBox::paramCallback(float fValue) {
   int idx = (int)fValue;
-  if (idx > -1 && idx) {
+  if (idx > -1 && idx != selectedPatchIdx) {
+    selectedPatchIdx = idx;
+
     // TODO: call the parent to load the appropriate
     // patch data here
     updateButtonEnablement();
@@ -57,6 +59,47 @@ void PatchComboBox::updateButtonEnablement() {
   rButton.setEnabled(currentIdx < cb.getNumItems() - 1);
 }
 
-void PatchComboBox::comboBoxChanged(juce::ComboBox* cb) {
-  auto newIdx = cb->getSelectedItemIndex();
+void PatchComboBox::comboBoxChanged(juce::ComboBox* box) {
+  auto newIdx = box->getSelectedItemIndex();
+  if (newIdx != selectedPatchIdx) {
+    selectedPatchIdx = newIdx;
+  }
+}
+
+void PatchComboBox::existingPatchSaved(const String& patchName) {
+  auto idx = state->patchLib.indexForName(patchName);
+  cb.setSelectedItemIndex(idx);
+}
+
+void PatchComboBox::newPatchSaved(const String& patchName) {
+  auto idx = state->patchLib.indexForName(patchName);
+  cb.setSelectedItemIndex(idx);
+}
+
+void PatchComboBox::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float btnWidth = fBounds.getHeight();
+  lButton.setBounds(
+      fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());
+  rButton.setBounds(
+      fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());
+  cb.setBounds(fBounds.toNearestInt());
+}
+
+//========================================
+
+PatchLoader::PatchLoader(HexState* s)
+    : cb(s), saveBtn("Save Patch"), loadBtn("Load Patch") {
+  addAndMakeVisible(&cb);
+  addAndMakeVisible(&saveBtn);
+  addAndMakeVisible(&loadBtn);
+  // TODO: onClick lambdas go here
+}
+
+void PatchLoader::resized() {
+  auto fBounds = getLocalBounds().toFloat();
+  const float cbHeight = 40.0f;
+  auto cbBox = fBounds.removeFromTop(cbHeight).reduced(2.0f).toNearestInt();
+  cb.setBounds(cbBox);
+  const float btnWidth = fBounds.getWidth() / 2.0f;
 }

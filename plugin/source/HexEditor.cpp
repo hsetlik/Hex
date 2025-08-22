@@ -131,12 +131,14 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
       modGrid(tree),
       graph(params, buffer),
       fPanel(tree, params),
-      kbdBar(tree, kbdState) {
+      kbdBar(tree, kbdState),
+      loader(tree) {
   setLookAndFeel(&lnf);
   addAndMakeVisible(&modGrid);
   addAndMakeVisible(&graph);
   addAndMakeVisible(&fPanel);
   addAndMakeVisible(&kbdBar);
+  addAndMakeVisible(&loader);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
     addAndMakeVisible(
         opComponents.add(new OperatorComponent(i, linkedTree, params)));
@@ -159,6 +161,7 @@ void HexEditor::resized() {
   auto rightColumn = bounds.removeFromRight((int)gridWidth);
   auto loaderHeight = rightColumn.getWidth() / 3;
   auto loaderBounds = rightColumn.removeFromTop(loaderHeight);
+  loader.setBounds(loaderBounds);
   modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
   int gHeight = (int)(gridWidth * 0.65f);
   auto gBounds = rightColumn.removeFromTop((int)gHeight);

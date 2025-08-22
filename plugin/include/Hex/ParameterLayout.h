@@ -33,7 +33,7 @@ public:
 
     static const int minPatchIdx = -1;
     static const int maxPatchIdx = 512;
-    juce::ParameterID patchNumID{ID::selectedPatchIndex, 1};
+    juce::ParameterID patchNumID{ID::selectedPatchIndex.toString(), 1};
     String patchNumName = "Selected patch";
     layout.add(std::make_unique<juce::AudioParameterInt>(
         patchNumID, patchNumName, minPatchIdx, maxPatchIdx, minPatchIdx));

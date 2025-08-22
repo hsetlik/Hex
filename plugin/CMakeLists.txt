@@ -65,6 +65,8 @@ PRIVATE
   source/ParameterLayout.cpp
   ${INCLUDE_DIR}/PatchBrowser.h
   source/PatchBrowser.cpp
+  ${INCLUDE_DIR}/FileSystem.h
+  source/FileSystem.cpp
   ${INCLUDE_DIR}/PluginEditor.h
   source/PluginEditor.cpp
   ${INCLUDE_DIR}/PluginProcessor.h

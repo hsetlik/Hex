@@ -3,6 +3,7 @@
 #pragma once
 #include "HexState.h"
 #include "SymbolButton.h"
+#include "FileSystem.h"
 
 class PatchBrowserParent : public Component {
 public:
@@ -24,6 +25,7 @@ private:
   std::unique_ptr<ParamAttachment> pAttach;
   void paramCallback(float fValue);
   void updateButtonEnablement();
+  int selectedPatchIdx = -1;
 
 public:
   PatchComboBox(HexState* s);
@@ -32,4 +34,16 @@ public:
   void resized() override;
   void newPatchSaved(const String& name) override;
   void existingPatchSaved(const String& name) override;
+};
+//==========================
+
+class PatchLoader : public Component {
+private:
+  PatchComboBox cb;
+  juce::TextButton saveBtn;
+  juce::TextButton loadBtn;
+
+public:
+  PatchLoader(HexState* s);
+  void resized() override;
 };
