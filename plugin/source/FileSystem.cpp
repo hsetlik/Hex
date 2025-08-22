@@ -130,6 +130,13 @@ int PatchLibrary::indexForName(const String& name) const {
   return -1;
 }
 
+int PatchLibrary::currentPatchIndex() const {
+  if (selectedPatchName != "Untitled") {
+    return indexForName(selectedPatchName);
+  }
+  return -1;
+}
+
 void PatchLibrary::addListener(Listener* l) {
   listeners.push_back(l);
 }

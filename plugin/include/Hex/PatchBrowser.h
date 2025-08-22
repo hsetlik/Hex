@@ -9,7 +9,9 @@ class PatchBrowserParent : public Component {
 public:
   PatchBrowserParent() {}
   virtual ~PatchBrowserParent() {}
-  virtual void loadPatch(const String& name) = 0;
+  virtual void openSaveDialog(const String& name) = 0;
+  virtual void openLoadDialog(const String& name) = 0;
+  virtual void closeModal() = 0;
 };
 
 //==========================
@@ -30,6 +32,7 @@ private:
 public:
   PatchComboBox(HexState* s);
   ~PatchComboBox() override;
+  String getCurrentPatchName() const;
   void comboBoxChanged(juce::ComboBox* cb) override;
   void resized() override;
   void newPatchSaved(const String& name) override;
@@ -42,8 +45,40 @@ private:
   PatchComboBox cb;
   juce::TextButton saveBtn;
   juce::TextButton loadBtn;
+  PatchBrowserParent* getBrowserParent();
 
 public:
   PatchLoader(HexState* s);
   void resized() override;
+};
+
+//==========================
+
+class SaveDialog : public Component, public juce::TextEditor::Listener {
+private:
+  HexState* const state;
+  // children
+  juce::Label nameLabel;
+  juce::Label authorLabel;
+  juce::Label typeLabel;
+  juce::TextEditor nameEditor;
+  juce::TextEditor authEditor;
+  juce::ComboBox typeBox;
+
+  juce::TextButton saveButton;
+  juce::TextButton cancelButton;
+
+public:
+  SaveDialog(HexState* s);
+  void textEditorTextChanged(juce::TextEditor& ed) override;
+  // this gets called when we make the save dialog visible
+  void initializeFor(const String& patchName);
+};
+
+class LoadDialog : public Component {
+private:
+  HexState* const state;
+
+public:
+  LoadDialog(HexState* s);
 };

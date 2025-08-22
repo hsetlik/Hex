@@ -86,3 +86,5 @@ private:
   BottomBar kbdBar;
   PatchLoader loader;
 };
+
+//========================================================

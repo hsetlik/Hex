@@ -9,6 +9,8 @@ ValueTree loadStateForPatch(const String& name);
 
 //================================================
 
+const juce::StringArray patchTypeNames = {"Bass", "Lead", "Pad", "Keys"};
+
 struct patch_info_t {
   String name;
   String author;
@@ -28,6 +30,8 @@ public:
   int getNumPatches() const { return (int)patches.size(); }
   String nameAtIndex(int idx) const;
   int indexForName(const String& name) const;
+  String currentPatchName() const { return selectedPatchName; }
+  int currentPatchIndex() const;
   PatchStatusE validatePatch(const patch_info_t& info) const;
   // actual saving/loading work happens here
   void savePatch(apvts* state, const patch_info_t& patch);
