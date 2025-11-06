@@ -1,6 +1,8 @@
 
 #include "PatchBrowser.h"
+#include "FileSystem.h"
 #include "Identifiers.h"
+#include "juce_core/juce_core.h"
 #include "juce_events/juce_events.h"
 
 PatchComboBox::PatchComboBox(HexState* s) : PatchLibrary::Listener(), state(s) {
@@ -143,4 +145,87 @@ SaveDialog::SaveDialog(HexState* s) : state(s) {
   addAndMakeVisible(typeLabel);
 
   // editors
+  nameEditor.setMultiLine(false);
+  nameEditor.setReturnKeyStartsNewLine(false);
+  nameEditor.setEscapeAndReturnKeysConsumed(false);
+  addAndMakeVisible(nameEditor);
+  nameEditor.addListener(this);
+
+  authEditor.setMultiLine(false);
+  authEditor.setReturnKeyStartsNewLine(false);
+  authEditor.setEscapeAndReturnKeysConsumed(false);
+  addAndMakeVisible(authEditor);
+  authEditor.addListener(this);
+
+  // type combo box
+  typeBox.addItemList(patchTypeNames, 1);
+  typeBox.setSelectedItemIndex(0);
+  addAndMakeVisible(typeBox);
+
+  // save and close buttons
+  saveButton.setButtonText("Save");
+  saveButton.setEnabled(false);
+  saveButton.onClick = [this]() { saveAndClose(); };
+  addAndMakeVisible(saveButton);
+
+  cancelButton.setButtonText("Cancel");
+  cancelButton.onClick = [this]() {
+    auto* parent = findParentComponentOfClass<PatchBrowserParent>();
+    if (parent != nullptr)
+      parent->closeModal();
+  };
+  addAndMakeVisible(cancelButton);
+}
+
+SaveDialog::~SaveDialog() {
+  nameEditor.removeListener(this);
+  authEditor.removeListener(this);
+}
+
+void SaveDialog::textEditorTextChanged(juce::TextEditor& ed) {
+  juce::ignoreUnused(ed);
+  saveButton.setEnabled(isPatchLegal());
+}
+
+patch_info_t SaveDialog::getCurrentInfo() const {
+  patch_info_t info;
+  info.name = nameEditor.getText();
+  info.author = authEditor.getText();
+  info.type = typeBox.getSelectedItemIndex();
+  return info;
+}
+
+bool SaveDialog::isPatchLegal() const {
+  auto info = getCurrentInfo();
+  return state->patchLib.validatePatch(info) != PatchStatusE::Illegal;
+}
+
+void SaveDialog::saveAndClose() {
+  auto info = getCurrentInfo();
+  // save the existing patch
+  state->patchLib.savePatch(state, info);
+  // close the modal window
+  auto* parent = findParentComponentOfClass<PatchBrowserParent>();
+  if (parent != nullptr) {
+    parent->closeModal();
+  }
+}
+
+void SaveDialog::initializeFor(const String& patchName) {
+  auto patchIdx = state->patchLib.indexForName(patchName);
+  // if a patch of this name already exists
+  if (patchIdx != -1) {
+    auto info = state->patchLib.infoForIndex(patchIdx);
+    nameEditor.setText(info.name);
+    authEditor.setText(info.author);
+    typeBox.setSelectedItemIndex(info.type);
+  } else {
+    nameEditor.setText(patchName);
+    authEditor.setText("User");
+    typeBox.setSelectedItemIndex(0);
+  }
+}
+
+void SaveDialog::resized() {
+  auto fBounds = getLocalBounds().toFloat();
 }

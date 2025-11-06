@@ -130,6 +130,22 @@ int PatchLibrary::indexForName(const String& name) const {
   return -1;
 }
 
+patch_info_t PatchLibrary::infoForIndex(int idx) const {
+  patch_info_t info;
+  if (idx < 0 || idx < (int)patches.size()) {
+    auto name = availablePatchNames()[idx];
+    for (auto& p : patches) {
+      if (p.name == name) {
+        info = p;
+        return info;
+      }
+    }
+  } else {
+    jassert(false);
+  }
+  return info;
+}
+
 int PatchLibrary::currentPatchIndex() const {
   if (selectedPatchName != "Untitled") {
     return indexForName(selectedPatchName);

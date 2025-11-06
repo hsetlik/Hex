@@ -68,11 +68,18 @@ private:
   juce::TextButton saveButton;
   juce::TextButton cancelButton;
 
+  // helpers for saving
+  patch_info_t getCurrentInfo() const;
+  bool isPatchLegal() const;
+  void saveAndClose();
+
 public:
   SaveDialog(HexState* s);
+  ~SaveDialog() override;
   void textEditorTextChanged(juce::TextEditor& ed) override;
   // this gets called when we make the save dialog visible
   void initializeFor(const String& patchName);
+  void resized() override;
 };
 
 class LoadDialog : public Component {
