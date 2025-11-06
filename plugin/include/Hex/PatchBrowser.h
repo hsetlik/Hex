@@ -80,6 +80,7 @@ public:
   // this gets called when we make the save dialog visible
   void initializeFor(const String& patchName);
   void resized() override;
+  void paint(juce::Graphics& g) override;
 };
 
 class LoadDialog : public Component {

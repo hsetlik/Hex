@@ -132,21 +132,33 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
       graph(params, buffer),
       fPanel(tree, params),
       kbdBar(tree, kbdState),
-      loader(tree) {
+      loader(tree),
+      saveDialog(tree) {
   setLookAndFeel(&lnf);
   addAndMakeVisible(&modGrid);
+  nonModalComps.push_back(&modGrid);
   addAndMakeVisible(&graph);
+
+  nonModalComps.push_back(&graph);
   addAndMakeVisible(&fPanel);
+  nonModalComps.push_back(&fPanel);
   addAndMakeVisible(&kbdBar);
+  nonModalComps.push_back(&kbdBar);
   addAndMakeVisible(&loader);
+  nonModalComps.push_back(&loader);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
     addAndMakeVisible(
         opComponents.add(new OperatorComponent(i, linkedTree, params)));
+    nonModalComps.push_back(opComponents.getLast());
   }
   for (int i = 0; i < NUM_LFOS; ++i) {
     addAndMakeVisible(
         lfoComponents.add(new LfoComponent(i, proc, params, linkedTree)));
+    nonModalComps.push_back(lfoComponents.getLast());
   }
+  addAndMakeVisible(saveDialog);
+  saveDialog.setVisible(false);
+  saveDialog.setEnabled(false);
 }
 
 HexEditor::~HexEditor() {
@@ -188,9 +200,39 @@ void HexEditor::resized() {
   auto xCushion = getWidth() / 3.5;
   auto yCushion = getHeight() / 3.0;
   auto saveBounds = getLocalBounds().reduced((int)xCushion, (int)yCushion);
+  saveDialog.setBounds(saveBounds);
 }
 
 void HexEditor::paint(juce::Graphics& g) {
   g.setColour(UXPalette::lightGray);
   g.fillAll();
+}
+
+//------------------------------------------------------
+
+void HexEditor::setNonModalsEnabled(bool enabled) {
+  for (auto* c : nonModalComps) {
+    c->setEnabled(enabled);
+  }
+}
+
+void HexEditor::openSaveDialog(const String& patchName) {
+  setNonModalsEnabled(false);
+  saveDialog.initializeFor(patchName);
+  saveDialog.setEnabled(true);
+  saveDialog.setVisible(true);
+  saveDialog.toFront(true);
+  resized();
+}
+
+void HexEditor::openLoadDialog(const String& patchName) {
+  // TODO
+  juce::ignoreUnused(patchName);
+}
+
+void HexEditor::closeModal() {
+  saveDialog.setEnabled(false);
+  saveDialog.setVisible(false);
+  setNonModalsEnabled(true);
+  resized();
 }

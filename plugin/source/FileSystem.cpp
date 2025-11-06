@@ -126,7 +126,6 @@ int PatchLibrary::indexForName(const String& name) const {
     if (patchNames[i] == name)
       return i;
   }
-  jassert(false);
   return -1;
 }
 

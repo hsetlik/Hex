@@ -63,8 +63,10 @@ public:
   void resized() override;
   void paint(juce::Graphics& g) override;
 };
+
 //========================================================
-class HexEditor : public Component {
+
+class HexEditor : public PatchBrowserParent {
 public:
   HexEditor(HexAudioProcessor* proc,
             HexState* tree,
@@ -76,6 +78,11 @@ public:
   void resized() override;
   void paint(juce::Graphics& g) override;
 
+  // patch browser overrides
+  void openSaveDialog(const String& patchName) override;
+  void openLoadDialog(const String& patchName) override;
+  void closeModal() override;
+
 private:
   HexLookAndFeel lnf;
   juce::OwnedArray<OperatorComponent> opComponents;
@@ -85,6 +92,12 @@ private:
   FilterPanel fPanel;
   BottomBar kbdBar;
   PatchLoader loader;
+  // modal handling stuff---------------
+  SaveDialog saveDialog;
+  // hold on to a list of the components that we need to disable when a modal
+  // component is active
+  std::vector<Component*> nonModalComps;
+  void setNonModalsEnabled(bool enabled);
 };
 
 //========================================================

@@ -1,5 +1,6 @@
 
 #include "PatchBrowser.h"
+#include "Color.h"
 #include "FileSystem.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
@@ -80,6 +81,7 @@ void PatchComboBox::existingPatchSaved(const String& patchName) {
 
 void PatchComboBox::newPatchSaved(const String& patchName) {
   auto idx = state->patchLib.indexForName(patchName);
+  cb.addItem(patchName, idx + 1);
   cb.setSelectedItemIndex(idx);
 }
 
@@ -227,5 +229,38 @@ void SaveDialog::initializeFor(const String& patchName) {
 }
 
 void SaveDialog::resized() {
+  auto fBounds = getLocalBounds().toFloat().reduced(3.5f);
+  const float dY = juce::jmax(fBounds.getHeight() / 7.0f, 24.0f);
+  const float dX = juce::jmin(fBounds.getWidth(), 300.0f);
+  const float border = 1.5f;
+  // place things top to bottom
+  auto nlBounds = fBounds.removeFromTop(dY).reduced(border);
+  nameLabel.setBounds(nlBounds.toNearestInt());
+  auto neBounds = fBounds.removeFromTop(dY).reduced(border);
+  nameEditor.setBounds(neBounds.toNearestInt());
+  auto alBounds = fBounds.removeFromTop(dY).reduced(border);
+  authorLabel.setBounds(alBounds.toNearestInt());
+  auto aeBounds = fBounds.removeFromTop(dY).reduced(border);
+  authEditor.setBounds(aeBounds.toNearestInt());
+  auto tlBounds = fBounds.removeFromTop(dY).reduced(border);
+  typeLabel.setBounds(tlBounds.toNearestInt());
+  auto tbBounds = fBounds.removeFromTop(dY).reduced(border);
+  typeBox.setBounds(tbBounds.toNearestInt());
+  // place the buttons side to side
+  auto buttonBounds = fBounds.removeFromTop(dY);
+  buttonBounds = buttonBounds.withSizeKeepingCentre(
+      buttonBounds.getWidth() * 0.75f, buttonBounds.getHeight());
+  const float buttonWidth = buttonBounds.getWidth() / 2.0f;
+  auto cbBounds = buttonBounds.removeFromLeft(buttonWidth).reduced(border);
+  cancelButton.setBounds(cbBounds.toNearestInt());
+  auto sbBounds = buttonBounds.reduced(border);
+  saveButton.setBounds(sbBounds.toNearestInt());
+}
+
+void SaveDialog::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::highlight);
+  g.fillRect(fBounds);
+  g.setColour(UXPalette::darkBkgnd);
+  g.fillRect(fBounds.reduced(3.5f));
 }
