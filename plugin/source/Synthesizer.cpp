@@ -148,63 +148,64 @@ HexSynth::HexSynth(apvts* tree)
   addSound(new HexSound);
   setNoteStealingEnabled(false);
 }
-
-juce::SynthesiserVoice* HexSynth::findFreeVoice(
-    juce::SynthesiserSound* soundToPlay,
-    int midiChannel,
-    int midiNoteNum,
-    bool stealIfNoneAvailible) const {
-  auto idx = 0;
-  for (auto v : hexVoices) {
-    if (v->isVoiceCleared()) {
-      return v;
-    }
-    ++idx;
-  }
-  return nullptr;
-}
-
-void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity) {
-  const juce::ScopedLock sl(lock);
-  for (auto* sound : sounds) {
-    if (sound->appliesToNote(midiNoteNumber) &&
-        sound->appliesToChannel(midiChannel)) {
-      //! if a voice is already playing this note, stop it
-      for (auto* voice : hexVoices) {
-        if (voice->getCurrentlyPlayingNote() == midiNoteNumber &&
-            voice->isPlayingChannel(midiChannel)) {
-          stopVoice(voice, 1.0f, true);
-          voice->justKilled = true;
-        } else
-          voice->justKilled = false;
-      }
-      auto* freeVoice = findFreeVoice(sound, midiChannel, midiNoteNumber, true);
-      if (freeVoice != nullptr) {
-        startVoice(freeVoice, sound, midiChannel, midiNoteNumber, velocity);
-      }
-    }
-  }
-}
-void HexSynth::noteOff(int midiChannel,
-                       int midiNoteNumber,
-                       float velocity,
-                       bool allowTailOff) {
-  const juce::ScopedLock sl(lock);
-  for (auto* voice : voices) {
-    if (voice->getCurrentlyPlayingNote() == midiNoteNumber &&
-        voice->isPlayingChannel(midiChannel)) {
-      if (auto sound = voice->getCurrentlyPlayingSound()) {
-        if (sound->appliesToNote(midiNoteNumber) &&
-            sound->appliesToChannel(midiChannel)) {
-          voice->setKeyDown(false);
-          if (!(voice->isSustainPedalDown() || voice->isSostenutoPedalDown()))
-            stopVoice(voice, velocity, allowTailOff);
-        }
-      }
-    }
-  }
-}
-
+//
+// juce::SynthesiserVoice* HexSynth::findFreeVoice(
+//     juce::SynthesiserSound* soundToPlay,
+//     int midiChannel,
+//     int midiNoteNum,
+//     bool stealIfNoneAvailible) const {
+//   auto idx = 0;
+//   for (auto v : hexVoices) {
+//     if (v->isVoiceCleared()) {
+//       return v;
+//     }
+//     ++idx;
+//   }
+//   return nullptr;
+// }
+//
+// void HexSynth::noteOn(int midiChannel, int midiNoteNumber, float velocity) {
+//   const juce::ScopedLock sl(lock);
+//   for (auto* sound : sounds) {
+//     if (sound->appliesToNote(midiNoteNumber) &&
+//         sound->appliesToChannel(midiChannel)) {
+//       //! if a voice is already playing this note, stop it
+//       for (auto* voice : hexVoices) {
+//         if (voice->getCurrentlyPlayingNote() == midiNoteNumber &&
+//             voice->isPlayingChannel(midiChannel)) {
+//           stopVoice(voice, 1.0f, true);
+//           voice->justKilled = true;
+//         } else
+//           voice->justKilled = false;
+//       }
+//       auto* freeVoice = findFreeVoice(sound, midiChannel, midiNoteNumber,
+//       true); if (freeVoice != nullptr) {
+//         startVoice(freeVoice, sound, midiChannel, midiNoteNumber, velocity);
+//       }
+//     }
+//   }
+// }
+// void HexSynth::noteOff(int midiChannel,
+//                        int midiNoteNumber,
+//                        float velocity,
+//                        bool allowTailOff) {
+//   const juce::ScopedLock sl(lock);
+//   for (auto* voice : voices) {
+//     if (voice->getCurrentlyPlayingNote() == midiNoteNumber &&
+//         voice->isPlayingChannel(midiChannel)) {
+//       if (auto sound = voice->getCurrentlyPlayingSound()) {
+//         if (sound->appliesToNote(midiNoteNumber) &&
+//             sound->appliesToChannel(midiChannel)) {
+//           voice->setKeyDown(false);
+//           if (!(voice->isSustainPedalDown() ||
+//           voice->isSostenutoPedalDown()))
+//             stopVoice(voice, velocity, allowTailOff);
+//         }
+//       }
+//     }
+//   }
+// }
+//
 void HexSynth::renderVoices(juce::AudioBuffer<float>& buffer,
                             int startSample,
                             int numSamples) {

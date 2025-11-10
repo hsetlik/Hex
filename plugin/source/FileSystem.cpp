@@ -86,6 +86,11 @@ bool PatchLibrary::isNameLegal(const String& name) const {
 void PatchLibrary::loadPatch(apvts* state, const String& name) {
   selectedPatchName = name;
   auto newTree = UserFiles::loadStateForPatch(name);
+  // note: we need to accurately set the patch index variable based on
+  // the list of files in the user's patch folder (a .hxp file can't contain
+  // this information because it depends on the unknowable state of other files)
+  auto index = (float)indexForName(name);
+  newTree.setProperty(ID::selectedPatchIndex, index, nullptr);
   state->replaceState(newTree);
 }
 
