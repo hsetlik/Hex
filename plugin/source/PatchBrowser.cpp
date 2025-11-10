@@ -50,9 +50,8 @@ void PatchComboBox::paramCallback(float fValue) {
   int idx = (int)fValue;
   if (idx > -1 && idx != selectedPatchIdx) {
     selectedPatchIdx = idx;
-
-    // TODO: call the parent to load the appropriate
-    // patch data here
+    auto name = state->patchLib.nameAtIndex(idx);
+    state->patchLib.loadPatch(state, name);
     updateButtonEnablement();
   }
 }
@@ -70,7 +69,7 @@ void PatchComboBox::updateButtonEnablement() {
 void PatchComboBox::comboBoxChanged(juce::ComboBox* box) {
   auto newIdx = box->getSelectedItemIndex();
   if (newIdx != selectedPatchIdx) {
-    selectedPatchIdx = newIdx;
+    pAttach->setValueAsCompleteGesture((float)newIdx);
   }
 }
 

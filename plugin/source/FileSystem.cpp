@@ -84,6 +84,7 @@ bool PatchLibrary::isNameLegal(const String& name) const {
 }
 
 void PatchLibrary::loadPatch(apvts* state, const String& name) {
+  selectedPatchName = name;
   auto newTree = UserFiles::loadStateForPatch(name);
   state->replaceState(newTree);
 }
@@ -101,6 +102,7 @@ void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {
   jassert(file.replaceWithText(xmlString));
 
   auto status = validatePatch(patch);
+  selectedPatchName = patch.name;
   if (status == PatchStatusE::Available) {
     patches.push_back(patch);
     for (auto l : listeners) {
