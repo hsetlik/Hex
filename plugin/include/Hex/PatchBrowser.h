@@ -42,7 +42,7 @@ public:
 
 class PatchLoader : public Component {
 private:
-  PatchComboBox cb;
+  // PatchComboBox cb;
   juce::TextButton saveBtn;
   juce::TextButton loadBtn;
   PatchBrowserParent* getBrowserParent();

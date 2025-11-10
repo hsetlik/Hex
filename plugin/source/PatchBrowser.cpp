@@ -51,7 +51,7 @@ void PatchComboBox::paramCallback(float fValue) {
   if (idx > -1 && idx != selectedPatchIdx) {
     selectedPatchIdx = idx;
     auto name = state->patchLib.nameAtIndex(idx);
-    state->patchLib.loadPatch(&state->mainTree, name);
+    state->patchLib.loadPatch(&state->mainTree, state->patchTree, name);
     updateButtonEnablement();
   }
 }
@@ -97,19 +97,21 @@ void PatchComboBox::resized() {
 //========================================
 
 PatchLoader::PatchLoader(HexState* s)
-    : cb(s), saveBtn("Save Patch"), loadBtn("Load Patch") {
-  addAndMakeVisible(&cb);
+    : /*cb(s),*/ saveBtn("Save Patch"), loadBtn("Load Patch") {
+  // addAndMakeVisible(&cb);
   addAndMakeVisible(&saveBtn);
   addAndMakeVisible(&loadBtn);
 
   // set up onClick lambdas
-  saveBtn.onClick = [this]() {
+  saveBtn.onClick = [this, s]() {
     auto* parent = getBrowserParent();
-    parent->openSaveDialog(cb.getCurrentPatchName());
+    String patchName = s->patchTree[ID::patchName];
+    parent->openSaveDialog(patchName);
   };
-  loadBtn.onClick = [this]() {
+  loadBtn.onClick = [this, s]() {
     auto* parent = getBrowserParent();
-    parent->openLoadDialog(cb.getCurrentPatchName());
+    String patchName = s->patchTree[ID::patchName];
+    parent->openSaveDialog(patchName);
   };
 }
 
@@ -123,7 +125,7 @@ void PatchLoader::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float cbHeight = 45.0f;
   auto cbBox = fBounds.removeFromTop(cbHeight).reduced(2.0f).toNearestInt();
-  cb.setBounds(cbBox);
+  // cb.setBounds(cbBox);
   const float btnWidth = fBounds.getWidth() / 2.0f;
   saveBtn.setBounds(
       fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());

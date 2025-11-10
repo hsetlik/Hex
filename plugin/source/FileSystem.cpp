@@ -83,24 +83,24 @@ bool PatchLibrary::isNameLegal(const String& name) const {
   return rawName == legalName;
 }
 
-void PatchLibrary::loadPatch(apvts* state, const String& name) {
+void PatchLibrary::loadPatch(apvts* state,
+                             ValueTree& patchTree,
+                             const String& name) {
   selectedPatchName = name;
   auto newTree = UserFiles::loadStateForPatch(name);
-  // note: we need to accurately set the patch index variable based on
-  // the list of files in the user's patch folder (a .hxp file can't contain
-  // this information because it depends on the unknowable state of other files)
-  auto index = (float)indexForName(name);
-  newTree.setProperty(ID::selectedPatchIndex, index, nullptr);
+  patchTree = newTree.getChildWithName(ID::HEX_PATCH_INFO);
+  newTree.removeChild(patchTree, nullptr);
   state->replaceState(newTree);
 }
 
 void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {
   auto parent = state->copyState();
-  auto patchTree = parent.getChildWithName(ID::HEX_PATCH_INFO);
+  ValueTree patchTree(ID::HEX_PATCH_INFO);
   jassert(patchTree.isValid());
   patchTree.setProperty(ID::patchName, patch.name, nullptr);
   patchTree.setProperty(ID::patchAuthor, patch.author, nullptr);
   patchTree.setProperty(ID::patchType, patch.type, nullptr);
+  parent.appendChild(patchTree, nullptr);
 
   auto xmlString = parent.toXmlString();
   auto file = UserFiles::getPatchFile(patch.name);

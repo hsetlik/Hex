@@ -41,7 +41,7 @@ public:
   PatchStatusE validatePatch(const patch_info_t& info) const;
   // actual saving/loading work happens here
   void savePatch(apvts* state, const patch_info_t& patch);
-  void loadPatch(apvts* state, const String& name);
+  void loadPatch(apvts* state, ValueTree& patchTree, const String& name);
   //----------------------------
   struct Listener {
     Listener() = default;
