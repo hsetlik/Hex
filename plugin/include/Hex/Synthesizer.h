@@ -79,6 +79,7 @@ public:
                  float velocity,
                  juce::SynthesiserSound* sound,
                  int currentPitchWheelPosition) override;
+  void nStartNote(int midiNoteNumber, float velocity, int pitchWheelPos);
   void stopNote(float velocity, bool allowTailOff) override;
   //=============================================
   void updateGrid(RoutingGrid& newGrid) { grid = newGrid; }
@@ -165,15 +166,16 @@ public:
       voice->setSampleRate(newRate, blockSize);
     }
   }
-  /*
-   juce::SynthesiserVoice* findFreeVoice (juce::SynthesiserSound* soundToPlay,
-                                         int midiChannel,
-                                         int midiNoteNum,
-                                         bool stealIfNoneAvailible)const
-  override; void noteOn (int midiChannel, int midiNoteNumber, float velocity)
-  override; void noteOff (int midiChannel, int midiNoteNumber, float velocity,
-  bool allowTailOff) override;
-   */
+  juce::SynthesiserVoice* findFreeVoice(
+      juce::SynthesiserSound* soundToPlay,
+      int midiChannel,
+      int midiNoteNum,
+      bool stealIfNoneAvailible) const override;
+  void noteOn(int midiChannel, int midiNoteNumber, float velocity) override;
+  void noteOff(int midiChannel,
+               int midiNoteNumber,
+               float velocity,
+               bool allowTailOff) override;
   void renderVoices(juce::AudioBuffer<float>& buffer,
                     int startSample,
                     int numSamples) override;
