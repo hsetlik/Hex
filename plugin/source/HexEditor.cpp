@@ -13,7 +13,7 @@
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
 FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
-    : linkedTree(tree),
+    : linkedTree(&tree->mainTree),
       envComp(0, linkedTree, graph, true),
       cutoffName("Cutoff"),
       resName("Resonance"),
@@ -127,11 +127,11 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
                      GraphParamSet* params,
                      RingBuffer<float>* buffer,
                      juce::MidiKeyboardState& kbdState)
-    : linkedTree(tree),
-      modGrid(tree),
+    : linkedTree(&tree->mainTree),
+      modGrid(linkedTree),
       graph(params, buffer),
       fPanel(tree, params),
-      kbdBar(tree, kbdState),
+      kbdBar(linkedTree, kbdState),
       loader(tree),
       saveDialog(tree) {
   setLookAndFeel(&lnf);

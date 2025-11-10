@@ -35,7 +35,7 @@ PatchComboBox::PatchComboBox(HexState* s) : PatchLibrary::Listener(), state(s) {
   // 3. set up the main parameter attachment
 
   state->patchLib.addListener(this);
-  auto* param = state->getParameter(ID::selectedPatchIndex.toString());
+  auto* param = state->mainTree.getParameter(ID::selectedPatchIndex.toString());
   auto callback = [this](float fID) { paramCallback(fID); };
   pAttach.reset(new ParamAttachment(*param, callback, nullptr));
   pAttach->sendInitialUpdate();
@@ -51,7 +51,7 @@ void PatchComboBox::paramCallback(float fValue) {
   if (idx > -1 && idx != selectedPatchIdx) {
     selectedPatchIdx = idx;
     auto name = state->patchLib.nameAtIndex(idx);
-    state->patchLib.loadPatch(state, name);
+    state->patchLib.loadPatch(&state->mainTree, name);
     updateButtonEnablement();
   }
 }
@@ -204,7 +204,7 @@ bool SaveDialog::isPatchLegal() const {
 void SaveDialog::saveAndClose() {
   auto info = getCurrentInfo();
   // save the existing patch
-  state->patchLib.savePatch(state, info);
+  state->patchLib.savePatch(&state->mainTree, info);
   // close the modal window
   auto* parent = findParentComponentOfClass<PatchBrowserParent>();
   if (parent != nullptr) {

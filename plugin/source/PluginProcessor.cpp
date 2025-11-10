@@ -8,7 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "ParameterLayout.h"
+#include "juce_core/juce_core.h"
 
 //==============================================================================
 HexAudioProcessor::HexAudioProcessor()
@@ -24,7 +24,7 @@ HexAudioProcessor::HexAudioProcessor()
               ),
       // #endif
       tree(this),
-      synth(&tree),
+      synth(&tree.mainTree),
       createdEditor(nullptr) {
 }
 
@@ -73,14 +73,19 @@ int HexAudioProcessor::getCurrentProgram() {
   return 0;
 }
 
-void HexAudioProcessor::setCurrentProgram(int index) {}
+void HexAudioProcessor::setCurrentProgram(int index) {
+  juce::ignoreUnused(index);
+}
 
 const juce::String HexAudioProcessor::getProgramName(int index) {
+  juce::ignoreUnused(index);
   return {};
 }
 
 void HexAudioProcessor::changeProgramName(int index,
-                                          const juce::String& newName) {}
+                                          const juce::String& newName) {
+  juce::ignoreUnused(index, newName);
+}
 
 //==============================================================================
 void HexAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
@@ -148,7 +153,7 @@ juce::AudioProcessorEditor* HexAudioProcessor::createEditor() {
 
 //==============================================================================
 void HexAudioProcessor::getStateInformation(juce::MemoryBlock& destData) {
-  auto state = tree.copyState();
+  auto state = tree.mainTree.copyState();
   std::unique_ptr<juce::XmlElement> xml(state.createXml());
   copyXmlToBinary(*xml, destData);
 }
@@ -157,8 +162,8 @@ void HexAudioProcessor::setStateInformation(const void* data, int sizeInBytes) {
   std::unique_ptr<juce::XmlElement> xmlState(
       getXmlFromBinary(data, sizeInBytes));
   if (xmlState.get() != nullptr)
-    if (xmlState->hasTagName(tree.state.getType()))
-      tree.replaceState(juce::ValueTree::fromXml(*xmlState));
+    if (xmlState->hasTagName(tree.mainTree.state.getType()))
+      tree.mainTree.replaceState(juce::ValueTree::fromXml(*xmlState));
 }
 //==============================================================================
 // This creates new instances of the plugin..
