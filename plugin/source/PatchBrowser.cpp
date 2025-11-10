@@ -164,10 +164,15 @@ SaveDialog::SaveDialog(HexState* s) : state(s) {
   addAndMakeVisible(typeBox);
 
   // save and close buttons
-  saveButton.setButtonText("Save");
-  saveButton.setEnabled(false);
-  saveButton.onClick = [this]() { saveAndClose(); };
-  addAndMakeVisible(saveButton);
+  nSaveButton.setButtonText("Save New");
+  nSaveButton.setEnabled(false);
+  nSaveButton.onClick = [this]() { saveAndClose(); };
+  addAndMakeVisible(nSaveButton);
+
+  eSaveButton.setButtonText("Save Existing");
+  eSaveButton.setEnabled(false);
+  eSaveButton.onClick = [this]() { saveAndClose(); };
+  addAndMakeVisible(eSaveButton);
 
   cancelButton.setButtonText("Cancel");
   cancelButton.onClick = [this]() {
@@ -185,7 +190,22 @@ SaveDialog::~SaveDialog() {
 
 void SaveDialog::textEditorTextChanged(juce::TextEditor& ed) {
   juce::ignoreUnused(ed);
-  saveButton.setEnabled(isPatchLegal());
+  auto info = getCurrentInfo();
+  auto val = state->patchLib.validatePatch(info);
+  switch (val) {
+    case PatchStatusE::Available:
+      nSaveButton.setEnabled(true);
+      eSaveButton.setEnabled(false);
+      break;
+    case PatchStatusE::Existing:
+      nSaveButton.setEnabled(false);
+      eSaveButton.setEnabled(true);
+      break;
+    case PatchStatusE::Illegal:
+      nSaveButton.setEnabled(false);
+      eSaveButton.setEnabled(false);
+      break;
+  }
 }
 
 patch_info_t SaveDialog::getCurrentInfo() const {
@@ -220,6 +240,8 @@ void SaveDialog::initializeFor(const String& patchName) {
     nameEditor.setText(info.name);
     authEditor.setText(info.author);
     typeBox.setSelectedItemIndex(info.type);
+    eSaveButton.setEnabled(true);
+    nSaveButton.setEnabled(false);
   } else {
     nameEditor.setText(patchName);
     authEditor.setText("User");
@@ -249,11 +271,13 @@ void SaveDialog::resized() {
   auto buttonBounds = fBounds.removeFromTop(dY);
   buttonBounds = buttonBounds.withSizeKeepingCentre(
       buttonBounds.getWidth() * 0.75f, buttonBounds.getHeight());
-  const float buttonWidth = buttonBounds.getWidth() / 2.0f;
+  const float buttonWidth = buttonBounds.getWidth() / 3.0f;
   auto cbBounds = buttonBounds.removeFromLeft(buttonWidth).reduced(border);
   cancelButton.setBounds(cbBounds.toNearestInt());
-  auto sbBounds = buttonBounds.reduced(border);
-  saveButton.setBounds(sbBounds.toNearestInt());
+  auto nsbBounds = buttonBounds.removeFromLeft(buttonWidth).reduced(border);
+  nSaveButton.setBounds(nsbBounds.toNearestInt());
+  auto esbBounds = buttonBounds.reduced(border);
+  eSaveButton.setBounds(esbBounds.toNearestInt());
 }
 
 void SaveDialog::paint(juce::Graphics& g) {

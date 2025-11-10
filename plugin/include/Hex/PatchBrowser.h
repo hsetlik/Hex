@@ -65,7 +65,8 @@ private:
   juce::TextEditor authEditor;
   juce::ComboBox typeBox;
 
-  juce::TextButton saveButton;
+  juce::TextButton nSaveButton;
+  juce::TextButton eSaveButton;
   juce::TextButton cancelButton;
 
   // helpers for saving
