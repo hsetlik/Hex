@@ -309,7 +309,7 @@ void PatchInfoBar::mouseDoubleClick(const juce::MouseEvent& e) {
 
 static AttString buildPatchBatAttString(const String& text) {
   AttString aStr(text);
-
+  // TODO font and formatting stuff gets handled here
   return aStr;
 }
 
@@ -458,10 +458,9 @@ std::vector<PatchInfoBar*> PatchInfoList::barsSortedBy(PatchSortModeE mode,
   return bars;
 }
 
-void PatchInfoList::setSortMode(PatchSortModeE _mode, bool _ascending) {
-  currentMode = _mode;
-  sortAscending = _ascending;
-  resized();
+String PatchInfoList::selectedPatchName() const {
+  jassert(selectedBar != nullptr);
+  return selectedBar->info.name;
 }
 
 void PatchInfoList::resized() {
@@ -469,9 +468,134 @@ void PatchInfoList::resized() {
   const int height = 35;
   const int x = 0;
   int y = 0;
-  auto list = barsSortedBy(currentMode, sortAscending);
+  auto* parent = findParentComponentOfClass<LoadDialog>();
+  jassert(parent != nullptr);
+  auto list = barsSortedBy(parent->getSortMode(), parent->getAscending());
   for (size_t i = 0; i < list.size(); ++i) {
     list[i]->setBounds(x, y, width, height);
     y += height;
   }
+}
+
+PatchColumnTop::PatchColumnTop(const PatchSortModeE& _mode) : mode(_mode) {}
+
+bool PatchColumnTop::isSelected() const {
+  auto* parent = findParentComponentOfClass<LoadDialog>();
+  jassert(parent != nullptr);
+  return parent->getSortMode() == mode;
+}
+
+void PatchColumnTop::paint(juce::Graphics& g) {
+  // grip the colors
+  auto fillColor = isSelected() ? UXPalette::highlight : UXPalette::darkBkgnd;
+  auto strokeColor = isSelected() ? UXPalette::darkBkgnd : UXPalette::highlight;
+  auto fBounds = getLocalBounds().toFloat();
+  g.setColour(strokeColor);
+  g.fillRect(fBounds);
+  g.setColour(fillColor);
+  g.fillRect(fBounds.reduced(3.0f));
+  fBounds = fBounds.reduced(3.0f);
+  auto aStr = buildPatchBatAttString(getColumnText());
+  aStr.setColour(strokeColor);
+  aStr.draw(g, fBounds);
+}
+
+String PatchColumnTop::getColumnText() const {
+  switch (mode) {
+    case sName:
+      return "Name";
+      break;
+    case sAuthor:
+      return "Author";
+      break;
+    case sCategory:
+      return "Category";
+      break;
+  }
+  jassert(false);
+  return "Name";
+}
+
+void PatchColumnTop::mouseUp(const juce::MouseEvent& e) {
+  if (e.mouseWasClicked()) {
+    if (isSelected()) {
+      isAscending = !isAscending;
+    }
+    auto* parent = findParentComponentOfClass<LoadDialog>();
+    jassert(parent != nullptr);
+    parent->setSortMode(mode, isAscending);
+  }
+}
+//------------------------------------------------------------------
+
+void LoadDialog::setSortMode(PatchSortModeE _mode, bool _ascending) {
+  currentMode = _mode;
+  sortAscending = _ascending;
+  resized();
+}
+
+LoadDialog::LoadDialog(HexState* s)
+    : state(s),
+      infoList(s),
+      nameCT(sName),
+      authorCT(sAuthor),
+      categCT(sCategory) {
+  // set up viewport
+  vp.setViewedComponent(&infoList, false);
+  vp.setViewPosition(0, 0);
+  vp.setInterceptsMouseClicks(true, true);
+  vp.setRepaintsOnMouseActivity(true);
+  addAndMakeVisible(vp);
+
+  // set up headers
+  addAndMakeVisible(nameCT);
+  addAndMakeVisible(authorCT);
+  addAndMakeVisible(categCT);
+
+  // load and cancel buttons
+  loadBtn.setButtonText("Load");
+  loadBtn.onClick = [this]() {
+    state->patchLib.loadPatch(&state->mainTree, state->patchTree,
+                              infoList.selectedPatchName());
+    auto* parent = getBrowserParent();
+    parent->closeModal();
+  };
+  loadBtn.setEnabled(state->patchLib.getNumPatches() > 0);
+  addAndMakeVisible(loadBtn);
+
+  cancelBtn.setButtonText("Cancel");
+  cancelBtn.onClick = [this]() {
+    auto* parent = getBrowserParent();
+    parent->closeModal();
+  };
+  addAndMakeVisible(cancelBtn);
+}
+
+PatchBrowserParent* LoadDialog::getBrowserParent() const {
+  auto* parent = findParentComponentOfClass<PatchBrowserParent>();
+  jassert(parent != nullptr);
+  return parent;
+}
+
+void LoadDialog::resized() {
+  auto fBounds = getLocalBounds().toFloat().reduced(3.5f);
+  const float topHeight = fBounds.getHeight() / 11.0f;
+  const float dX = fBounds.getWidth() / 10.0f;
+  auto cBounds = fBounds.removeFromTop(topHeight);
+  auto nBounds = cBounds.removeFromLeft(4.0f * dX);
+  auto aBounds = cBounds.removeFromLeft(3.0f * dX);
+
+  nameCT.setBounds(nBounds.toNearestInt());
+  authorCT.setBounds(aBounds.toNearestInt());
+  categCT.setBounds(cBounds.toNearestInt());
+
+  auto buttonArea = fBounds.removeFromBottom(fBounds.getHeight() / 8.0f);
+  vp.setBounds(fBounds.toNearestInt());
+  buttonArea = buttonArea.withSizeKeepingCentre(buttonArea.getWidth() * 0.75f,
+                                                buttonArea.getHeight());
+  auto cancelBounds =
+      buttonArea.removeFromLeft(buttonArea.getWidth() / 2.0f).reduced(2.5f);
+  auto loadBounds = buttonArea.reduced(2.5f);
+  cancelBtn.setBounds(cancelBounds.toNearestInt());
+  loadBtn.setBounds(loadBounds.toNearestInt());
 }

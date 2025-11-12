@@ -118,8 +118,6 @@ private:
   // the sorting happens here
   std::vector<PatchInfoBar*> barsSortedBy(PatchSortModeE mode,
                                           bool ascending) const;
-  PatchSortModeE currentMode = sName;
-  bool sortAscending = true;
 
 public:
   PatchInfoList(HexState* s);
@@ -127,6 +125,45 @@ public:
     return &bar == selectedBar;
   }
   void setSelected(PatchInfoBar* bar) { selectedBar = bar; }
+  String selectedPatchName() const;
   void resized() override;
+};
+
+// buttons at the top of each column for controlling the way patches are sorted
+class PatchColumnTop : public Component {
+private:
+  const PatchSortModeE mode;
+  bool isAscending = true;
+  bool isSelected() const;
+  String getColumnText() const;
+
+public:
+  PatchColumnTop(const PatchSortModeE& _mode);
+  void paint(juce::Graphics& g) override;
+  void mouseUp(const juce::MouseEvent& e) override;
+};
+
+class LoadDialog : public Component {
+private:
+  HexState* const state;
+  PatchSortModeE currentMode = sName;
+  bool sortAscending = true;
+
+  juce::Viewport vp;
+  PatchInfoList infoList;
+  PatchColumnTop nameCT;
+  PatchColumnTop authorCT;
+  PatchColumnTop categCT;
+
+  juce::TextButton loadBtn;
+  juce::TextButton cancelBtn;
+
+  PatchBrowserParent* getBrowserParent() const;
+
+public:
+  LoadDialog(HexState* s);
   void setSortMode(PatchSortModeE _mode, bool _ascending);
+  PatchSortModeE getSortMode() const { return currentMode; }
+  bool getAscending() const { return sortAscending; }
+  void resized() override;
 };
