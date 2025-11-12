@@ -11,5 +11,4 @@ HexState::HexState(juce::AudioProcessor* proc)
   patchTree.setProperty(ID::patchName, "Untitled", nullptr);
   patchTree.setProperty(ID::patchAuthor, "User", nullptr);
   patchTree.setProperty(ID::patchType, 0, nullptr);
-  // mainTree.state.appendChild(patchTree, nullptr);
 }

@@ -24,25 +24,22 @@ private:
   juce::ComboBox cb;
   LeftButton lButton;
   RightButton rButton;
-  std::unique_ptr<ParamAttachment> pAttach;
-  void paramCallback(float fValue);
   void updateButtonEnablement();
-  int selectedPatchIdx = -1;
 
 public:
   PatchComboBox(HexState* s);
   ~PatchComboBox() override;
-  String getCurrentPatchName() const;
   void comboBoxChanged(juce::ComboBox* cb) override;
   void resized() override;
   void newPatchSaved(const String& name) override;
   void existingPatchSaved(const String& name) override;
+  void existingPatchLoaded(const String& name) override;
 };
 //==========================
 
 class PatchLoader : public Component {
 private:
-  // PatchComboBox cb;
+  PatchComboBox cb;
   juce::TextButton saveBtn;
   juce::TextButton loadBtn;
   PatchBrowserParent* getBrowserParent();

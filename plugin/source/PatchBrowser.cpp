@@ -6,39 +6,36 @@
 #include "juce_core/juce_core.h"
 #include "juce_events/juce_events.h"
 
-PatchComboBox::PatchComboBox(HexState* s) : PatchLibrary::Listener(), state(s) {
-  // 1. set up ComboBox and listener
+//========================================
+
+PatchComboBox::PatchComboBox(HexState* s) : state(s) {
+  // 1. combo box
   cb.setTextWhenNoChoicesAvailable("Untitled");
-  cb.setTextWhenNothingSelected("Untitled");
-  auto patchNames = state->patchLib.availablePatchNames();
-  cb.addItemList(patchNames, 1);
-  cb.addListener(this);
+  cb.addItemList(s->patchLib.availablePatchNames(), 1);
+  String currentName = state->patchTree[ID::patchName];
+  if (currentName != "Untitled") {
+    auto idx = state->patchLib.indexForName(currentName);
+    jassert(idx != -1);
+    cb.setSelectedItemIndex(idx);
+  }
   addAndMakeVisible(cb);
+  cb.addListener(this);
 
-  // 2. set up left & right buttons
-  lButton.onClick = [this]() {
-    int prevIndex = cb.getSelectedItemIndex();
-    jassert(prevIndex > 0);
-    cb.setSelectedItemIndex(prevIndex - 1);
-  };
-
-  rButton.onClick = [this]() {
-    int prevIndex = cb.getSelectedItemIndex();
-    jassert(prevIndex < cb.getNumItems() - 1);
-    cb.setSelectedItemIndex(prevIndex + 1);
-  };
-
+  // 2. buttons
   addAndMakeVisible(lButton);
+  lButton.onClick = [this]() {
+    auto idx = cb.getSelectedItemIndex() - 1;
+    cb.setSelectedItemIndex(idx);
+  };
+
   addAndMakeVisible(rButton);
+  rButton.onClick = [this]() {
+    auto idx = cb.getSelectedItemIndex() + 1;
+    cb.setSelectedItemIndex(idx);
+  };
   updateButtonEnablement();
-
-  // 3. set up the main parameter attachment
-
+  // 3. attach patchlib listener
   state->patchLib.addListener(this);
-  auto* param = state->mainTree.getParameter(ID::selectedPatchIndex.toString());
-  auto callback = [this](float fID) { paramCallback(fID); };
-  pAttach.reset(new ParamAttachment(*param, callback, nullptr));
-  pAttach->sendInitialUpdate();
 }
 
 PatchComboBox::~PatchComboBox() {
@@ -46,59 +43,55 @@ PatchComboBox::~PatchComboBox() {
   state->patchLib.removeListener(this);
 }
 
-void PatchComboBox::paramCallback(float fValue) {
-  int idx = (int)fValue;
-  if (idx > -1 && idx != selectedPatchIdx) {
-    selectedPatchIdx = idx;
-    auto name = state->patchLib.nameAtIndex(idx);
-    state->patchLib.loadPatch(&state->mainTree, state->patchTree, name);
-    updateButtonEnablement();
-  }
-}
-
-String PatchComboBox::getCurrentPatchName() const {
-  return state->patchLib.currentPatchName();
-}
-
 void PatchComboBox::updateButtonEnablement() {
-  auto currentIdx = cb.getSelectedItemIndex();
-  lButton.setEnabled(currentIdx > 0);
-  rButton.setEnabled(currentIdx < cb.getNumItems() - 1);
-}
-
-void PatchComboBox::comboBoxChanged(juce::ComboBox* box) {
-  auto newIdx = box->getSelectedItemIndex();
-  if (newIdx != selectedPatchIdx) {
-    pAttach->setValueAsCompleteGesture((float)newIdx);
-  }
-}
-
-void PatchComboBox::existingPatchSaved(const String& patchName) {
-  auto idx = state->patchLib.indexForName(patchName);
-  cb.setSelectedItemIndex(idx);
-}
-
-void PatchComboBox::newPatchSaved(const String& patchName) {
-  auto idx = state->patchLib.indexForName(patchName);
-  cb.addItem(patchName, idx + 1);
-  cb.setSelectedItemIndex(idx);
+  const int idx = cb.getSelectedItemIndex();
+  lButton.setEnabled(idx > 0);
+  rButton.setEnabled(idx < cb.getNumItems() - 1);
 }
 
 void PatchComboBox::resized() {
   auto fBounds = getLocalBounds().toFloat();
-  const float btnWidth = fBounds.getHeight();
-  lButton.setBounds(
-      fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());
-  rButton.setBounds(
-      fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());
-  cb.setBounds(fBounds.toNearestInt());
+  const float dX = fBounds.getHeight();
+  static const float inset = 2.0f;
+  auto lBounds = fBounds.removeFromLeft(dX).reduced(inset);
+  lButton.setBounds(lBounds.toNearestInt());
+  auto rBounds = fBounds.removeFromLeft(dX).reduced(inset);
+  rButton.setBounds(rBounds.toNearestInt());
+  auto boxBounds = fBounds.reduced(inset);
+  cb.setBounds(boxBounds.toNearestInt());
 }
 
+void PatchComboBox::comboBoxChanged(juce::ComboBox* box) {
+  auto name = box->getText();
+  state->patchLib.loadPatch(&state->mainTree, state->patchTree, name);
+  updateButtonEnablement();
+}
+
+void PatchComboBox::existingPatchSaved(const String& name) {
+  auto idx = state->patchLib.indexForName(name);
+  jassert(idx > -1);
+  cb.setSelectedItemIndex(idx, juce::dontSendNotification);
+  updateButtonEnablement();
+}
+
+void PatchComboBox::newPatchSaved(const String& name) {
+  auto newIndex = state->patchLib.indexForName(name);
+  cb.addItem(name, newIndex + 1);
+  cb.setSelectedItemIndex(newIndex, juce::dontSendNotification);
+  updateButtonEnablement();
+}
+
+void PatchComboBox::existingPatchLoaded(const String& name) {
+  auto idx = state->patchLib.indexForName(name);
+  jassert(idx > -1);
+  cb.setSelectedItemIndex(idx, juce::dontSendNotification);
+  updateButtonEnablement();
+}
 //========================================
 
 PatchLoader::PatchLoader(HexState* s)
-    : /*cb(s),*/ saveBtn("Save Patch"), loadBtn("Load Patch") {
-  // addAndMakeVisible(&cb);
+    : cb(s), saveBtn("Save Patch"), loadBtn("Load Patch") {
+  addAndMakeVisible(&cb);
   addAndMakeVisible(&saveBtn);
   addAndMakeVisible(&loadBtn);
 
@@ -125,7 +118,7 @@ void PatchLoader::resized() {
   auto fBounds = getLocalBounds().toFloat();
   const float cbHeight = 45.0f;
   auto cbBox = fBounds.removeFromTop(cbHeight).reduced(2.0f).toNearestInt();
-  // cb.setBounds(cbBox);
+  cb.setBounds(cbBox);
   const float btnWidth = fBounds.getWidth() / 2.0f;
   saveBtn.setBounds(
       fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());

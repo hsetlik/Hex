@@ -7,7 +7,9 @@
 */
 
 #include "PluginProcessor.h"
+#include "Identifiers.h"
 #include "PluginEditor.h"
+#include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_core/juce_core.h"
 
 //==============================================================================
@@ -130,6 +132,7 @@ bool HexAudioProcessor::isBusesLayoutSupported(
 
 void HexAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
                                      juce::MidiBuffer& midiMessages) {
+  juce::ScopedNoDenormals nd;
   masterKbdState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(),
                                        true);
   buffer.clear();
@@ -154,6 +157,7 @@ juce::AudioProcessorEditor* HexAudioProcessor::createEditor() {
 //==============================================================================
 void HexAudioProcessor::getStateInformation(juce::MemoryBlock& destData) {
   auto state = tree.mainTree.copyState();
+  state.appendChild(tree.patchTree.createCopy(), nullptr);
   std::unique_ptr<juce::XmlElement> xml(state.createXml());
   copyXmlToBinary(*xml, destData);
 }
@@ -162,8 +166,13 @@ void HexAudioProcessor::setStateInformation(const void* data, int sizeInBytes) {
   std::unique_ptr<juce::XmlElement> xmlState(
       getXmlFromBinary(data, sizeInBytes));
   if (xmlState.get() != nullptr)
-    if (xmlState->hasTagName(tree.mainTree.state.getType()))
-      tree.mainTree.replaceState(juce::ValueTree::fromXml(*xmlState));
+    if (xmlState->hasTagName(tree.mainTree.state.getType())) {
+      auto parentTree = juce::ValueTree::fromXml(*xmlState);
+      auto childTree = parentTree.getChildWithName(ID::HEX_PATCH_INFO);
+      tree.patchTree.copyPropertiesFrom(childTree, nullptr);
+      parentTree.removeChild(childTree, nullptr);
+      tree.mainTree.replaceState(parentTree);
+    }
 }
 //==============================================================================
 // This creates new instances of the plugin..

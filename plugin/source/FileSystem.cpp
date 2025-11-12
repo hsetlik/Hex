@@ -89,8 +89,12 @@ void PatchLibrary::loadPatch(apvts* state,
   selectedPatchName = name;
   auto newTree = UserFiles::loadStateForPatch(name);
   patchTree = newTree.getChildWithName(ID::HEX_PATCH_INFO);
+  jassert(patchTree.isValid());
   newTree.removeChild(patchTree, nullptr);
   state->replaceState(newTree);
+  for (auto* l : listeners) {
+    l->existingPatchLoaded(name);
+  }
 }
 
 void PatchLibrary::savePatch(apvts* state, const patch_info_t& patch) {

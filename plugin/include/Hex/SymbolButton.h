@@ -131,7 +131,8 @@ public:
 
 private:
   Color bkgndColor;
-  Color symbolColor;
+  Color symbolColorActive;
+  Color symbolColorInactive;
 };
 
 class LeftButton : public ArrowButton {
