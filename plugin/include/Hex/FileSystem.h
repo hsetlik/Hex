@@ -37,6 +37,7 @@ public:
   int indexForName(const String& name) const;
   String currentPatchName() const { return selectedPatchName; }
   patch_info_t infoForIndex(int idx) const;
+  std::vector<patch_info_t> getAllPatches() const;
   int currentPatchIndex() const;
   PatchStatusE validatePatch(const patch_info_t& info) const;
   // actual saving/loading work happens here

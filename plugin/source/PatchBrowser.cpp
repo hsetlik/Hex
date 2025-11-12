@@ -282,3 +282,75 @@ void SaveDialog::paint(juce::Graphics& g) {
   g.setColour(UXPalette::darkBkgnd);
   g.fillRect(fBounds.reduced(3.5f));
 }
+
+//===========================================================================
+
+PatchInfoBar::PatchInfoBar(const patch_info_t& _info) : info(_info) {}
+
+bool PatchInfoBar::isSelected() const {
+  auto* list = findParentComponentOfClass<PatchInfoList>();
+  jassert(list != nullptr);
+  return list->barIsSelected(*this);
+}
+//===========================================================================
+namespace PatchSort {
+bool compareNames(const patch_info_t& a,
+                  const patch_info_t& b,
+                  bool ascending) {
+  int comp = a.name.compare(b.name);
+  // flip the comparison if we're descending
+  if (!ascending)
+    comp *= -1;
+  if (comp < 0) {
+    return true;
+  } else if (comp > 0) {
+    return false;
+  }
+  return compareCategories(a, b, ascending);
+}
+
+bool compareAuthors(const patch_info_t& a,
+                    const patch_info_t& b,
+                    bool ascending) {
+  int comp = a.author.compare(b.author);
+  // flip the comparison if we're descending
+  if (!ascending)
+    comp *= -1;
+  if (comp < 0) {
+    return true;
+  } else if (comp > 0) {
+    return false;
+  }
+  return compareNames(a, b, ascending);
+}
+
+bool compareCategories(const patch_info_t& a,
+                       const patch_info_t& b,
+                       bool ascending) {
+  String aCateg = patchTypeNames[a.type];
+  String bCateg = patchTypeNames[b.type];
+  int comp = aCateg.compare(bCateg);
+  if (!ascending)
+    comp *= -1;
+  if (comp < 0) {
+    return true;
+  } else if (comp > 0) {
+    return false;
+  }
+  return compareNames(a, b, ascending);
+}
+}  // namespace PatchSort
+//===========================================================================
+
+PatchInfoList::PatchInfoList(HexState* s) : state(s) {
+  auto patchList = state->patchLib.getAllPatches();
+  for (auto& p : patchList) {
+    patchBars.add(new PatchInfoBar(p));
+    addAndMakeVisible(patchBars.getLast());
+  }
+  if (patchBars.size() > 0) {
+    selectedBar = patchBars.getFirst();
+  }
+}
+
+std::vector<PatchInfoBar*> PatchInfoList::getBarList() const {}

@@ -81,10 +81,42 @@ public:
   void paint(juce::Graphics& g) override;
 };
 
-class LoadDialog : public Component {
+//====================================================
+class PatchInfoBar : public Component {
+public:
+  const patch_info_t info;
+  PatchInfoBar(const patch_info_t& _info);
+  bool isSelected() const;
+  void paint(juce::Graphics& g) override;
+};
+
+enum PatchSortModeE { sName, sAuthor, sCategory };
+
+// helpers for our sorting labmdas
+namespace PatchSort {
+bool compareNames(const patch_info_t& a,
+                  const patch_info_t& b,
+                  bool ascending = true);
+bool compareAuthors(const patch_info_t& a,
+                    const patch_info_t& b,
+                    bool ascending = true);
+bool compareCategories(const patch_info_t& a,
+                       const patch_info_t& b,
+                       bool ascending = true);
+}  // namespace PatchSort
+
+class PatchInfoList : public Component {
 private:
   HexState* const state;
+  juce::OwnedArray<PatchInfoBar> patchBars;
+  PatchInfoBar* selectedBar = nullptr;
+  // helper for getting an unsorted list of all the patches
+  std::vector<PatchInfoBar*> getBarList() const;
 
 public:
-  LoadDialog(HexState* s);
+  PatchInfoList(HexState* s);
+  bool barIsSelected(const PatchInfoBar& bar) const {
+    return &bar == selectedBar;
+  }
+  void setSelected(PatchInfoBar* bar) { selectedBar = bar; }
 };

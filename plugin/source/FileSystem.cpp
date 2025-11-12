@@ -156,6 +156,14 @@ patch_info_t PatchLibrary::infoForIndex(int idx) const {
   return info;
 }
 
+std::vector<patch_info_t> PatchLibrary::getAllPatches() const {
+  std::vector<patch_info_t> list = {};
+  for (auto& p : patches) {
+    list.push_back(p);
+  }
+  return list;
+}
+
 int PatchLibrary::currentPatchIndex() const {
   if (selectedPatchName != "Untitled") {
     return indexForName(selectedPatchName);
