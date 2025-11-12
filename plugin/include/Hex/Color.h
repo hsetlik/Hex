@@ -27,4 +27,8 @@ static juce::Font robotoLightItalic =
     juce::Font(juce::FontOptions(juce::Typeface::createSystemTypefaceFor(
         FontData::RobotoLightItalic_ttf,
         FontData::RobotoLightItalic_ttfSize)));
+static juce::Font robotoThin =
+    juce::Font(juce::FontOptions(juce::Typeface::createSystemTypefaceFor(
+        FontData::RobotoLightItalic_ttf,
+        FontData::RobotoLightItalic_ttfSize)));
 }  // namespace UXPalette

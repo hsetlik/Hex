@@ -292,6 +292,73 @@ bool PatchInfoBar::isSelected() const {
   jassert(list != nullptr);
   return list->barIsSelected(*this);
 }
+
+void PatchInfoBar::mouseUp(const juce::MouseEvent& e) {
+  if (e.mouseWasClicked() && isMouseOver()) {
+    auto* parent = findParentComponentOfClass<PatchInfoList>();
+    jassert(parent != nullptr);
+    parent->setSelected(this);
+  }
+}
+
+void PatchInfoBar::mouseDoubleClick(const juce::MouseEvent& e) {
+  juce::ignoreUnused(e);
+  // TODO: this should load the double-clicked patch and
+  // close the modal dialog
+}
+
+static AttString buildPatchBatAttString(const String& text) {
+  AttString aStr(text);
+
+  return aStr;
+}
+
+void PatchInfoBar::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  // 1. fill the background
+  if (!isSelected()) {
+    g.setColour(UXPalette::darkGray);
+    g.fillRect(fBounds);
+  } else {
+    g.setColour(UXPalette::highlight);
+    g.fillRect(fBounds);
+    g.setColour(UXPalette::darkGray);
+    g.fillRect(fBounds.reduced(2.0f));
+  }
+  fBounds = fBounds.reduced(2.0f);
+  // 2. divide up the bar's area into sections
+  const float dX = fBounds.getWidth() / 10.0f;
+  const float nWidth = 4.0f * dX;
+  const float aWidth = 3.0f * dX;
+  const float cWidth = 3.0f * dX;
+  // 3. draw each string and the two dividers
+  static const float dividerWidth = 4.0f;
+  auto textColor = isSelected() ? UXPalette::highlight : UXPalette::lightGray;
+
+  // name-----
+  auto nBounds = fBounds.removeFromLeft(nWidth);
+  auto nDiv = nBounds.removeFromRight(dividerWidth);
+  g.setColour(textColor);
+  g.fillRect(nDiv);
+  auto nStr = buildPatchBatAttString(info.name);
+  nStr.setColour(textColor);
+  nStr.draw(g, nBounds);
+
+  // author----
+  auto aBounds = fBounds.removeFromLeft(aWidth);
+  auto aDiv = aBounds.removeFromRight(dividerWidth);
+  g.fillRect(aDiv);
+  auto aStr = buildPatchBatAttString(info.author);
+  aStr.setColour(textColor);
+  aStr.draw(g, aBounds);
+
+  // category----
+  auto cBounds = fBounds;
+  auto cStr = buildPatchBatAttString(patchTypeNames[info.type]);
+  cStr.setColour(textColor);
+  cStr.draw(g, cBounds);
+}
+
 //===========================================================================
 namespace PatchSort {
 bool compareNames(const patch_info_t& a,
@@ -353,4 +420,58 @@ PatchInfoList::PatchInfoList(HexState* s) : state(s) {
   }
 }
 
-std::vector<PatchInfoBar*> PatchInfoList::getBarList() const {}
+std::vector<PatchInfoBar*> PatchInfoList::getBarList() const {
+  std::vector<PatchInfoBar*> list = {};
+  for (auto* b : patchBars) {
+    list.push_back(b);
+  }
+  return list;
+}
+
+std::vector<PatchInfoBar*> PatchInfoList::barsSortedBy(PatchSortModeE mode,
+                                                       bool ascending) const {
+  auto bars = getBarList();
+  switch (mode) {
+    case sName:
+      std::sort(bars.begin(), bars.end(),
+                [ascending](const PatchInfoBar* a, const PatchInfoBar* b) {
+                  return PatchSort::compareNames(a->info, b->info, ascending);
+                });
+      break;
+    case sAuthor:
+      std::sort(bars.begin(), bars.end(),
+                [ascending](const PatchInfoBar* a, const PatchInfoBar* b) {
+                  return PatchSort::compareAuthors(a->info, b->info, ascending);
+                });
+      break;
+    case sCategory:
+      std::sort(bars.begin(), bars.end(),
+                [ascending](const PatchInfoBar* a, const PatchInfoBar* b) {
+                  return PatchSort::compareCategories(a->info, b->info,
+                                                      ascending);
+                });
+      break;
+    default:
+      jassert(false);
+      break;
+  }
+  return bars;
+}
+
+void PatchInfoList::setSortMode(PatchSortModeE _mode, bool _ascending) {
+  currentMode = _mode;
+  sortAscending = _ascending;
+  resized();
+}
+
+void PatchInfoList::resized() {
+  const int width = getWidth();
+  const int height = 35;
+  const int x = 0;
+  int y = 0;
+  auto list = barsSortedBy(currentMode, sortAscending);
+  for (size_t i = 0; i < list.size(); ++i) {
+    list[i]->setBounds(x, y, width, height);
+    y += height;
+  }
+}

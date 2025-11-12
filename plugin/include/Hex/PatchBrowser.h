@@ -88,6 +88,9 @@ public:
   PatchInfoBar(const patch_info_t& _info);
   bool isSelected() const;
   void paint(juce::Graphics& g) override;
+  // mouse callbacks
+  void mouseUp(const juce::MouseEvent& e) override;
+  void mouseDoubleClick(const juce::MouseEvent& e) override;
 };
 
 enum PatchSortModeE { sName, sAuthor, sCategory };
@@ -112,6 +115,11 @@ private:
   PatchInfoBar* selectedBar = nullptr;
   // helper for getting an unsorted list of all the patches
   std::vector<PatchInfoBar*> getBarList() const;
+  // the sorting happens here
+  std::vector<PatchInfoBar*> barsSortedBy(PatchSortModeE mode,
+                                          bool ascending) const;
+  PatchSortModeE currentMode = sName;
+  bool sortAscending = true;
 
 public:
   PatchInfoList(HexState* s);
@@ -119,4 +127,6 @@ public:
     return &bar == selectedBar;
   }
   void setSelected(PatchInfoBar* bar) { selectedBar = bar; }
+  void resized() override;
+  void setSortMode(PatchSortModeE _mode, bool _ascending);
 };

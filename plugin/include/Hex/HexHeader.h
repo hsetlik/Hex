@@ -9,6 +9,7 @@ typedef juce::Identifier Identifier;
 typedef juce::ParameterAttachment ParamAttachment;
 using apvts = juce::AudioProcessorValueTreeState;
 using Color = juce::Colour;
+using AttString = juce::AttributedString;
 
 #define NUM_OPERATORS 6
 
