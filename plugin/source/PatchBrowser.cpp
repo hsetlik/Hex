@@ -294,6 +294,10 @@ bool PatchInfoBar::isSelected() const {
   return list->barIsSelected(*this);
 }
 
+void PatchInfoBar::resized() {
+  repaint();
+}
+
 void PatchInfoBar::mouseUp(const juce::MouseEvent& e) {
   if (e.mouseWasClicked() && isMouseOver()) {
     auto* parent = findParentComponentOfClass<PatchInfoList>();
@@ -308,7 +312,7 @@ void PatchInfoBar::mouseDoubleClick(const juce::MouseEvent& e) {
   // close the modal dialog
 }
 
-static AttString buildPatchBatAttString(const String& text) {
+static AttString buildPatchBarAttString(const String& text) {
   AttString aStr(text);
   // TODO font and formatting stuff gets handled here
   return aStr;
@@ -341,7 +345,7 @@ void PatchInfoBar::paint(juce::Graphics& g) {
   auto nDiv = nBounds.removeFromRight(dividerWidth);
   g.setColour(textColor);
   g.fillRect(nDiv);
-  auto nStr = buildPatchBatAttString(info.name);
+  auto nStr = buildPatchBarAttString(info.name);
   nStr.setColour(textColor);
   nStr.draw(g, nBounds);
 
@@ -349,13 +353,13 @@ void PatchInfoBar::paint(juce::Graphics& g) {
   auto aBounds = fBounds.removeFromLeft(aWidth);
   auto aDiv = aBounds.removeFromRight(dividerWidth);
   g.fillRect(aDiv);
-  auto aStr = buildPatchBatAttString(info.author);
+  auto aStr = buildPatchBarAttString(info.author);
   aStr.setColour(textColor);
   aStr.draw(g, aBounds);
 
   // category----
   auto cBounds = fBounds;
-  auto cStr = buildPatchBatAttString(patchTypeNames[info.type]);
+  auto cStr = buildPatchBarAttString(patchTypeNames[info.type]);
   cStr.setColour(textColor);
   cStr.draw(g, cBounds);
   // g.setColour(UXPalette::highlight);
@@ -412,18 +416,30 @@ bool compareCategories(const patch_info_t& a,
 }  // namespace PatchSort
 //===========================================================================
 
-PatchInfoList::PatchInfoList(HexState* s) : state(s) {
-  auto patchList = state->patchLib.getAllPatches();
-  for (auto& p : patchList) {
+PatchInfoList::ListComponent::ListComponent(HexState* s) {
+  auto list = s->patchLib.getAllPatches();
+  for (auto& p : list) {
     patchBars.add(new PatchInfoBar(p));
     addAndMakeVisible(patchBars.getLast());
-  }
-  if (patchBars.size() > 0) {
-    selectedBar = patchBars.getFirst();
+    patchBars.getLast()->setInterceptsMouseClicks(true, true);
   }
 }
 
-std::vector<PatchInfoBar*> PatchInfoList::getBarList() const {
+void PatchInfoList::ListComponent::resized() {
+  static const int barHeight = 40;
+  auto* infoList = findParentComponentOfClass<PatchInfoList>();
+  jassert(infoList != nullptr);
+  const int barWidth = std::max(infoList->getWidth(), 200);
+  int y = 0;
+  auto sortedList = barsSortedBy(sortMode, sortAscending);
+  for (auto* b : sortedList) {
+    b->setBounds(0, y, barWidth, barHeight);
+    y += barHeight;
+  }
+  setSize(barWidth, y);
+}
+
+std::vector<PatchInfoBar*> PatchInfoList::ListComponent::getBarList() const {
   std::vector<PatchInfoBar*> list = {};
   for (auto* b : patchBars) {
     list.push_back(b);
@@ -431,8 +447,9 @@ std::vector<PatchInfoBar*> PatchInfoList::getBarList() const {
   return list;
 }
 
-std::vector<PatchInfoBar*> PatchInfoList::barsSortedBy(PatchSortModeE mode,
-                                                       bool ascending) const {
+std::vector<PatchInfoBar*> PatchInfoList::ListComponent::barsSortedBy(
+    PatchSortModeE mode,
+    bool ascending) const {
   auto bars = getBarList();
   switch (mode) {
     case sName:
@@ -461,29 +478,38 @@ std::vector<PatchInfoBar*> PatchInfoList::barsSortedBy(PatchSortModeE mode,
   return bars;
 }
 
+//--------------------------------------------------------------------
+
+PatchInfoList::PatchInfoList(HexState* s) : state(s), listComp(s) {
+  vpt.setViewedComponent(&listComp, false);
+  vpt.setViewPosition(0, 0);
+  vpt.setInterceptsMouseClicks(true, true);
+  addAndMakeVisible(vpt);
+  listComp.resized();
+}
 String PatchInfoList::selectedPatchName() const {
   jassert(selectedBar != nullptr);
   return selectedBar->info.name;
 }
 
+void PatchInfoList::setSortMode(PatchSortModeE _mode, bool _ascending) {
+  listComp.sortMode = _mode;
+  listComp.sortAscending = _ascending;
+  resized();
+}
+
 void PatchInfoList::resized() {
-  const int width = getWidth();
-  const int height = 35;
-  const int x = 0;
-  int y = 0;
-  auto* parent = findParentComponentOfClass<LoadDialog>();
-  jassert(parent != nullptr);
-  auto list = barsSortedBy(parent->getSortMode(), parent->getAscending());
-  for (size_t i = 0; i < list.size(); ++i) {
-    list[i]->setBounds(x, y, width, height);
-    y += height;
-  }
+  vpt.setBounds(getLocalBounds());
+  listComp.resized();
 }
 
 void PatchInfoList::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
-  g.setColour(UXPalette::highlight);
+  g.setColour(UXPalette::lightGray);
   g.fillRect(fBounds);
+  auto listBounds = listComp.getBounds().toFloat();
+  g.setColour(UXPalette::highlight);
+  g.fillRect(listBounds);
 }
 
 void PatchInfoList::setSelectedName(const String& name) {
@@ -491,7 +517,7 @@ void PatchInfoList::setSelectedName(const String& name) {
 }
 
 PatchInfoBar* PatchInfoList::barForName(const String& name) const {
-  for (auto* p : patchBars) {
+  for (auto* p : listComp.patchBars) {
     if (p->info.name == name)
       return p;
   }
@@ -518,7 +544,7 @@ void PatchColumnTop::paint(juce::Graphics& g) {
   g.setColour(fillColor);
   g.fillRect(fBounds.reduced(3.0f));
   fBounds = fBounds.reduced(3.0f);
-  auto aStr = buildPatchBatAttString(getColumnText());
+  auto aStr = buildPatchBarAttString(getColumnText());
   aStr.setColour(strokeColor);
   aStr.draw(g, fBounds);
 }
@@ -551,25 +577,13 @@ void PatchColumnTop::mouseUp(const juce::MouseEvent& e) {
 }
 //------------------------------------------------------------------
 
-void LoadDialog::setSortMode(PatchSortModeE _mode, bool _ascending) {
-  currentMode = _mode;
-  sortAscending = _ascending;
-  repaint();
-}
-
 LoadDialog::LoadDialog(HexState* s)
     : state(s),
       infoList(s),
       nameCT(sName),
       authorCT(sAuthor),
       categCT(sCategory) {
-  // set up viewport
-  vp.setViewedComponent(&infoList, false);
-  vp.setViewPosition(0, 0);
-  vp.setInterceptsMouseClicks(true, true);
-  vp.setRepaintsOnMouseActivity(true);
-  addAndMakeVisible(vp);
-  infoList.resized();
+  addAndMakeVisible(&infoList);
 
   // set up headers
   addAndMakeVisible(nameCT);
@@ -602,7 +616,6 @@ PatchBrowserParent* LoadDialog::getBrowserParent() const {
 }
 
 void LoadDialog::resized() {
-  infoList.resized();
   auto fBounds = getLocalBounds().toFloat().reduced(MODAL_INSET);
   const float topHeight = fBounds.getHeight() / 11.0f;
   const float dX = fBounds.getWidth() / 10.0f;
@@ -615,7 +628,7 @@ void LoadDialog::resized() {
   categCT.setBounds(cBounds.toNearestInt());
 
   auto buttonArea = fBounds.removeFromBottom(fBounds.getHeight() / 8.0f);
-  vp.setBounds(fBounds.toNearestInt());
+  infoList.setBounds(fBounds.toNearestInt());
   buttonArea = buttonArea.withSizeKeepingCentre(buttonArea.getWidth() * 0.75f,
                                                 buttonArea.getHeight());
   auto cancelBounds =
@@ -627,14 +640,20 @@ void LoadDialog::resized() {
 
 void LoadDialog::initializeFor(const String& patchName) {
   infoList.setSelectedName(patchName);
-  resized();
+  setSortMode(sName, true);
+  // resized();
 }
 
 void LoadDialog::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
   g.setColour(UXPalette::highlight);
   g.fillRect(fBounds);
-  g.fillRect(vp.getLocalBounds());
   g.setColour(UXPalette::darkBkgnd);
   g.fillRect(fBounds.reduced(MODAL_INSET));
+}
+
+void LoadDialog::enablementChanged() {
+  if (isEnabled()) {
+    infoList.resized();
+  }
 }

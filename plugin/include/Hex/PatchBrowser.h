@@ -87,6 +87,7 @@ public:
   const patch_info_t info;
   PatchInfoBar(const patch_info_t& _info);
   bool isSelected() const;
+  void resized() override;
   void paint(juce::Graphics& g) override;
   // mouse callbacks
   void mouseUp(const juce::MouseEvent& e) override;
@@ -110,14 +111,26 @@ bool compareCategories(const patch_info_t& a,
 
 class PatchInfoList : public Component {
 private:
+  class ListComponent : public Component {
+  public:
+    ListComponent(HexState* s);
+    juce::OwnedArray<PatchInfoBar> patchBars;
+    void resized() override;
+    // helper for getting an unsorted list of all the patches
+    std::vector<PatchInfoBar*> getBarList() const;
+    // the sorting happens here
+    std::vector<PatchInfoBar*> barsSortedBy(PatchSortModeE mode,
+                                            bool ascending) const;
+    PatchSortModeE sortMode = sName;
+    bool sortAscending = true;
+  };
+
   HexState* const state;
-  juce::OwnedArray<PatchInfoBar> patchBars;
+
+  juce::Viewport vpt;
+  ListComponent listComp;
   PatchInfoBar* selectedBar = nullptr;
-  // helper for getting an unsorted list of all the patches
-  std::vector<PatchInfoBar*> getBarList() const;
-  // the sorting happens here
-  std::vector<PatchInfoBar*> barsSortedBy(PatchSortModeE mode,
-                                          bool ascending) const;
+
   PatchInfoBar* barForName(const String& name) const;
 
 public:
@@ -125,9 +138,15 @@ public:
   bool barIsSelected(const PatchInfoBar& bar) const {
     return &bar == selectedBar;
   }
-  void setSelected(PatchInfoBar* bar) { selectedBar = bar; }
+  void setSelected(PatchInfoBar* bar) {
+    selectedBar = bar;
+    repaint();
+  }
   void setSelectedName(const String& name);
   String selectedPatchName() const;
+  void setSortMode(PatchSortModeE _mode, bool _ascending);
+  PatchSortModeE getSortMode() const { return listComp.sortMode; }
+  bool getAscending() const { return listComp.sortAscending; }
   void resized() override;
   void paint(juce::Graphics& g) override;
 };
@@ -146,13 +165,12 @@ public:
   void mouseUp(const juce::MouseEvent& e) override;
 };
 
+//--------------------------------------------
+
 class LoadDialog : public Component {
 private:
   HexState* const state;
-  PatchSortModeE currentMode = sName;
-  bool sortAscending = true;
 
-  juce::Viewport vp;
   PatchInfoList infoList;
   PatchColumnTop nameCT;
   PatchColumnTop authorCT;
@@ -165,10 +183,14 @@ private:
 
 public:
   LoadDialog(HexState* s);
-  void setSortMode(PatchSortModeE _mode, bool _ascending);
-  PatchSortModeE getSortMode() const { return currentMode; }
-  bool getAscending() const { return sortAscending; }
+  void setSortMode(PatchSortModeE _mode, bool _ascending) {
+    infoList.setSortMode(_mode, _ascending);
+    repaint();
+  }
+  PatchSortModeE getSortMode() const { return infoList.getSortMode(); }
+  bool getAscending() const { return infoList.getAscending(); }
   void initializeFor(const String& patchName);
   void resized() override;
+  void enablementChanged() override;
   void paint(juce::Graphics& g) override;
 };
