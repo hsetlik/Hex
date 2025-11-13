@@ -11,7 +11,7 @@ void setTrackingAmount(float amt) {
   trackingAmt.store(amt);
 }
 static frange_t getGainRange() {
-  auto minGain = juce::Decibels::decibelsToGain(-10.0f);
+  auto minGain = juce::Decibels::decibelsToGain(-18.0f);
   auto midGain = juce::Decibels::decibelsToGain(-6.0f);
   frange_t range(minGain, 1.0f);
   range.setSkewForCentre(midGain);

@@ -9,9 +9,13 @@
 */
 
 #include "LfoComponent.h"
+#include "Color.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_core/juce_core.h"
+
+#define LFO_INSET 3.5f
+
 DualModeSlider::DualModeSlider() : snapMode(false), bpm(120.0f) {
   noteLengths.push_back(std::make_pair(1, 32));
   noteLengths.push_back(std::make_pair(1, 24));
@@ -72,8 +76,14 @@ bool DualModeSlider::setSync(int num, int denom, float tempo) {
   return true;
 }
 //======================================================================================
+
+static String validateSpeedString(const String& input) {
+  return input.retainCharacters("1234567890/");
+}
+
 DualModeLabel::DualModeLabel(DualModeSlider* s) : linkedSlider(s), bpm(120.0f) {
   linkedSlider->addListener(this);
+  setJustificationType(juce::Justification::centredTop);
   if (linkedSlider->inSnapMode()) {
     auto note = linkedSlider->currentNoteLength();
     lastStr = juce::String(note.first) + " / " + juce::String(note.second);
@@ -93,11 +103,12 @@ void DualModeLabel::sliderValueChanged(juce::Slider* s) {
   }
 }
 void DualModeLabel::setTextHz(float value) {
-  setText(juce::String(value), juce::dontSendNotification);
+  auto text = validateSpeedString(String(value));
+  setText(text, juce::dontSendNotification);
 }
 void DualModeLabel::setTextNoteLength(int num, int denom) {
-  auto str = juce::String(num) + " / " + juce::String(denom);
-  setText(str, juce::dontSendNotification);
+  auto str = juce::String(num) + "/" + juce::String(denom);
+  setText(validateSpeedString(str), juce::dontSendNotification);
 }
 void DualModeLabel::textWasEdited() {
   auto str = getText();
@@ -237,19 +248,35 @@ void LfoComponent::prepare() {
   bpm = (float)currentPos.bpm;
   rateLabel.setBpm(bpm);
 }
-
-void LfoComponent::resized() {
+void LfoComponent::paint(juce::Graphics& g) {
+  // 1. draw border and background
   auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::darkGray);
+  g.fillRect(fBounds);
+  fBounds = fBounds.reduced(LFO_INSET);
+  g.setColour(UXPalette::lightGray);
+  g.fillRect(fBounds);
+  // 2. draw the text
+  auto upperBox = fBounds.removeFromTop(25.0f);
+  auto textBox = upperBox.removeFromLeft(100.0f);
+  const String text = "LFO " + String(lfoIndex + 1);
+  AttString nameStr(text);
+  nameStr.setJustification(juce::Justification::centred);
+  // TODO: configure font and color stuff here
+  nameStr.draw(g, textBox);
+}
+void LfoComponent::resized() {
+  auto fBounds = getLocalBounds().toFloat().reduced(LFO_INSET);
   const float dX = fBounds.getWidth() / 16.0f;
   const float dY = fBounds.getHeight() / 16.0f;
   const float sWidth = std::min(dX, dY);
-  frect_t rateBox = {dX, dY, 5.0f * sWidth, 5.0f * sWidth};
-  frect_t depthBounds = {dX, 8.5f * dY, 5.0f * sWidth, 5.0f * sWidth};
-  frect_t bpmBounds = {7.0f * dX, dY, 3.0f * dX, 1.5f * dY};
-  frect_t targetBounds = {8.0f * dX, 4.0f * dY, 8.0f * dX, 2.0f * dY};
-  frect_t waveBounds = {6.0f * dX, 7.0f * dY, 10.0f * dX, 3.0f * dY};
-  rateSlider.setBounds(rateBox.reduced(3.0f).toNearestInt());
-  depthSlider.setBounds(depthBounds.reduced(3.0f).toNearestInt());
+  frect_t rateBox = {dX, 4.2f * dY, 4.0f * sWidth, 4.0f * sWidth};
+  frect_t depthBounds = {dX, 10.3f * dY, 4.0f * sWidth, 4.0f * sWidth};
+  frect_t bpmBounds = {6.0f * dX, 4.0f * dY, 3.0f * dX, 1.5f * dY};
+  frect_t targetBounds = {6.0f * dX, 6.0f * dY, 8.0f * dX, 2.0f * dY};
+  frect_t waveBounds = {6.0f * dX, 8.0f * dY, 10.0f * dX, 3.0f * dY};
+  rateSlider.setBounds(rateBox.reduced(2.0f).toNearestInt());
+  depthSlider.setBounds(depthBounds.reduced(2.0f).toNearestInt());
   bpmToggle.setBounds(bpmBounds.toNearestInt());
   targetBox.setBounds(targetBounds.toNearestInt());
   waveSelect.setBounds(waveBounds.toNearestInt());

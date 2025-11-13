@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
+#include "ComponentUtil.h"
 FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
     : linkedTree(&tree->mainTree),
       envComp(0, linkedTree, graph, true),

@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
+#include "ComponentUtil.h"
 
 EnvelopeComponent::DAHDSRGraph::DAHDSRGraph(EnvelopeComponent* env)
     : pDelay(&env->delaySlider),
