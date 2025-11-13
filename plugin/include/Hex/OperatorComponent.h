@@ -146,6 +146,7 @@ public:
   void resized() override;
   void buttonClicked(juce::Button* b) override;
   void comboBoxChanged(juce::ComboBox* b) override;
+  void paint(juce::Graphics& g) override;
 
 private:
   SineButton bSine;

@@ -13,6 +13,7 @@
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_core/juce_core.h"
+#include "juce_graphics/juce_graphics.h"
 
 #define LFO_INSET 3.5f
 
@@ -137,22 +138,20 @@ void DualModeLabel::componentMovedOrResized(juce::Component& component,
 
   if (isAttachedOnLeft()) {
     auto width =
-        std::min(juce::roundToInt(
-                     juce::TextLayout::getStringWidth(f, getText()) * 3.5f) +
+        std::min((int)(juce::TextLayout::getStringWidth(f, getText()) * 3.5f) +
                      borderSize.getLeftAndRight(),
                  component.getX());
 
     setBounds(component.getX() - (int)width, component.getY(), (int)width,
               component.getHeight());
   } else {
-    auto height = borderSize.getTopAndBottom() + 2 +
-                  juce::roundToInt(f.getHeight() * 1.5f);
+    auto height =
+        borderSize.getTopAndBottom() + 2 + (int)(f.getHeight() * 1.5f);
 
     auto stringWidth = juce::TextLayout::getStringWidth(f, getText()) * 3.5f;
-    auto width = juce::roundToInt(stringWidth) + borderSize.getLeftAndRight();
-    auto centerX =
-        component.getX() + juce::roundToInt((float)component.getWidth() / 2.0f);
-    auto x = centerX - juce::roundToInt((float)width / 2.0f);
+    auto width = (int)(stringWidth) + borderSize.getLeftAndRight();
+    auto centerX = component.getX() + (int)((float)component.getWidth() / 2.0f);
+    auto x = centerX - (int)((float)width / 2.0f);
     setBounds(x, component.getBottom() + 1, width, height);
   }
 }
@@ -215,28 +214,12 @@ LfoComponent::LfoComponent(int i,
 
   startTimerHz(2);
 
-  rateSlider.setLookAndFeel(&lnf);
-  rateLabel.setLookAndFeel(&lnf);
-
-  depthSlider.setLookAndFeel(&lnf);
-  depthLabel.setLookAndFeel(&lnf);
-
-  targetBox.setLookAndFeel(&lnf);
-
   targetBox.setSelectedId(1);
 
   prepare();
 }
 
-LfoComponent::~LfoComponent() {
-  rateSlider.setLookAndFeel(nullptr);
-  rateLabel.setLookAndFeel(nullptr);
-
-  depthSlider.setLookAndFeel(nullptr);
-  depthLabel.setLookAndFeel(nullptr);
-
-  targetBox.setLookAndFeel(nullptr);
-}
+LfoComponent::~LfoComponent() {}
 
 void LfoComponent::buttonClicked(juce::Button*) {
   rateSlider.toggleSnapMode();
@@ -259,10 +242,12 @@ void LfoComponent::paint(juce::Graphics& g) {
   // 2. draw the text
   auto upperBox = fBounds.removeFromTop(25.0f);
   auto textBox = upperBox.removeFromLeft(100.0f);
+  textBox.removeFromLeft(3.5f);
   const String text = "LFO " + String(lfoIndex + 1);
   AttString nameStr(text);
-  nameStr.setJustification(juce::Justification::centred);
-  // TODO: configure font and color stuff here
+  nameStr.setJustification(juce::Justification::centredLeft);
+  nameStr.setFont(UXPalette::robotoBlackItalic.withHeight(22.0f));
+  nameStr.setColour(juce::Colours::white);
   nameStr.draw(g, textBox);
 }
 void LfoComponent::resized() {
@@ -274,20 +259,12 @@ void LfoComponent::resized() {
   frect_t depthBounds = {dX, 10.3f * dY, 4.0f * sWidth, 4.0f * sWidth};
   frect_t bpmBounds = {6.0f * dX, 4.0f * dY, 3.0f * dX, 1.5f * dY};
   frect_t targetBounds = {6.0f * dX, 6.0f * dY, 8.0f * dX, 2.0f * dY};
-  frect_t waveBounds = {6.0f * dX, 8.0f * dY, 10.0f * dX, 3.0f * dY};
+  frect_t waveBounds = {6.0f * dX, 8.2f * dY, 10.0f * dX, 3.0f * dY};
   rateSlider.setBounds(rateBox.reduced(2.0f).toNearestInt());
   depthSlider.setBounds(depthBounds.reduced(2.0f).toNearestInt());
   bpmToggle.setBounds(bpmBounds.toNearestInt());
   targetBox.setBounds(targetBounds.toNearestInt());
   waveSelect.setBounds(waveBounds.toNearestInt());
-  // auto dX = getWidth() / 16;
-  // rateSlider.setBounds (dX, dX, 5 * dX, 5 * dX);
-  // ComponentUtil::cushionByFraction (rateSlider, 6, 6);
-  // depthSlider.setBounds (dX, 7 * dX, 5 * dX, 5 * dX);
-  // ComponentUtil::cushionByFraction (depthSlider, 6, 6);
-  // bpmToggle.setBounds (7 * dX, dX, 3 * dX, 1.5f * dX);
-  // targetBox.setBounds (8 * dX, 4 * dX, 8 * dX, 2 * dX);
-  // waveSelect.setBounds (6 * dX, 7 * dX, 10 * dX, 3 * dX);
 }
 
 void LfoComponent::timerCallback() {

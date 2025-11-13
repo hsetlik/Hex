@@ -126,5 +126,4 @@ private:
   pButtonAttach syncAttach;
   pComboBoxAttach targetAttach;
   float bpm;
-  HexLookAndFeel lnf;
 };

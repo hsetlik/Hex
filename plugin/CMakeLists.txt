@@ -5,6 +5,7 @@ project(Hex VERSION 1.2.0)
 set(FONTFILES
 "${CMAKE_CURRENT_LIST_DIR}/fonts/Roboto-LightItalic.ttf"
 "${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoLight.ttf"
+"${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoBlackItalic.ttf"
 )
 
 juce_add_binary_data(

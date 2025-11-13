@@ -13,6 +13,8 @@
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "ComponentUtil.h"
+#include "juce_graphics/juce_graphics.h"
+#define OPERATOR_INSET 4.0f
 
 EnvelopeComponent::DAHDSRGraph::DAHDSRGraph(EnvelopeComponent* env)
     : pDelay(&env->delaySlider),
@@ -224,40 +226,41 @@ EnvelopeComponent::~EnvelopeComponent() {
 }
 
 void EnvelopeComponent::resized() {
-  auto bounds = getLocalBounds();
-  auto dY = bounds.getHeight() / 2;
+  auto bounds = getLocalBounds().toFloat();
+  auto dY = bounds.getHeight() / 2.0f;
   auto upper = bounds.removeFromTop(dY);
-  auto dX = upper.getWidth() / 10;
+  auto dX = upper.getWidth() / 10.0f;
   auto mBounds = upper.removeFromRight(dX);
-  meter.setBounds(mBounds);
-  graph.setBounds(upper);
-  // auto lBounds = bounds.removeFromBottom (bounds.getHeight() / 8);
-  dX = bounds.getWidth() / 6;
+  meter.setBounds(mBounds.toNearestInt());
+  graph.setBounds(upper.toNearestInt());
+
+  dX = bounds.getWidth() / 6.0f;
   auto labelHeight = bounds.getHeight() / 8;
+  bounds.removeFromBottom(2.5f);
 
   auto delBounds = bounds.removeFromLeft(dX);
-  delayName.setBounds(delBounds.removeFromBottom(labelHeight));
-  delaySlider.setBounds(delBounds);
+  delayName.setBounds(delBounds.removeFromBottom(labelHeight).toNearestInt());
+  delaySlider.setBounds(delBounds.toNearestInt());
 
   auto aBounds = bounds.removeFromLeft(dX);
-  attackName.setBounds(aBounds.removeFromBottom(labelHeight));
-  attackSlider.setBounds(aBounds);
+  attackName.setBounds(aBounds.removeFromBottom(labelHeight).toNearestInt());
+  attackSlider.setBounds(aBounds.toNearestInt());
 
   auto hBounds = bounds.removeFromLeft(dX);
-  holdName.setBounds(hBounds.removeFromBottom(labelHeight));
-  holdSlider.setBounds(hBounds);
+  holdName.setBounds(hBounds.removeFromBottom(labelHeight).toNearestInt());
+  holdSlider.setBounds(hBounds.toNearestInt());
 
   auto dBounds = bounds.removeFromLeft(dX);
-  decayName.setBounds(dBounds.removeFromBottom(labelHeight));
-  decaySlider.setBounds(dBounds);
+  decayName.setBounds(dBounds.removeFromBottom(labelHeight).toNearestInt());
+  decaySlider.setBounds(dBounds.toNearestInt());
 
   auto sBounds = bounds.removeFromLeft(dX);
-  sustainName.setBounds(sBounds.removeFromBottom(labelHeight));
-  sustainSlider.setBounds(sBounds);
+  sustainName.setBounds(sBounds.removeFromBottom(labelHeight).toNearestInt());
+  sustainSlider.setBounds(sBounds.toNearestInt());
 
   auto rBounds = bounds;
-  releaseName.setBounds(rBounds.removeFromBottom(labelHeight));
-  releaseSlider.setBounds(rBounds);
+  releaseName.setBounds(rBounds.removeFromBottom(labelHeight).toNearestInt());
+  releaseSlider.setBounds(rBounds.toNearestInt());
 }
 //==============================================================================
 void SineButton::setSymbol() {
@@ -382,13 +385,13 @@ WaveSelector::WaveSelector(int index, apvts* tree, juce::String prefix)
 }
 
 void WaveSelector::resized() {
-  auto fBounds = getLocalBounds();
+  auto fBounds = getLocalBounds().toFloat();
   auto dX = fBounds.getWidth() / 5;
-  bSine.setBounds(fBounds.removeFromLeft(dX));
-  bSquare.setBounds(fBounds.removeFromLeft(dX));
-  bSaw.setBounds(fBounds.removeFromLeft(dX));
-  bTri.setBounds(fBounds.removeFromLeft(dX));
-  bNoise.setBounds(fBounds);
+  bSine.setBounds(fBounds.removeFromLeft(dX).reduced(2.0f).toNearestInt());
+  bSquare.setBounds(fBounds.removeFromLeft(dX).reduced(2.0f).toNearestInt());
+  bSaw.setBounds(fBounds.removeFromLeft(dX).reduced(2.0f).toNearestInt());
+  bTri.setBounds(fBounds.removeFromLeft(dX).reduced(2.0f).toNearestInt());
+  bNoise.setBounds(fBounds.reduced(2.0f).toNearestInt());
 }
 void WaveSelector::buttonClicked(juce::Button* b) {
   if (b == &bSine)
@@ -415,6 +418,12 @@ void WaveSelector::comboBoxChanged(juce::ComboBox* b) {
     bTri.triggerClick();
   else if (idx == 4)
     bNoise.triggerClick();
+}
+
+void WaveSelector::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::darkGray);
+  g.fillRect(fBounds);
 }
 
 //=======================================================
@@ -503,7 +512,7 @@ void OperatorComponent::buttonClicked(juce::Button* b) {
 
 void OperatorComponent::resized() {
   auto fBounds = getLocalBounds().toFloat();
-  fBounds = fBounds.reduced(4.0f);
+  fBounds = fBounds.reduced(OPERATOR_INSET);
   const float x0 = fBounds.getX();
   const float y0 = fBounds.getY();
   auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2.0f);
@@ -519,7 +528,7 @@ void OperatorComponent::resized() {
   frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * sRatio,
                        dX * sRatio};
   frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
-  frect_t selectBounds = {x0 + dX, y0 + dY * 12.0f, dX * 16.0f, dY * 2.0f};
+  frect_t selectBounds = {x0 + dX, y0 + dY * 12.5f, dX * 16.0f, dY * 3.0f};
 
   ratioSlider.setBounds(ratioBox.toNearestInt());
   modSlider.setBounds(modBounds.toNearestInt());
@@ -531,8 +540,18 @@ void OperatorComponent::resized() {
 
 void OperatorComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::darkGray);
+  g.fillRect(fBounds);
+  fBounds = fBounds.reduced(OPERATOR_INSET / 2.0f);
   g.setColour(UXPalette::lightGray);
   g.fillRect(fBounds);
-  g.setColour(UXPalette::darkGray);
-  g.drawRect(fBounds, 2.5f);
+  auto upperBox = fBounds.removeFromTop(25.0f);
+  auto tBounds = upperBox.removeFromLeft(120.0f);
+  tBounds.removeFromLeft(3.0f);
+  const String text = "Operator " + String(opIndex + 1);
+  AttString aStr(text);
+  aStr.setJustification(juce::Justification::centredLeft);
+  aStr.setFont(UXPalette::robotoBlackItalic.withHeight(22.0f));
+  aStr.setColour(juce::Colours::white);
+  aStr.draw(g, tBounds);
 }
