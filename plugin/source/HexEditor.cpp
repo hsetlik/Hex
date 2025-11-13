@@ -133,7 +133,8 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
       fPanel(tree, params),
       kbdBar(linkedTree, kbdState),
       loader(tree),
-      saveDialog(tree) {
+      saveDialog(tree),
+      loadDialog(tree) {
   setLookAndFeel(&lnf);
   addAndMakeVisible(&modGrid);
   nonModalComps.push_back(&modGrid);
@@ -159,6 +160,9 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
   addAndMakeVisible(saveDialog);
   saveDialog.setVisible(false);
   saveDialog.setEnabled(false);
+  addAndMakeVisible(loadDialog);
+  loadDialog.setVisible(false);
+  loadDialog.setEnabled(false);
 }
 
 HexEditor::~HexEditor() {
@@ -201,6 +205,7 @@ void HexEditor::resized() {
   auto yCushion = getHeight() / 3.0;
   auto saveBounds = getLocalBounds().reduced((int)xCushion, (int)yCushion);
   saveDialog.setBounds(saveBounds);
+  loadDialog.setBounds(saveBounds);
 }
 
 void HexEditor::paint(juce::Graphics& g) {
@@ -226,13 +231,19 @@ void HexEditor::openSaveDialog(const String& patchName) {
 }
 
 void HexEditor::openLoadDialog(const String& patchName) {
-  // TODO
-  juce::ignoreUnused(patchName);
+  setNonModalsEnabled(false);
+  loadDialog.initializeFor(patchName);
+  loadDialog.setEnabled(true);
+  loadDialog.setVisible(true);
+  loadDialog.toFront(true);
+  resized();
 }
 
 void HexEditor::closeModal() {
   saveDialog.setEnabled(false);
   saveDialog.setVisible(false);
+  loadDialog.setEnabled(false);
+  loadDialog.setVisible(false);
   setNonModalsEnabled(true);
   resized();
 }

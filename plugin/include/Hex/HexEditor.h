@@ -94,6 +94,7 @@ private:
   PatchLoader loader;
   // modal handling stuff---------------
   SaveDialog saveDialog;
+  LoadDialog loadDialog;
   // hold on to a list of the components that we need to disable when a modal
   // component is active
   std::vector<Component*> nonModalComps;

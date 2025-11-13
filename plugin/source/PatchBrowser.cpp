@@ -6,6 +6,7 @@
 #include "juce_core/juce_core.h"
 #include "juce_events/juce_events.h"
 
+#define MODAL_INSET 6.5f
 //========================================
 
 PatchComboBox::PatchComboBox(HexState* s) : state(s) {
@@ -104,7 +105,7 @@ PatchLoader::PatchLoader(HexState* s)
   loadBtn.onClick = [this, s]() {
     auto* parent = getBrowserParent();
     String patchName = s->patchTree[ID::patchName];
-    parent->openSaveDialog(patchName);
+    parent->openLoadDialog(patchName);
   };
 }
 
@@ -245,7 +246,7 @@ void SaveDialog::initializeFor(const String& patchName) {
 }
 
 void SaveDialog::resized() {
-  auto fBounds = getLocalBounds().toFloat().reduced(3.5f);
+  auto fBounds = getLocalBounds().toFloat().reduced(MODAL_INSET);
   const float dY = juce::jmax(fBounds.getHeight() / 7.0f, 24.0f);
   const float dX = juce::jmin(fBounds.getWidth(), 300.0f);
   const float border = 1.5f;
@@ -280,7 +281,7 @@ void SaveDialog::paint(juce::Graphics& g) {
   g.setColour(UXPalette::highlight);
   g.fillRect(fBounds);
   g.setColour(UXPalette::darkBkgnd);
-  g.fillRect(fBounds.reduced(3.5f));
+  g.fillRect(fBounds.reduced(MODAL_INSET));
 }
 
 //===========================================================================
@@ -357,6 +358,8 @@ void PatchInfoBar::paint(juce::Graphics& g) {
   auto cStr = buildPatchBatAttString(patchTypeNames[info.type]);
   cStr.setColour(textColor);
   cStr.draw(g, cBounds);
+  // g.setColour(UXPalette::highlight);
+  // g.fillRect(getLocalBounds());
 }
 
 //===========================================================================
@@ -477,6 +480,26 @@ void PatchInfoList::resized() {
   }
 }
 
+void PatchInfoList::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::highlight);
+  g.fillRect(fBounds);
+}
+
+void PatchInfoList::setSelectedName(const String& name) {
+  setSelected(barForName(name));
+}
+
+PatchInfoBar* PatchInfoList::barForName(const String& name) const {
+  for (auto* p : patchBars) {
+    if (p->info.name == name)
+      return p;
+  }
+  jassert(false);
+  return nullptr;
+}
+
+//-------------------------------------------------------
 PatchColumnTop::PatchColumnTop(const PatchSortModeE& _mode) : mode(_mode) {}
 
 bool PatchColumnTop::isSelected() const {
@@ -531,7 +554,7 @@ void PatchColumnTop::mouseUp(const juce::MouseEvent& e) {
 void LoadDialog::setSortMode(PatchSortModeE _mode, bool _ascending) {
   currentMode = _mode;
   sortAscending = _ascending;
-  resized();
+  repaint();
 }
 
 LoadDialog::LoadDialog(HexState* s)
@@ -546,6 +569,7 @@ LoadDialog::LoadDialog(HexState* s)
   vp.setInterceptsMouseClicks(true, true);
   vp.setRepaintsOnMouseActivity(true);
   addAndMakeVisible(vp);
+  infoList.resized();
 
   // set up headers
   addAndMakeVisible(nameCT);
@@ -578,7 +602,8 @@ PatchBrowserParent* LoadDialog::getBrowserParent() const {
 }
 
 void LoadDialog::resized() {
-  auto fBounds = getLocalBounds().toFloat().reduced(3.5f);
+  infoList.resized();
+  auto fBounds = getLocalBounds().toFloat().reduced(MODAL_INSET);
   const float topHeight = fBounds.getHeight() / 11.0f;
   const float dX = fBounds.getWidth() / 10.0f;
   auto cBounds = fBounds.removeFromTop(topHeight);
@@ -598,4 +623,18 @@ void LoadDialog::resized() {
   auto loadBounds = buttonArea.reduced(2.5f);
   cancelBtn.setBounds(cancelBounds.toNearestInt());
   loadBtn.setBounds(loadBounds.toNearestInt());
+}
+
+void LoadDialog::initializeFor(const String& patchName) {
+  infoList.setSelectedName(patchName);
+  resized();
+}
+
+void LoadDialog::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  g.setColour(UXPalette::highlight);
+  g.fillRect(fBounds);
+  g.fillRect(vp.getLocalBounds());
+  g.setColour(UXPalette::darkBkgnd);
+  g.fillRect(fBounds.reduced(MODAL_INSET));
 }

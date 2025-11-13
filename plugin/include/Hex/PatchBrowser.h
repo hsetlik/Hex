@@ -118,6 +118,7 @@ private:
   // the sorting happens here
   std::vector<PatchInfoBar*> barsSortedBy(PatchSortModeE mode,
                                           bool ascending) const;
+  PatchInfoBar* barForName(const String& name) const;
 
 public:
   PatchInfoList(HexState* s);
@@ -125,8 +126,10 @@ public:
     return &bar == selectedBar;
   }
   void setSelected(PatchInfoBar* bar) { selectedBar = bar; }
+  void setSelectedName(const String& name);
   String selectedPatchName() const;
   void resized() override;
+  void paint(juce::Graphics& g) override;
 };
 
 // buttons at the top of each column for controlling the way patches are sorted
@@ -165,5 +168,7 @@ public:
   void setSortMode(PatchSortModeE _mode, bool _ascending);
   PatchSortModeE getSortMode() const { return currentMode; }
   bool getAscending() const { return sortAscending; }
+  void initializeFor(const String& patchName);
   void resized() override;
+  void paint(juce::Graphics& g) override;
 };
