@@ -11,6 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 #include <regex>
+#include "Identifiers.h"
 #define SEMITONE_RATIO 1.05946309436f
 #define PI_CONST 3.14159265358979323846264338327950288f
 
@@ -19,7 +20,6 @@ inline bool fequal(float a, float b, float thresh = 0.0000001f) {
   return diff <= thresh;
 }
 
-typedef juce::Rectangle<float> frect_t;
 namespace MathUtil {
 inline float fLerp(float lower, float upper, float t) {
   return lower + ((upper - lower) * t);
