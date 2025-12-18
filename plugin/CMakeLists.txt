@@ -8,6 +8,14 @@ set(FONTFILES
 "${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoBlackItalic.ttf"
 )
 
+set(ASSET_DIR "${CMAKE_CURRENT_LIST_DIR}/assets")
+
+set(ASSET_FILES 
+"${ASSET_DIR}/KnobBkgnd_70x70.png"
+"${ASSET_DIR}/KnobTop_48x48.png"
+"${ASSET_DIR}/Thumb_84x60.png"
+)
+
 juce_add_binary_data(
   fontBinaries
   HEADER_NAME
@@ -16,6 +24,16 @@ juce_add_binary_data(
   "FontData"
   SOURCES
   "${FONTFILES}")
+
+juce_add_binary_data(
+  assetBinary
+  HEADER_NAME
+  "AssetData.h"
+  NAMESPACE
+  "AssetData"
+  SOURCES
+  "${ASSET_FILES}"
+)
 
 set(INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/include/Hex")
 
@@ -98,6 +116,7 @@ target_link_libraries(${PROJECT_NAME}
         juce::juce_audio_utils
     PUBLIC
     fontBinaries
+    assetBinary
         juce::juce_recommended_config_flags
         juce::juce_recommended_lto_flags
         juce::juce_recommended_warning_flags
