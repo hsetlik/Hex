@@ -26,6 +26,9 @@ set(ASSET_FILES
 "${ASSET_DIR}/TriOn_72x72.png"
 "${ASSET_DIR}/NoiseOn_72x72.png"
 
+"${ASSET_DIR}/PlaybackOff_100x100.png"
+"${ASSET_DIR}/PlaybackOn_100x100.png"
+
 )
 
 juce_add_binary_data(
