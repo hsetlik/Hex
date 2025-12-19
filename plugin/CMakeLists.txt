@@ -14,6 +14,18 @@ set(ASSET_FILES
 "${ASSET_DIR}/KnobBkgnd_70x70.png"
 "${ASSET_DIR}/KnobTop_48x48.png"
 "${ASSET_DIR}/Thumb_84x60.png"
+
+"${ASSET_DIR}/SineOff_72x72.png"
+"${ASSET_DIR}/SawOff_72x72.png"
+"${ASSET_DIR}/SquareOff_72x72.png"
+"${ASSET_DIR}/TriOff_72x72.png"
+"${ASSET_DIR}/NoiseOff_72x72.png"
+"${ASSET_DIR}/SineOn_72x72.png"
+"${ASSET_DIR}/SawOn_72x72.png"
+"${ASSET_DIR}/SquareOn_72x72.png"
+"${ASSET_DIR}/TriOn_72x72.png"
+"${ASSET_DIR}/NoiseOn_72x72.png"
+
 )
 
 juce_add_binary_data(
