@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "LfoComponent.h"
-#include "Color.h"
+#include "GUI/LfoComponent.h"
+#include "GUI/Color.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_core/juce_core.h"

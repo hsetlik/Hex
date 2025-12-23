@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "ModulationGrid.h"
-#include "Color.h"
+#include "GUI/ModulationGrid.h"
+#include "GUI/Color.h"
 #include "Identifiers.h"
 ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree) {
   for (int src = 0; src < NUM_OPERATORS; ++src) {

@@ -8,11 +8,11 @@
   ==============================================================================
 */
 
-#include "OperatorComponent.h"
-#include "Color.h"
+#include "GUI/OperatorComponent.h"
+#include "GUI/Color.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
-#include "ComponentUtil.h"
+#include "GUI/ComponentUtil.h"
 #include "juce_graphics/juce_graphics.h"
 #define OPERATOR_INSET 4.0f
 

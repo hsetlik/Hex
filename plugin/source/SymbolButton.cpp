@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "SymbolButton.h"
+#include "GUI/SymbolButton.h"
 #include "juce_core/juce_core.h"
 ModulationToggle::ModulationToggle(int src, int dst)
     : juce::ShapeButton("name",

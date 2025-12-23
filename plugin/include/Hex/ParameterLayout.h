@@ -12,7 +12,7 @@
 #include "DAHDSR.h"
 #include "FMOperator.h"
 #include "Filter.h"
-#include "LfoComponent.h"
+#include "GUI/LfoComponent.h"
 #include "LFO.h"
 #include "Identifiers.h"
 #include "juce_audio_processors/juce_audio_processors.h"

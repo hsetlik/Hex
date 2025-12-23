@@ -1,6 +1,6 @@
 
-#include "PatchBrowser.h"
-#include "Color.h"
+#include "GUI/PatchBrowser.h"
+#include "GUI/Color.h"
 #include "FileSystem.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"

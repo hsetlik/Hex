@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "SliderLabel.h"
+#include "GUI/SliderLabel.h"
 
 RotaryLabel::RotaryLabel(juce::Slider* s, int decPlaces)
     : linkedSlider(s), decimalPlaces(decPlaces) {

@@ -8,11 +8,11 @@
   ==============================================================================
 */
 
-#include "HexEditor.h"
-#include "Color.h"
+#include "GUI/HexEditor.h"
+#include "GUI/Color.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
-#include "ComponentUtil.h"
+#include "GUI/ComponentUtil.h"
 FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
     : linkedTree(&tree->mainTree),
       envComp(0, linkedTree, graph, true),

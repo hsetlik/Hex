@@ -7,7 +7,7 @@
 */
 
 #pragma once
-#include "HexEditor.h"
+#include "GUI/HexEditor.h"
 #include <JuceHeader.h>
 
 //==============================================================================

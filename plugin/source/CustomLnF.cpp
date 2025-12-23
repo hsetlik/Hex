@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "CustomLnF.h"
-#include "Color.h"
+#include "GUI/CustomLnF.h"
+#include "GUI/Color.h"
 #include "juce_core/juce_core.h"
 void HexLookAndFeel::drawComboBox(juce::Graphics& g,
                                   int width,

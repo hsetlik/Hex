@@ -66,11 +66,11 @@ juce_add_plugin(${PROJECT_NAME}
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-  ${INCLUDE_DIR}/Color.h
+  ${INCLUDE_DIR}/GUI/Color.h
   ${INCLUDE_DIR}/Identifiers.h
   ${INCLUDE_DIR}/HexHeader.h
-  ${INCLUDE_DIR}/ComponentUtil.h
-  ${INCLUDE_DIR}/CustomLnF.h
+  ${INCLUDE_DIR}/GUI/ComponentUtil.h
+  ${INCLUDE_DIR}/GUI/CustomLnF.h
   source/CustomLnF.cpp
   source/HexHeader.cpp
   ${INCLUDE_DIR}/DAHDSR.h
@@ -85,35 +85,37 @@ PRIVATE
   source/FMOperator.cpp
   ${INCLUDE_DIR}/FMOscillator.h
   source/FMOscillator.cpp
-  ${INCLUDE_DIR}/HexEditor.h
+  ${INCLUDE_DIR}/GUI/HexEditor.h
   source/HexEditor.cpp
   ${INCLUDE_DIR}/LFO.h
   source/LFO.cpp
-  ${INCLUDE_DIR}/LfoComponent.h
+  ${INCLUDE_DIR}/GUI/LfoComponent.h
   source/LfoComponent.cpp
   ${INCLUDE_DIR}/MathUtil.h
   source/MathUtil.cpp
-  ${INCLUDE_DIR}/ModulationGrid.h
+  ${INCLUDE_DIR}/GUI/ModulationGrid.h
   source/ModulationGrid.cpp
-  ${INCLUDE_DIR}/OperatorComponent.h
+  ${INCLUDE_DIR}/GUI/OperatorComponent.h
   source/OperatorComponent.cpp
   ${INCLUDE_DIR}/ParameterLayout.h
   source/ParameterLayout.cpp
-  ${INCLUDE_DIR}/PatchBrowser.h
+  ${INCLUDE_DIR}/GUI/PatchBrowser.h
   source/PatchBrowser.cpp
   ${INCLUDE_DIR}/FileSystem.h
   source/FileSystem.cpp
   ${INCLUDE_DIR}/PluginEditor.h
   source/PluginEditor.cpp
+	source/Assets.cpp
+	${INCLUDE_DIR}/GUI/Assets.h
   ${INCLUDE_DIR}/PluginProcessor.h
   source/PluginProcessor.cpp
-  ${INCLUDE_DIR}/SliderLabel.h
+  ${INCLUDE_DIR}/GUI/SliderLabel.h
   source/SliderLabel.cpp
-  ${INCLUDE_DIR}/SymbolButton.h
+  ${INCLUDE_DIR}/GUI/SymbolButton.h
   source/SymbolButton.cpp
   ${INCLUDE_DIR}/Synthesizer.h
   source/Synthesizer.cpp
-  ${INCLUDE_DIR}/BitmapWaveGraph.h
+  ${INCLUDE_DIR}/GUI/BitmapWaveGraph.h
   source/BitmapWaveGraph.cpp
 )
 
