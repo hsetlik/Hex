@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "LFO.h"
+#include "Audio/LFO.h"
 #include "HexHeader.h"
 #include "Identifiers.h"
 #include "MathUtil.h"

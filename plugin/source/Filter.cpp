@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "Filter.h"
-#include "DAHDSR.h"
+#include "Audio/Filter.h"
+#include "Audio/DAHDSR.h"
 StereoFilter::StereoFilter(EnvelopeLUTGroup* luts, int voiceIdx)
     : env(&luts->filterEnv),
       cutoffVal(2500.0f),

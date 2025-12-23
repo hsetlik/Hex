@@ -73,21 +73,21 @@ PRIVATE
   ${INCLUDE_DIR}/GUI/CustomLnF.h
   source/CustomLnF.cpp
   source/HexHeader.cpp
-  ${INCLUDE_DIR}/DAHDSR.h
+  ${INCLUDE_DIR}/Audio/DAHDSR.h
   source/DAHDSR.cpp
   ${INCLUDE_DIR}/HexState.h
   source/HexState.cpp
   ${INCLUDE_DIR}/DebugUtil.h
   source/DebugUtil.cpp
-  ${INCLUDE_DIR}/Filter.h
+  ${INCLUDE_DIR}/Audio/Filter.h
   source/Filter.cpp
-  ${INCLUDE_DIR}/FMOperator.h
+  ${INCLUDE_DIR}/Audio/FMOperator.h
   source/FMOperator.cpp
-  ${INCLUDE_DIR}/FMOscillator.h
+  ${INCLUDE_DIR}/Audio/FMOscillator.h
   source/FMOscillator.cpp
   ${INCLUDE_DIR}/GUI/HexEditor.h
   source/HexEditor.cpp
-  ${INCLUDE_DIR}/LFO.h
+  ${INCLUDE_DIR}/Audio/LFO.h
   source/LFO.cpp
   ${INCLUDE_DIR}/GUI/LfoComponent.h
   source/LfoComponent.cpp
@@ -113,7 +113,7 @@ PRIVATE
   source/SliderLabel.cpp
   ${INCLUDE_DIR}/GUI/SymbolButton.h
   source/SymbolButton.cpp
-  ${INCLUDE_DIR}/Synthesizer.h
+  ${INCLUDE_DIR}/Audio/Synthesizer.h
   source/Synthesizer.cpp
   ${INCLUDE_DIR}/GUI/BitmapWaveGraph.h
   source/BitmapWaveGraph.cpp

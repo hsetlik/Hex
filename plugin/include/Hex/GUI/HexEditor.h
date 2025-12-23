@@ -16,7 +16,7 @@
 #include "ModulationGrid.h"
 #include "LfoComponent.h"
 #include "PatchBrowser.h"
-#include "PluginProcessor.h"
+#include "../PluginProcessor.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 

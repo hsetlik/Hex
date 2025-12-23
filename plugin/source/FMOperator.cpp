@@ -8,8 +8,8 @@
   ==============================================================================
 */
 
-#include "FMOperator.h"
-#include "DAHDSR.h"
+#include "Audio/FMOperator.h"
+#include "Audio/DAHDSR.h"
 #include "MathUtil.h"
 
 FMOperator::FMOperator(int opIndex, EnvelopeLUTGroup* luts)

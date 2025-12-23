@@ -10,7 +10,7 @@
 
 #pragma once
 #include "Color.h"
-#include "Synthesizer.h"
+#include "Audio/Synthesizer.h"
 #include "SymbolButton.h"
 #include "SliderLabel.h"
 #include "CustomLnF.h"

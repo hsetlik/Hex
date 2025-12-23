@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "DebugUtil.h"
 #include "HexState.h"
-#include "Synthesizer.h"
+#include "Audio/Synthesizer.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 //==============================================================================
 /**

@@ -8,10 +8,10 @@
   ==============================================================================
 */
 
-#include "Synthesizer.h"
-#include "DAHDSR.h"
+#include "Audio/Synthesizer.h"
+#include "Audio/DAHDSR.h"
 #include "Identifiers.h"
-#include "LFO.h"
+#include "Audio/LFO.h"
 #include "juce_core/juce_core.h"
 HexVoice::HexVoice(apvts* tree,
                    GraphParamSet* gParams,

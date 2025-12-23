@@ -1,6 +1,6 @@
 #include "GUI/BitmapWaveGraph.h"
 #include "GUI/Color.h"
-#include "RingBuffer.h"
+#include "Audio/RingBuffer.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 
 int BitmapWaveGraph::firstRisingEdge() const {

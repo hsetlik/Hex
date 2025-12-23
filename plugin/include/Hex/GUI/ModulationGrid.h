@@ -10,17 +10,16 @@
 
 #pragma once
 #include "SymbolButton.h"
-#include "FMOperator.h"
+#include "Audio/FMOperator.h"
 
-
-class ModulationGrid : public juce::Component
-{
+class ModulationGrid : public juce::Component {
 public:
-    ModulationGrid (apvts* tree);
-    apvts* const linkedTree;
-    void resized() override;
-    void paint (juce::Graphics& g) override;
+  ModulationGrid(apvts* tree);
+  apvts* const linkedTree;
+  void resized() override;
+  void paint(juce::Graphics& g) override;
+
 private:
-    juce::OwnedArray<ModulationToggle> buttons;
-    std::array<pButtonAttach, NUM_OPERATORS * NUM_OPERATORS> attachments;
+  juce::OwnedArray<ModulationToggle> buttons;
+  std::array<pButtonAttach, NUM_OPERATORS * NUM_OPERATORS> attachments;
 };
