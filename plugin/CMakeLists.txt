@@ -4,8 +4,12 @@ project(Hex VERSION 1.2.0)
 
 set(FONTFILES
 "${CMAKE_CURRENT_LIST_DIR}/fonts/Roboto-LightItalic.ttf"
+"${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoLightItalic.ttf"
 "${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoLight.ttf"
 "${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoBlackItalic.ttf"
+"${CMAKE_CURRENT_LIST_DIR}/fonts/KenyanCoffeeBoldItalic.otf"
+"${CMAKE_CURRENT_LIST_DIR}/fonts/KenyanCoffeeRegular.otf"
+"${CMAKE_CURRENT_LIST_DIR}/fonts/RobotoMediumItalic.ttf"
 )
 
 set(ASSET_DIR "${CMAKE_CURRENT_LIST_DIR}/assets")
@@ -109,6 +113,8 @@ PRIVATE
 	${INCLUDE_DIR}/GUI/Assets.h
 				source/WaveformSelector.cpp
 				${INCLUDE_DIR}/GUI/WaveformSelector.h
+				source/Fonts.cpp
+				${INCLUDE_DIR}/GUI/Fonts.h
   ${INCLUDE_DIR}/PluginProcessor.h
   source/PluginProcessor.cpp
   ${INCLUDE_DIR}/GUI/SliderLabel.h
