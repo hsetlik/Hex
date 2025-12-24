@@ -11,6 +11,7 @@
 #include "GUI/CustomLnF.h"
 #include "GUI/Assets.h"
 #include "GUI/Color.h"
+#include "GUI/Fonts.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_core/juce_core.h"
@@ -53,7 +54,7 @@ juce::Label* HexLookAndFeel::createComboBoxTextBox(juce::ComboBox& box) {
 }
 juce::Font HexLookAndFeel::getComboBoxFont(juce::ComboBox& box) {
   auto height = (float)box.getHeight() * 0.35f;
-  return UXPalette::robotoLightItalic.withHeight(height);
+  return Fonts::getFont(Fonts::RobotoLightItalic, height);
 }
 void HexLookAndFeel::positionComboBoxText(juce::ComboBox& box,
                                           juce::Label& label) {
@@ -63,7 +64,7 @@ void HexLookAndFeel::positionComboBoxText(juce::ComboBox& box,
 //===========================================================================================
 juce::Font HexLookAndFeel::getLabelFont(juce::Label& label) {
   juce::ignoreUnused(label);
-  return UXPalette::robotoLightItalic.withHeight(10.0f);
+  return Fonts::getFont(Fonts::RobotoLightItalic, 10.0f);
 }
 
 void HexLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label) {
@@ -199,5 +200,5 @@ int HexLookAndFeel::getTextButtonWidthToFitText(juce::TextButton& b,
 
 juce::Font HexLookAndFeel::getTextButtonFont(juce::TextButton& b, int height) {
   juce::ignoreUnused(b);
-  return UXPalette::robotoLightItalic.withHeight((float)height * 0.8f);
+  return Fonts::getFont(Fonts::RobotoLightItalic, (float)height * 0.85f);
 }

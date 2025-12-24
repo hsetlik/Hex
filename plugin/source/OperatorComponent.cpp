@@ -10,6 +10,7 @@
 
 #include "GUI/OperatorComponent.h"
 #include "GUI/Color.h"
+#include "GUI/Fonts.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "GUI/ComponentUtil.h"
@@ -388,7 +389,7 @@ void OperatorComponent::paint(juce::Graphics& g) {
   const String text = "Operator " + String(opIndex + 1);
   AttString aStr(text);
   aStr.setJustification(juce::Justification::centredLeft);
-  aStr.setFont(UXPalette::robotoBlackItalic.withHeight(22.0f));
+  aStr.setFont(Fonts::getFont(Fonts::RobotoBlackItalic, 22.0f));
   aStr.setColour(juce::Colours::white);
   aStr.draw(g, tBounds);
 }

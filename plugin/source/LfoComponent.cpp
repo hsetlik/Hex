@@ -10,6 +10,7 @@
 
 #include "GUI/LfoComponent.h"
 #include "GUI/Color.h"
+#include "GUI/Fonts.h"
 #include "Identifiers.h"
 #include "MathUtil.h"
 #include "juce_core/juce_core.h"
@@ -246,7 +247,7 @@ void LfoComponent::paint(juce::Graphics& g) {
   const String text = "LFO " + String(lfoIndex + 1);
   AttString nameStr(text);
   nameStr.setJustification(juce::Justification::centredLeft);
-  nameStr.setFont(UXPalette::robotoBlackItalic.withHeight(22.0f));
+  nameStr.setFont(Fonts::getFont(Fonts::RobotoBlackItalic, 22.0f));
   nameStr.setColour(juce::Colours::white);
   nameStr.draw(g, textBox);
 }

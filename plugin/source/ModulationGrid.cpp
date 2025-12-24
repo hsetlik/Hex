@@ -10,6 +10,7 @@
 
 #include "GUI/ModulationGrid.h"
 #include "GUI/Color.h"
+#include "GUI/Fonts.h"
 #include "Identifiers.h"
 ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree) {
   for (int src = 0; src < NUM_OPERATORS; ++src) {
@@ -45,7 +46,7 @@ void ModulationGrid::paint(juce::Graphics& g) {
   auto topBounds = fBounds.removeFromTop(barWidth);
   topBounds.removeFromLeft(barWidth);
   AttString topStr("Modulator");
-  auto font = UXPalette::robotoBlackItalic.withHeight(barWidth * 0.9f);
+  auto font = Fonts::getFont(Fonts::RobotoBlackItalic, 0.9f * barWidth);
   topStr.setFont(font);
   topStr.setColour(UXPalette::darkRed);
   topStr.setJustification(juce::Justification::centred);

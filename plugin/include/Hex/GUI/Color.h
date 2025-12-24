@@ -23,16 +23,4 @@ static Color darkRed = lightRed.darker(0.45f);
 static Color darkBlue = Color(39, 104, 158);
 static Color lightBlue = Color(91, 201, 225);
 
-static juce::Font robotoLightItalic =
-    juce::Font(juce::FontOptions(juce::Typeface::createSystemTypefaceFor(
-        FontData::RobotoLightItalic_ttf,
-        FontData::RobotoLightItalic_ttfSize)));
-static juce::Font robotoThin =
-    juce::Font(juce::FontOptions(juce::Typeface::createSystemTypefaceFor(
-        FontData::RobotoLightItalic_ttf,
-        FontData::RobotoLightItalic_ttfSize)));
-static juce::Font robotoBlackItalic =
-    juce::Font(juce::FontOptions(juce::Typeface::createSystemTypefaceFor(
-        FontData::RobotoBlackItalic_ttf,
-        FontData::RobotoBlackItalic_ttfSize)));
 }  // namespace UXPalette
