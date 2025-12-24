@@ -9,8 +9,13 @@
 */
 
 #include "GUI/CustomLnF.h"
+#include "GUI/Assets.h"
 #include "GUI/Color.h"
+#include "Identifiers.h"
+#include "MathUtil.h"
 #include "juce_core/juce_core.h"
+
+constexpr float KnobTopAspectRatio = 24.0f / 35.0f;
 void HexLookAndFeel::drawComboBox(juce::Graphics& g,
                                   int width,
                                   int height,
@@ -81,30 +86,30 @@ void HexLookAndFeel::drawRotarySlider(juce::Graphics& g,
                                       float rotaryEndAngle,
                                       juce::Slider& slider) {
   juce::ignoreUnused(slider);
-  auto iBounds = juce::Rectangle<int>{x, y, width, height};
-  auto fBounds = iBounds.toFloat();
-  g.setColour(UXPalette::darkGray);
-  g.fillEllipse(fBounds);
-  g.setColour(UXPalette::lightGray);
-  auto angle = fabs(rotaryStartAngle - rotaryEndAngle) * sliderPosProportional;
-  auto centerX = fBounds.getX() + (fBounds.getWidth() / 2.0f);
-  auto centerY = fBounds.getY() + (fBounds.getHeight() / 2.0f);
-  auto radius = fBounds.getWidth() * 0.4f;
-  auto strokeType = juce::PathStrokeType(5.0f, juce::PathStrokeType::curved,
-                                         juce::PathStrokeType::rounded);
-  juce::Path track;
-  track.addCentredArc(centerX, centerY, radius, radius, 0.0f, rotaryStartAngle,
-                      rotaryEndAngle, true);
-  g.strokePath(track, strokeType);
-  g.setColour(UXPalette::highlight);
-  auto iRadius = radius * 0.6f;
-  juce::Path thumb;
-  thumb.startNewSubPath(centerX, centerY - radius);
-  thumb.lineTo(centerX, centerY - iRadius);
-  thumb.closeSubPath();
-  thumb.applyTransform(juce::AffineTransform::rotation(rotaryStartAngle + angle,
-                                                       centerX, centerY));
-  g.strokePath(thumb, strokeType);
+  if (width != height) {
+    if (width < height)
+      height = width;
+    else
+      width = height;
+  }
+  irect_t iBounds(x, y, width, height);
+  auto sideLength = std::min(width, height);
+  iBounds = iBounds.withSizeKeepingCentre(sideLength, sideLength);
+  auto bounds = iBounds.toFloat();
+  // 1. draw the background image
+  auto bkgndImg = Assets::getImage(Assets::KnobBkgnd);
+  g.drawImage(bkgndImg, bounds);
+  // 2. find the bounds for the knob top
+  auto topBounds =
+      bounds.withSizeKeepingCentre(bounds.getWidth() * KnobTopAspectRatio,
+                                   bounds.getHeight() * KnobTopAspectRatio);
+  auto topImg = Assets::getImage(Assets::KnobTop);
+  auto endAngle =
+      MathUtil::fLerp(rotaryStartAngle, rotaryEndAngle, sliderPosProportional);
+  auto transform = juce::AffineTransform::rotation(
+      endAngle, topBounds.getCentreX(), topBounds.getCentreY());
+  g.addTransform(transform);
+  g.drawImage(topImg, topBounds);
 }
 void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
                                       int x,
