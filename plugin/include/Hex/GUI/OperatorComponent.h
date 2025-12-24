@@ -102,7 +102,7 @@ public:
   pSliderAttach sustainAttach;
   pSliderAttach releaseAttach;
 
-  HexLookAndFeel lnf;
+  // HexLookAndFeel lnf;
 };
 
 //===============================================================
@@ -142,5 +142,5 @@ private:
 
   pButtonAttach outAttach;
 
-  HexLookAndFeel hexLnf;
+  // HexLookAndFeel hexLnf;
 };

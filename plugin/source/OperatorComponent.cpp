@@ -181,12 +181,12 @@ EnvelopeComponent::EnvelopeComponent(int idx,
   sustainSlider.addListener(&graph);
   releaseSlider.addListener(&graph);
 
-  delaySlider.setLookAndFeel(&lnf);
-  attackSlider.setLookAndFeel(&lnf);
-  holdSlider.setLookAndFeel(&lnf);
-  decaySlider.setLookAndFeel(&lnf);
-  sustainSlider.setLookAndFeel(&lnf);
-  releaseSlider.setLookAndFeel(&lnf);
+  // delaySlider.setLookAndFeel(&lnf);
+  // attackSlider.setLookAndFeel(&lnf);
+  // holdSlider.setLookAndFeel(&lnf);
+  // decaySlider.setLookAndFeel(&lnf);
+  // sustainSlider.setLookAndFeel(&lnf);
+  // releaseSlider.setLookAndFeel(&lnf);
 
   addAndMakeVisible(&graph);
 
@@ -217,12 +217,12 @@ EnvelopeComponent::EnvelopeComponent(int idx,
 }
 
 EnvelopeComponent::~EnvelopeComponent() {
-  delaySlider.setLookAndFeel(nullptr);
-  attackSlider.setLookAndFeel(nullptr);
-  holdSlider.setLookAndFeel(nullptr);
-  decaySlider.setLookAndFeel(nullptr);
-  sustainSlider.setLookAndFeel(nullptr);
-  releaseSlider.setLookAndFeel(nullptr);
+  // delaySlider.setLookAndFeel(nullptr);
+  // attackSlider.setLookAndFeel(nullptr);
+  // holdSlider.setLookAndFeel(nullptr);
+  // decaySlider.setLookAndFeel(nullptr);
+  // sustainSlider.setLookAndFeel(nullptr);
+  // releaseSlider.setLookAndFeel(nullptr);
 }
 
 void EnvelopeComponent::resized() {
@@ -279,7 +279,7 @@ OperatorComponent::OperatorComponent(int idx,
       modLabel(&modSlider),
       panLabel(&panSlider),
       levelLabel(&levelSlider) {
-  setLookAndFeel(&hexLnf);
+  // setLookAndFeel(&hexLnf);
   addAndMakeVisible(&envComponent);
   addAndMakeVisible(&waveSelect);
 
@@ -334,7 +334,7 @@ OperatorComponent::OperatorComponent(int idx,
 }
 
 OperatorComponent::~OperatorComponent() {
-  setLookAndFeel(nullptr);
+  // setLookAndFeel(nullptr);
 }
 
 void OperatorComponent::buttonClicked(juce::Button* b) {
