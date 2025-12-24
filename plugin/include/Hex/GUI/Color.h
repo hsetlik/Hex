@@ -10,7 +10,7 @@
 
 #pragma once
 #include "HexHeader.h"
-#include "FontData.h"
+
 namespace UXPalette {
 static Color thumbYellow = Color(255, 236, 95);
 static Color thumbBlue = Color(32, 139, 181);
@@ -24,3 +24,17 @@ static Color darkBlue = Color(39, 104, 158);
 static Color lightBlue = Color(91, 201, 225);
 
 }  // namespace UXPalette
+
+#define DECLARE_COLOR(name, r, g, b) const Color name = Color::fromRGB(r, g, b);
+
+namespace UIColor {
+DECLARE_COLOR(orangeLight, 226, 79, 54)
+DECLARE_COLOR(greenLight, 128, 254, 85)
+DECLARE_COLOR(bkgndGray, 51, 51, 51)
+DECLARE_COLOR(shadowGray, 25, 25, 25)
+DECLARE_COLOR(borderGray, 102, 102, 102)
+DECLARE_COLOR(offWhite, 204, 204, 204)
+
+}  // namespace UIColor
+
+#undef DECLARE_COLOR
