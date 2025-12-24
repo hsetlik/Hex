@@ -120,7 +120,7 @@ private:
   RotaryLabel depthLabel;
   RotaryParamName depthName;
   PosInfo currentPos;
-  WaveSelector waveSelect;
+  WaveformSelector waveSelect;
   pSliderAttach rateAttach;
   pSliderAttach depthAttach;
   pButtonAttach syncAttach;

@@ -170,7 +170,7 @@ LfoComponent::LfoComponent(int i,
       rateName("Rate"),
       depthLabel(&depthSlider),
       depthName("Depth"),
-      waveSelect(i, tree, ID::lfoWave.toString()) {
+      waveSelect(*tree, ID::lfoWave.toString() + String(i)) {
   auto iStr = juce::String(lfoIndex);
   auto rateId = ID::lfoRate + iStr;
   rateAttach.reset(new sliderAttach(*linkedTree, rateId, rateSlider));

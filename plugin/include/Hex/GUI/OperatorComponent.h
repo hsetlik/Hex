@@ -11,6 +11,7 @@
 #pragma once
 #include "Color.h"
 #include "Audio/Synthesizer.h"
+#include "GUI/WaveformSelector.h"
 #include "SymbolButton.h"
 #include "SliderLabel.h"
 #include "CustomLnF.h"
@@ -104,60 +105,6 @@ public:
   HexLookAndFeel lnf;
 };
 
-//============================================================================
-//! button classes for wave selection
-class WaveButton : public SymbolButton {
-public:
-  WaveButton() {
-    setClickingTogglesState(true);
-    setStroke(true, 1.5f);
-    setSymbolOnColor(UXPalette::highlight);
-    setSymbolOffColor(UXPalette::darkGray);
-  }
-};
-class SineButton : public WaveButton {
-public:
-  void setSymbol() override;
-};
-class SquareButton : public WaveButton {
-public:
-  void setSymbol() override;
-};
-class SawButton : public WaveButton {
-public:
-  void setSymbol() override;
-};
-class TriButton : public WaveButton {
-public:
-  void setSymbol() override;
-};
-class NoiseButton : public WaveButton {
-public:
-  void setSymbol() override;
-};
-//===============================================================
-class WaveSelector : public juce::Component,
-                     public juce::Button::Listener,
-                     public juce::ComboBox::Listener {
-public:
-  WaveSelector(int idx, apvts* tree, juce::String prefix);
-  const int opIndex;
-  apvts* const linkedTree;
-  void resized() override;
-  void buttonClicked(juce::Button* b) override;
-  void comboBoxChanged(juce::ComboBox* b) override;
-  void paint(juce::Graphics& g) override;
-
-private:
-  SineButton bSine;
-  SquareButton bSquare;
-  SawButton bSaw;
-  TriButton bTri;
-  NoiseButton bNoise;
-  juce::ComboBox hiddenBox;
-  std::unique_ptr<juce::AudioProcessorValueTreeState::ComboBoxAttachment>
-      hiddenBoxAttach;
-};
 //===============================================================
 class OperatorComponent : public juce::Component,
                           public juce::Button::Listener {
@@ -172,7 +119,7 @@ public:
 
 private:
   EnvelopeComponent envComponent;
-  WaveSelector waveSelect;
+  WaveformSelector waveSelect;
   OutputButton outButton;
   juce::Slider ratioSlider;
   RotaryParamName ratioName;

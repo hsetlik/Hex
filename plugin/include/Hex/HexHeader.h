@@ -7,6 +7,7 @@ typedef juce::File File;
 typedef juce::ValueTree ValueTree;
 typedef juce::Identifier Identifier;
 typedef juce::ParameterAttachment ParamAttachment;
+typedef std::unique_ptr<ParamAttachment> param_attach_ptr;
 using apvts = juce::AudioProcessorValueTreeState;
 using Color = juce::Colour;
 using AttString = juce::AttributedString;

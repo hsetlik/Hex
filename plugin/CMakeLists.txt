@@ -107,6 +107,8 @@ PRIVATE
   source/PluginEditor.cpp
 	source/Assets.cpp
 	${INCLUDE_DIR}/GUI/Assets.h
+				source/WaveformSelector.cpp
+				${INCLUDE_DIR}/GUI/WaveformSelector.h
   ${INCLUDE_DIR}/PluginProcessor.h
   source/PluginProcessor.cpp
   ${INCLUDE_DIR}/GUI/SliderLabel.h

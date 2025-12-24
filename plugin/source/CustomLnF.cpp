@@ -111,6 +111,7 @@ void HexLookAndFeel::drawRotarySlider(juce::Graphics& g,
   g.addTransform(transform);
   g.drawImage(topImg, topBounds);
 }
+
 void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
                                       int x,
                                       int y,
