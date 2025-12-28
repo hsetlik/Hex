@@ -114,6 +114,8 @@ PRIVATE
 				${INCLUDE_DIR}/GUI/WaveformSelector.h
 				source/Fonts.cpp
 				${INCLUDE_DIR}/GUI/Fonts.h
+				source/EnvelopeComponent.cpp
+				${INCLUDE_DIR}/GUI/EnvelopeComponent.h
   ${INCLUDE_DIR}/PluginProcessor.h
   source/PluginProcessor.cpp
   ${INCLUDE_DIR}/GUI/SliderLabel.h
