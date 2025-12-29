@@ -126,26 +126,27 @@ void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
   juce::ignoreUnused(y, width, height, minSliderPos, style);
   auto fPos = 1.0f - (sliderPos / maxSliderPos);
   auto fBounds = slider.getBounds().toFloat();
-  auto bkgndWidth = fBounds.getWidth() * 0.2f;
-  auto xOffsetBkgnd = (fBounds.getWidth() / 2.0f) - (bkgndWidth / 2.0f);
-  auto corner = bkgndWidth / 2.0f;
-  auto thumbWidth = fBounds.getWidth() * 0.45f;
+  const float xScale = fBounds.getWidth() / 28.0f;
+  const float yScale = fBounds.getHeight() / 130.0f;
+  const float trackWidth = 3.0f * xScale;
+  const float trackX = (float)x + ((float)width / 2.0f) - (trackWidth / 2.0f);
+  frect_t trackBounds = {trackX, (float)y, trackWidth, (float)height};
+  g.setColour(UIColor::bkgndGray);
+  g.fillRoundedRectangle(trackBounds, trackWidth / 2.0f);
+  const float trackStroke = 1.0f * xScale;
+  g.setColour(UIColor::borderGray);
+  g.drawRoundedRectangle(trackBounds, trackWidth / 2.0f, trackStroke);
+  const float thumbHeight = 20.0f * yScale;
+  const float thumbMax = (float)y + (float)height - (thumbHeight / 2.0f);
+  const float thumbMin = thumbHeight / 2.0f;
+  const float thumbY = MathUtil::fLerp(thumbMax, thumbMin, fPos);
+  frect_t thumbBounds = {(float)x, thumbY, (float)width, thumbHeight};
+  auto& thumbImg = Assets::getImage(Assets::Thumb);
+  g.drawImage(thumbImg, thumbBounds);
 
-  auto thumbXOffset = (fBounds.getWidth() / 2.0f) - (thumbWidth / 2.0f);
-  auto thumbHeight =
-      (fBounds.getHeight() - (float)slider.getTextBoxHeight()) * 0.1f;
-  auto thumbY = (1.0f - fPos) * (fBounds.getHeight() - thumbHeight) - 5;
-
-  // draw the background
-  g.setColour(UXPalette::darkGray);
-  g.fillRoundedRectangle(
-      (float)x + xOffsetBkgnd, 5, bkgndWidth,
-      fBounds.getHeight() - ((float)slider.getTextBoxHeight() * 1.2f) - 5,
-      corner);
-  // draw the thumb
-  g.setColour(UXPalette::highlight);
-  g.fillRoundedRectangle((float)x + thumbXOffset, thumbY, thumbWidth,
-                         thumbHeight, thumbHeight / 2.0f);
+  // irect_t bounds = {x, y, width, height};
+  // g.setColour(UIColor::greenLight);
+  // g.fillRect(bounds);
 }
 //======================================================================================
 
