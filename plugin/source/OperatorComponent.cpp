@@ -9,6 +9,7 @@
 */
 
 #include "GUI/OperatorComponent.h"
+#include "GUI/Assets.h"
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
 #include "Identifiers.h"
@@ -16,6 +17,18 @@
 #include "GUI/ComponentUtil.h"
 #include "juce_graphics/juce_graphics.h"
 #define OPERATOR_INSET 4.0f
+//=======================================================
+OutputToggle::OutputToggle() : juce::Button("OutputToggle") {}
+
+void OutputToggle::paintButton(juce::Graphics& g, bool highlighted, bool down) {
+  juce::ignoreUnused(highlighted, down);
+  auto fBounds = getLocalBounds().toFloat();
+  const float sideLength = std::min(fBounds.getHeight(), fBounds.getWidth());
+  auto btnBounds = fBounds.withSizeKeepingCentre(sideLength, sideLength);
+  auto& img = getToggleState() ? Assets::getImage(Assets::PlaybackOn)
+                               : Assets::getImage(Assets::PlaybackOff);
+  g.drawImage(img, btnBounds);
+}
 //=======================================================
 OperatorComponent::OperatorComponent(int idx,
                                      apvts* tree,
@@ -56,6 +69,7 @@ OperatorComponent::OperatorComponent(int idx,
   addAndMakeVisible(&panName);
   addAndMakeVisible(&levelName);
 
+  outButton.setClickingTogglesState(true);
   addAndMakeVisible(&outButton);
 
   addAndMakeVisible(&ratioLabel);
@@ -98,6 +112,7 @@ void OperatorComponent::buttonClicked(juce::Button* b) {
     panSlider.setVisible(false);
     panLabel.setVisible(false);
   }
+  outButton.repaint();
 }
 
 void OperatorComponent::resized() {

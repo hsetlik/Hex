@@ -17,6 +17,12 @@
 #include "CustomLnF.h"
 #include "EnvelopeComponent.h"
 //===============================================================
+class OutputToggle : public juce::Button {
+public:
+  OutputToggle();
+  void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
+};
+//===============================================================
 class OperatorComponent : public juce::Component,
                           public juce::Button::Listener {
 public:
@@ -31,7 +37,7 @@ public:
 private:
   EnvelopeComponent envComponent;
   WaveformSelector waveSelect;
-  OutputButton outButton;
+  OutputToggle outButton;
   juce::Slider ratioSlider;
   RotaryParamName ratioName;
   juce::Slider modSlider;

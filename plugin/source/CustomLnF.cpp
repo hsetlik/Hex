@@ -127,7 +127,7 @@ void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
   auto fPos = 1.0f - (sliderPos / maxSliderPos);
   auto fBounds = slider.getBounds().toFloat();
   const float xScale = fBounds.getWidth() / 28.0f;
-  const float yScale = fBounds.getHeight() / 130.0f;
+  const float yScale = fBounds.getHeight() / 100.0f;
   const float trackWidth = 3.0f * xScale;
   const float trackX = (float)x + ((float)width / 2.0f) - (trackWidth / 2.0f);
   frect_t trackBounds = {trackX, (float)y, trackWidth, (float)height};
