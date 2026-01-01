@@ -9,6 +9,8 @@
 */
 
 #include "GUI/SliderLabel.h"
+#include "GUI/Color.h"
+#include "GUI/Fonts.h"
 
 RotaryLabel::RotaryLabel(juce::Slider* s, int decPlaces)
     : linkedSlider(s), decimalPlaces(decPlaces) {
@@ -111,4 +113,35 @@ void VerticalParamName::componentMovedOrResized(juce::Component& component,
     auto xCenter = component.getX() + (component.getWidth() / 2);
     setBounds(xCenter - (width / 2), component.getBottom(), width, height);
   }
+}
+
+//==============================================================================
+
+SliderValueDisplay::SliderValueDisplay(juce::Slider* s) : attachedSlider(s) {
+  attachedSlider->addListener(this);
+}
+
+SliderValueDisplay::~SliderValueDisplay() {
+  attachedSlider->removeListener(this);
+}
+
+void SliderValueDisplay::sliderValueChanged(juce::Slider* s) {
+  currentSliderValue = (float)s->getValue();
+  repaint();
+}
+
+void SliderValueDisplay::setDisplayCallback(const display_func_t& func) {
+  displayFunction = func;
+  repaint();
+}
+
+void SliderValueDisplay::paint(juce::Graphics& g) {
+  auto fBounds = getLocalBounds().toFloat();
+  const String text = displayFunction(currentSliderValue);
+  AttString aStr(text);
+  aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
+                   .withHeight(fBounds.getHeight() * 0.8f));
+  aStr.setColour(UIColor::offWhite);
+  aStr.setJustification(juce::Justification::centred);
+  aStr.draw(g, fBounds);
 }

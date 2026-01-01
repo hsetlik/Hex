@@ -8,6 +8,8 @@
 #define REPAINT_FPS 24
 #define NOISE_SEED 2239
 
+//============================================================
+
 class EnvelopeComponent : public juce::Component {
 public:
   class DAHDSRGraph : public juce::Component,
@@ -69,12 +71,12 @@ public:
   juce::Slider sustainSlider;
   juce::Slider releaseSlider;
 
-  VerticalParamName delayName;
-  VerticalParamName attackName;
-  VerticalParamName holdName;
-  VerticalParamName decayName;
-  VerticalParamName sustainName;
-  VerticalParamName releaseName;
+  // VerticalParamName delayName;
+  // VerticalParamName attackName;
+  // VerticalParamName holdName;
+  // VerticalParamName decayName;
+  // VerticalParamName sustainName;
+  // VerticalParamName releaseName;
 
   pSliderAttach delayAttach;
   pSliderAttach attackAttach;
@@ -82,5 +84,12 @@ public:
   pSliderAttach decayAttach;
   pSliderAttach sustainAttach;
   pSliderAttach releaseAttach;
+
+  SliderValueDisplay dDelay;
+  SliderValueDisplay dAttack;
+  SliderValueDisplay dHold;
+  SliderValueDisplay dDecay;
+  SliderValueDisplay dSustain;
+  SliderValueDisplay dRelease;
 };
 

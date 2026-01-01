@@ -85,3 +85,21 @@ public:
 private:
   float fLift;
 };
+
+//===============================================================
+
+typedef std::function<String(float)> display_func_t;
+
+class SliderValueDisplay : public Component, public juce::Slider::Listener {
+private:
+  float currentSliderValue = 0.0f;
+  juce::Slider* const attachedSlider;
+  display_func_t displayFunction;
+
+public:
+  SliderValueDisplay(juce::Slider* slider);
+  ~SliderValueDisplay() override;
+  void sliderValueChanged(juce::Slider* s) override;
+  void paint(juce::Graphics& g) override;
+  void setDisplayCallback(const display_func_t& func);
+};

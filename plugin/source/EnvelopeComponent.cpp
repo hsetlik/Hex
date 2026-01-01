@@ -125,12 +125,12 @@ EnvelopeComponent::EnvelopeComponent(int idx,
       linkedTree(tree),
       graph(this),
       meter(idx, gParams, isFilter),
-      delayName("Delay"),
-      attackName("Attack"),
-      holdName("Hold"),
-      decayName("Decay"),
-      sustainName("Sustain"),
-      releaseName("Release") {
+      dDelay(&delaySlider),
+      dAttack(&attackSlider),
+      dHold(&holdSlider),
+      dDecay(&decaySlider),
+      dSustain(&sustainSlider),
+      dRelease(&releaseSlider) {
   SliderUtil::setVerticalLinearNoBox(delaySlider);
   SliderUtil::setVerticalLinearNoBox(attackSlider);
   SliderUtil::setVerticalLinearNoBox(holdSlider);
@@ -145,19 +145,19 @@ EnvelopeComponent::EnvelopeComponent(int idx,
   addAndMakeVisible(&sustainSlider);
   addAndMakeVisible(&releaseSlider);
 
-  addAndMakeVisible(&delayName);
-  addAndMakeVisible(&attackName);
-  addAndMakeVisible(&holdName);
-  addAndMakeVisible(&decayName);
-  addAndMakeVisible(&sustainName);
-  addAndMakeVisible(&releaseName);
+  addAndMakeVisible(&dDelay);
+  addAndMakeVisible(&dAttack);
+  addAndMakeVisible(&dHold);
+  addAndMakeVisible(&dDecay);
+  addAndMakeVisible(&dSustain);
+  addAndMakeVisible(&dRelease);
 
-  delayName.attachToComponent(&delaySlider, false);
-  attackName.attachToComponent(&attackSlider, false);
-  holdName.attachToComponent(&holdSlider, false);
-  decayName.attachToComponent(&decaySlider, false);
-  sustainName.attachToComponent(&sustainSlider, false);
-  releaseName.attachToComponent(&releaseSlider, false);
+  // delayName.attachToComponent(&delaySlider, false);
+  // attackName.attachToComponent(&attackSlider, false);
+  // holdName.attachToComponent(&holdSlider, false);
+  // decayName.attachToComponent(&decaySlider, false);
+  // sustainName.attachToComponent(&sustainSlider, false);
+  // releaseName.attachToComponent(&releaseSlider, false);
 
   delaySlider.addListener(&graph);
   attackSlider.addListener(&graph);
@@ -199,6 +199,42 @@ EnvelopeComponent::EnvelopeComponent(int idx,
   decayAttach.reset(new sliderAttach(*linkedTree, decayId, decaySlider));
   sustainAttach.reset(new sliderAttach(*linkedTree, sustainId, sustainSlider));
   releaseAttach.reset(new sliderAttach(*linkedTree, releaseId, releaseSlider));
+
+  auto msCallback = [](float value) {
+    auto fullStr = String(value);
+    // for values over 100 ms, don't bother with decimals in any case
+    if (value >= 100.0f) {
+      auto numberStr = fullStr.substring(0, 3);
+      return numberStr + " ms";
+    }
+    auto pointIdx = fullStr.indexOf(".");
+    int placesToUse = 0;
+    bool foundZero = false;
+    while (pointIdx != -1 && placesToUse < 3 && !foundZero) {
+      auto decValue = fullStr[pointIdx + placesToUse];
+      if (decValue == '0') {
+        foundZero = true;
+      }
+      ++placesToUse;
+    }
+    if (pointIdx != -1) {
+      auto numStr = fullStr.substring(0, pointIdx + placesToUse);
+      return numStr + " ms";
+    }
+    return fullStr + " ms";
+  };
+  dDelay.setDisplayCallback(msCallback);
+  dAttack.setDisplayCallback(msCallback);
+  dHold.setDisplayCallback(msCallback);
+  dDecay.setDisplayCallback(msCallback);
+  dRelease.setDisplayCallback(msCallback);
+
+  auto sustainCallback = [](float value) {
+    const float fPercent = value * 100.0f;
+    const int iPercent = (int)std::floorf(fPercent);
+    return String(iPercent) + "%";
+  };
+  dSustain.setDisplayCallback(sustainCallback);
 }
 
 EnvelopeComponent::~EnvelopeComponent() {
@@ -211,40 +247,56 @@ EnvelopeComponent::~EnvelopeComponent() {
 }
 
 void EnvelopeComponent::resized() {
-  auto bounds = getLocalBounds().toFloat();
-  auto dY = bounds.getHeight() / 2.0f;
-  auto upper = bounds.removeFromTop(dY);
-  auto dX = upper.getWidth() / 10.0f;
-  auto mBounds = upper.removeFromRight(dX);
-  meter.setBounds(mBounds.toNearestInt());
-  graph.setBounds(upper.toNearestInt());
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 250.0f;
+  const float yScale = fBounds.getHeight() / 250.0f;
 
-  dX = bounds.getWidth() / 6.0f;
-  auto labelHeight = bounds.getHeight() / 8;
-  bounds.removeFromBottom(2.5f);
-
-  auto delBounds = bounds.removeFromLeft(dX);
-  delayName.setBounds(delBounds.removeFromBottom(labelHeight).toNearestInt());
-  delaySlider.setBounds(delBounds.toNearestInt());
-
-  auto aBounds = bounds.removeFromLeft(dX);
-  attackName.setBounds(aBounds.removeFromBottom(labelHeight).toNearestInt());
-  attackSlider.setBounds(aBounds.toNearestInt());
-
-  auto hBounds = bounds.removeFromLeft(dX);
-  holdName.setBounds(hBounds.removeFromBottom(labelHeight).toNearestInt());
-  holdSlider.setBounds(hBounds.toNearestInt());
-
-  auto dBounds = bounds.removeFromLeft(dX);
-  decayName.setBounds(dBounds.removeFromBottom(labelHeight).toNearestInt());
-  decaySlider.setBounds(dBounds.toNearestInt());
-
-  auto sBounds = bounds.removeFromLeft(dX);
-  sustainName.setBounds(sBounds.removeFromBottom(labelHeight).toNearestInt());
-  sustainSlider.setBounds(sBounds.toNearestInt());
-
-  auto rBounds = bounds;
-  releaseName.setBounds(rBounds.removeFromBottom(labelHeight).toNearestInt());
-  releaseSlider.setBounds(rBounds.toNearestInt());
+  // 1. place the graph & level meter
+  frect_t graphBounds = {0.0f, 0.0f, 230.0f * xScale, 130.0f * yScale};
+  frect_t meterBounds = {230.0f * xScale, 0.0f, 20.0f * xScale,
+                         130.0f * yScale};
+  graph.setBounds(graphBounds.toNearestInt());
+  meter.setBounds(meterBounds.toNearestInt());
+  // 2. place the sliders
+  frect_t delayBounds = {6.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                         100.0f * yScale};
+  frect_t attackBounds = {48.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                          100.0f * yScale};
+  frect_t holdBounds = {90.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                        100.0f * yScale};
+  frect_t decayBounds = {132.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                         100.0f * yScale};
+  frect_t sustainBounds = {174.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                           100.0f * yScale};
+  frect_t releaseBounds = {217.0f * xScale, 148.0f * yScale, 28.0f * xScale,
+                           100.0f * yScale};
+  delaySlider.setBounds(delayBounds.toNearestInt());
+  attackSlider.setBounds(attackBounds.toNearestInt());
+  holdSlider.setBounds(holdBounds.toNearestInt());
+  decaySlider.setBounds(decayBounds.toNearestInt());
+  sustainSlider.setBounds(sustainBounds.toNearestInt());
+  releaseSlider.setBounds(releaseBounds.toNearestInt());
+  // 3. place the labels
+  const float dispY = 130.0f * yScale;
+  const float dispHeight = 18.0f * yScale;
+  const float dispWidth = fBounds.getWidth() / 6.0f;
+  float xPos = 0.0f;
+  frect_t delayDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dDelay.setBounds(delayDispBounds.toNearestInt());
+  xPos += dispWidth;
+  frect_t attackDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dAttack.setBounds(attackDispBounds.toNearestInt());
+  xPos += dispWidth;
+  frect_t holdDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dHold.setBounds(holdDispBounds.toNearestInt());
+  xPos += dispWidth;
+  frect_t decayDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dDecay.setBounds(decayDispBounds.toNearestInt());
+  xPos += dispWidth;
+  frect_t sustainDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dSustain.setBounds(sustainDispBounds.toNearestInt());
+  xPos += dispWidth;
+  frect_t releaseDispBounds = {xPos, dispY, dispWidth, dispHeight};
+  dRelease.setBounds(releaseDispBounds.toNearestInt());
 }
 
