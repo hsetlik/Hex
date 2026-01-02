@@ -12,14 +12,51 @@
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
 #include "Identifiers.h"
+
+ModulationToggle::ModulationToggle(apvts* tree, int source, int dest)
+    : juce::Button("ModToggle"), srcID(source), destID(dest) {
+  const String paramID = String(srcID) + "to" + String(destID) + "Param";
+  setClickingTogglesState(true);
+  setRepaintsOnMouseActivity(true);
+  attach.reset(new buttonAttach(*tree, paramID, *this));
+}
+
+void ModulationToggle::paintButton(juce::Graphics& g,
+                                   bool highlighted,
+                                   bool down) {
+  juce::ignoreUnused(highlighted, down);
+  auto fBounds = getLocalBounds().toFloat();
+  auto inset = fBounds.getWidth() / 10.0f;
+  fBounds = fBounds.reduced(inset);
+  g.setColour(UIColor::borderGray);
+  g.fillRect(fBounds);
+  const float dX = fBounds.getWidth() / 3.0f;
+  frect_t srcBounds = {inset, inset, dX, fBounds.getHeight()};
+  frect_t destBounds = {inset + (2.0f * dX), inset, dX, fBounds.getHeight()};
+  auto font =
+      Fonts::getFont(Fonts::KenyanReg).withHeight(fBounds.getHeight() * 0.5f);
+  AttString srcStr(String(srcID + 1));
+  srcStr.setFont(font);
+  srcStr.setJustification(juce::Justification::centred);
+  auto srcColor = getToggleState() ? UIColor::greenLight : UIColor::bkgndGray;
+  srcStr.setColour(srcColor);
+  srcStr.draw(g, srcBounds);
+
+  AttString destStr(String(destID + 1));
+  destStr.setFont(font);
+  destStr.setJustification(juce::Justification::centred);
+  auto destColor = getToggleState() ? UIColor::orangeLight : UIColor::bkgndGray;
+  destStr.setColour(destColor);
+  destStr.draw(g, destBounds);
+}
+
+//=========================================================================
+
 ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree) {
   for (int src = 0; src < NUM_OPERATORS; ++src) {
     for (int dst = 0; dst < NUM_OPERATORS; ++dst) {
-      addAndMakeVisible(buttons.add(new ModulationToggle(src, dst)));
-      size_t idx = (size_t)(src * NUM_OPERATORS) + (size_t)dst;
-      auto str = juce::String(src) + "to" + juce::String(dst) + "Param";
-      auto btn = buttons.getLast();
-      attachments[idx].reset(new buttonAttach(*linkedTree, str, *btn));
+      addAndMakeVisible(
+          buttons.add(new ModulationToggle(linkedTree, src, dst)));
     }
   }
 }

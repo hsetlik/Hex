@@ -93,21 +93,6 @@ private:
   int cornerFactor;
 };
 //===================================================================
-class ModulationToggle : public juce::ShapeButton {
-public:
-  ModulationToggle(int src, int dst);
-  const int source;
-  const int dest;
-  void paintButton(juce::Graphics& g, bool highlighted, bool down) override;
-
-private:
-  Color litBkgndUpper;
-  Color unlitBkgndUpper;
-  Color litBkgndLower;
-  Color unlitBkgndLower;
-  Color litText;
-  Color unlitText;
-};
 
 class OutputButton : public juce::ShapeButton {
 public:

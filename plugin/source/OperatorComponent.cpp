@@ -13,7 +13,6 @@
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
 #include "Identifiers.h"
-#include "MathUtil.h"
 #include "GUI/ComponentUtil.h"
 #include "juce_graphics/juce_graphics.h"
 #define OPERATOR_INSET 4.0f
@@ -147,30 +146,6 @@ void OperatorComponent::resized() {
   frect_t levelBounds = {346.0f * xScale, 231.0f * yScale, 28.0f * xScale,
                          130.0f * yScale};
   levelSlider.setBounds(levelBounds.toNearestInt());
-  // fBounds = fBounds.reduced(OPERATOR_INSET);
-  // const float x0 = fBounds.getX();
-  // const float y0 = fBounds.getY();
-  // auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2.0f);
-  // envComponent.setBounds(envBounds.toNearestInt());
-  // auto dX = fBounds.getWidth() / 25.0f;
-  // auto dY = fBounds.getHeight() / 16.0f;
-  // const float sRatio = 3.5f;
-  // frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * sRatio, dX * sRatio};
-  // frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * sRatio,
-  //                      dX * sRatio};
-  // frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * sRatio,
-  //                        dX * sRatio};
-  // frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * sRatio,
-  //                      dX * sRatio};
-  // frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
-  // frect_t selectBounds = {x0 + dX, y0 + dY * 12.5f, dX * 16.0f, dY * 3.0f};
-  //
-  // ratioSlider.setBounds(ratioBox.toNearestInt());
-  // modSlider.setBounds(modBounds.toNearestInt());
-  // levelSlider.setBounds(levelBounds.toNearestInt());
-  // panSlider.setBounds(panBounds.toNearestInt());
-  // outButton.setBounds(outBounds.toNearestInt());
-  // waveSelect.setBounds(selectBounds.toNearestInt());
 }
 
 void OperatorComponent::paint(juce::Graphics& g) {
