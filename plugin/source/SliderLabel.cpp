@@ -12,7 +12,7 @@
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
 
-RotaryLabel::RotaryLabel(juce::Slider* s, int decPlaces)
+SliderLabel::SliderLabel(juce::Slider* s, int decPlaces)
     : linkedSlider(s), decimalPlaces(decPlaces) {
   linkedSlider->addListener(this);
   setEditable(true);
@@ -22,7 +22,7 @@ RotaryLabel::RotaryLabel(juce::Slider* s, int decPlaces)
   setText(str, juce::dontSendNotification);
 }
 
-void RotaryLabel::sliderValueChanged(juce::Slider* s) {
+void SliderLabel::sliderValueChanged(juce::Slider* s) {
   jassert(s == linkedSlider);
   auto str = juce::String(linkedSlider->getValue());
   if (str.length() > decimalPlaces)
@@ -30,14 +30,14 @@ void RotaryLabel::sliderValueChanged(juce::Slider* s) {
   setText(str, juce::dontSendNotification);
 }
 
-juce::String RotaryLabel::currentValueString() {
+juce::String SliderLabel::currentValueString() {
   auto str = juce::String(linkedSlider->getValue());
   if (str.length() > decimalPlaces)
     str = str.substring(0, decimalPlaces);
   return str;
 }
 
-void RotaryLabel::componentMovedOrResized(juce::Component& component,
+void SliderLabel::componentMovedOrResized(juce::Component& component,
                                           bool wasMoved,
                                           bool wasResized) {
   juce::ignoreUnused(wasMoved, wasResized);
@@ -140,8 +140,11 @@ void SliderValueDisplay::paint(juce::Graphics& g) {
   const String text = displayFunction(currentSliderValue);
   AttString aStr(text);
   aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
-                   .withHeight(fBounds.getHeight() * 0.8f));
+                   .withHeight(fBounds.getHeight() * 0.6f));
   aStr.setColour(UIColor::offWhite);
   aStr.setJustification(juce::Justification::centred);
-  aStr.draw(g, fBounds);
+  aStr.setWordWrap(AttString::none);
+  juce::TextLayout layout;
+  layout.createLayout(aStr, fBounds.getWidth());
+  layout.draw(g, fBounds);
 }

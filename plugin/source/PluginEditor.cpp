@@ -23,7 +23,9 @@ HexAudioProcessorEditor::HexAudioProcessorEditor(HexAudioProcessor& p)
   // editor's size to whatever you need it to be.
   addAndMakeVisible(&mainEditor);
   addAndMakeVisible(&tWindow);
-  setSize(1150, 900);
+  setResizable(true, true);
+  setResizeLimits(360, 216, 1800, 1080);
+  setSize(1800, 1080);
 }
 
 HexAudioProcessorEditor::~HexAudioProcessorEditor() {}

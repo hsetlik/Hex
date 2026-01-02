@@ -47,10 +47,10 @@ private:
   juce::Slider levelSlider;
   RotaryParamName levelName;
 
-  RotaryLabel ratioLabel;
-  RotaryLabel modLabel;
-  RotaryLabel panLabel;
-  RotaryLabel levelLabel;
+  SliderLabel ratioLabel;
+  SliderLabel modLabel;
+  SliderLabel panLabel;
+  SliderLabel levelLabel;
 
   pSliderAttach ratioAttach;
   pSliderAttach modAttach;

@@ -52,7 +52,9 @@ OperatorComponent::OperatorComponent(int idx,
   SliderUtil::setRotaryNoBox(ratioSlider);
   SliderUtil::setRotaryNoBox(modSlider);
   SliderUtil::setRotaryNoBox(panSlider);
-  SliderUtil::setRotaryNoBox(levelSlider);
+  // SliderUtil::setRotaryNoBox(levelSlider);
+  levelSlider.setSliderStyle(juce::Slider::LinearVertical);
+  levelSlider.setTextBoxStyle(juce::Slider::NoTextBox, true, 0, 0);
 
   addAndMakeVisible(&ratioSlider);
   addAndMakeVisible(&modSlider);
@@ -117,46 +119,89 @@ void OperatorComponent::buttonClicked(juce::Button* b) {
 
 void OperatorComponent::resized() {
   auto fBounds = getLocalBounds().toFloat();
-  fBounds = fBounds.reduced(OPERATOR_INSET);
-  const float x0 = fBounds.getX();
-  const float y0 = fBounds.getY();
-  auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2.0f);
-  envComponent.setBounds(envBounds.toNearestInt());
-  auto dX = fBounds.getWidth() / 25.0f;
-  auto dY = fBounds.getHeight() / 16.0f;
-  const float sRatio = 3.5f;
-  frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * sRatio, dX * sRatio};
-  frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * sRatio,
-                       dX * sRatio};
-  frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * sRatio,
-                         dX * sRatio};
-  frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * sRatio,
-                       dX * sRatio};
-  frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
-  frect_t selectBounds = {x0 + dX, y0 + dY * 12.5f, dX * 16.0f, dY * 3.0f};
+  const float xScale = fBounds.getWidth() / 450.0f;
+  const float yScale = fBounds.getHeight() / 365.0f;
 
-  ratioSlider.setBounds(ratioBox.toNearestInt());
-  modSlider.setBounds(modBounds.toNearestInt());
-  levelSlider.setBounds(levelBounds.toNearestInt());
-  panSlider.setBounds(panBounds.toNearestInt());
+  frect_t waveSelBounds = {10.0f * xScale, 60.0f * yScale, 180.0f * xScale,
+                           36.0f * yScale};
+  waveSelect.setBounds(waveSelBounds.toNearestInt());
+
+  frect_t envBounds = {9.0f * xScale, 108.0f * yScale, 250.0f * xScale,
+                       249.0f * yScale};
+  envComponent.setBounds(envBounds.toNearestInt());
+
+  frect_t outBounds = {300.0f * xScale, 40.0f * yScale, 40.0f * xScale,
+                       40.0f * yScale};
+  frect_t ratioBounds = {300.0f * xScale, 128.0f * yScale, 40.0f * xScale,
+                         40.0f * yScale};
+  frect_t panBounds = {385.0f * xScale, 40.0f * yScale, 40.0f * xScale,
+                       40.0f * yScale};
+  frect_t indexBounds = {385.0f * xScale, 128.0f * yScale, 40.0f * xScale,
+                         40.0f * yScale};
+
   outButton.setBounds(outBounds.toNearestInt());
-  waveSelect.setBounds(selectBounds.toNearestInt());
+  ratioSlider.setBounds(ratioBounds.toNearestInt());
+  panSlider.setBounds(panBounds.toNearestInt());
+  modSlider.setBounds(indexBounds.toNearestInt());
+
+  frect_t levelBounds = {346.0f * xScale, 231.0f * yScale, 28.0f * xScale,
+                         130.0f * yScale};
+  levelSlider.setBounds(levelBounds.toNearestInt());
+  // fBounds = fBounds.reduced(OPERATOR_INSET);
+  // const float x0 = fBounds.getX();
+  // const float y0 = fBounds.getY();
+  // auto envBounds = fBounds.removeFromBottom(fBounds.getHeight() / 2.0f);
+  // envComponent.setBounds(envBounds.toNearestInt());
+  // auto dX = fBounds.getWidth() / 25.0f;
+  // auto dY = fBounds.getHeight() / 16.0f;
+  // const float sRatio = 3.5f;
+  // frect_t ratioBox = {x0 + dX, y0 + dX * 5.0f, dX * sRatio, dX * sRatio};
+  // frect_t modBounds = {x0 + dX * 6.0f, y0 + dX * 5.0f, dX * sRatio,
+  //                      dX * sRatio};
+  // frect_t levelBounds = {x0 + dX * 11.0f, y0 + dX * 5.0f, dX * sRatio,
+  //                        dX * sRatio};
+  // frect_t panBounds = {x0 + dX * 16.0f, y0 + dX * 5.0f, dX * sRatio,
+  //                      dX * sRatio};
+  // frect_t outBounds = {x0 + dX * 16.0f, y0 + dX, dX * 6.0f, dX * 2.0f};
+  // frect_t selectBounds = {x0 + dX, y0 + dY * 12.5f, dX * 16.0f, dY * 3.0f};
+  //
+  // ratioSlider.setBounds(ratioBox.toNearestInt());
+  // modSlider.setBounds(modBounds.toNearestInt());
+  // levelSlider.setBounds(levelBounds.toNearestInt());
+  // panSlider.setBounds(panBounds.toNearestInt());
+  // outButton.setBounds(outBounds.toNearestInt());
+  // waveSelect.setBounds(selectBounds.toNearestInt());
 }
 
 void OperatorComponent::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
-  g.setColour(UXPalette::darkGray);
+  const float xScale = fBounds.getWidth() / 450.0f;
+  const float yScale = fBounds.getHeight() / 365.0f;
+  // draw the background
+  g.setColour(UIColor::borderGray);
   g.fillRect(fBounds);
-  fBounds = fBounds.reduced(OPERATOR_INSET / 2.0f);
-  g.setColour(UXPalette::lightGray);
-  g.fillRect(fBounds);
-  auto upperBox = fBounds.removeFromTop(25.0f);
-  auto tBounds = upperBox.removeFromLeft(120.0f);
-  tBounds.removeFromLeft(3.0f);
-  const String text = "Operator " + String(opIndex + 1);
-  AttString aStr(text);
+  auto innerBounds =
+      fBounds.withSizeKeepingCentre(445.0f * xScale, 361.0f * yScale);
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(innerBounds);
+  // draw the operator label
+  String labelTxt = "OPERATOR " + String(opIndex + 1);
+  AttString aStr(labelTxt);
+  aStr.setColour(UIColor::orangeLight);
+  aStr.setFont(
+      Fonts::getFont(Fonts::KenyanBoldItalic).withHeight(40.0f * yScale));
+  aStr.setWordWrap(AttString::none);
   aStr.setJustification(juce::Justification::centredLeft);
-  aStr.setFont(Fonts::getFont(Fonts::RobotoBlackItalic, 22.0f));
-  aStr.setColour(juce::Colours::white);
-  aStr.draw(g, tBounds);
+  auto txtBounds = juce::TextLayout::getStringBounds(aStr);
+  txtBounds.setPosition(10.0f * xScale, 8.0f * yScale);
+  aStr.draw(g, txtBounds);
+
+  // draw the little divider things
+  const float divWidth = 4.0f * std::min(xScale, yScale);
+  frect_t div1Bounds = {12.0f * xScale, 46.0f * yScale, 176 * xScale, divWidth};
+  frect_t div2Bounds = {270.0f * xScale, 111.0f * yScale, divWidth,
+                        250.0f * yScale};
+  g.setColour(UIColor::borderGray);
+  g.fillRoundedRectangle(div1Bounds, divWidth * 0.5f);
+  g.fillRoundedRectangle(div2Bounds, divWidth * 0.5f);
 }

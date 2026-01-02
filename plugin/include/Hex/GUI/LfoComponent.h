@@ -117,7 +117,7 @@ private:
   DualModeLabel rateLabel;
   RotaryParamName rateName;
   juce::Slider depthSlider;
-  RotaryLabel depthLabel;
+  SliderLabel depthLabel;
   RotaryParamName depthName;
   PosInfo currentPos;
   WaveformSelector waveSelect;

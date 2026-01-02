@@ -10,9 +10,9 @@
 
 #pragma once
 #include "CustomLnF.h"
-class RotaryLabel : public juce::Label, public juce::Slider::Listener {
+class SliderLabel : public juce::Label, public juce::Slider::Listener {
 public:
-  RotaryLabel(juce::Slider* s, int decimals = 5);
+  SliderLabel(juce::Slider* s, int decimals = 5);
   juce::Slider* const linkedSlider;
   void textWasEdited() override {
     auto str = getText(true);

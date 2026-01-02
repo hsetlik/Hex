@@ -123,8 +123,8 @@ void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
                                       float maxSliderPos,
                                       const juce::Slider::SliderStyle style,
                                       juce::Slider& slider) {
-  juce::ignoreUnused(y, width, height, minSliderPos, style);
-  auto fPos = 1.0f - (sliderPos / maxSliderPos);
+  juce::ignoreUnused(style, minSliderPos);
+  auto fPos = 1.0f - (sliderPos / (maxSliderPos));
   auto fBounds = slider.getBounds().toFloat();
   const float xScale = fBounds.getWidth() / 28.0f;
   const float yScale = fBounds.getHeight() / 100.0f;
@@ -137,9 +137,10 @@ void HexLookAndFeel::drawLinearSlider(juce::Graphics& g,
   g.setColour(UIColor::borderGray);
   g.drawRoundedRectangle(trackBounds, trackWidth / 2.0f, trackStroke);
   const float thumbHeight = 20.0f * yScale;
-  const float thumbMax = (float)y + (float)height - (thumbHeight / 2.0f);
-  const float thumbMin = thumbHeight / 2.0f;
-  const float thumbY = MathUtil::fLerp(thumbMax, thumbMin, fPos);
+  const float thumbMax = (float)y + (float)height;
+  const float thumbMin = (float)y;
+  const float thumbY =
+      MathUtil::fLerp(thumbMax, thumbMin, fPos) - (thumbHeight * 0.5f);
   frect_t thumbBounds = {(float)x, thumbY, (float)width, thumbHeight};
   auto& thumbImg = Assets::getImage(Assets::Thumb);
   g.drawImage(thumbImg, thumbBounds);
