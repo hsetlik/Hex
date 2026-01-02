@@ -21,6 +21,23 @@ ModulationToggle::ModulationToggle(apvts* tree, int source, int dest)
   attach.reset(new buttonAttach(*tree, paramID, *this));
 }
 
+static juce::Path makeArrowPath(const frect_t bounds) {
+  juce::Path p;
+  const float dX = bounds.getWidth() / 10.0f;
+  const float dY = bounds.getHeight() / 10.0f;
+  const float x0 = bounds.getX();
+  const float y0 = bounds.getY();
+  p.startNewSubPath(x0, y0 + 3.0f * dY);
+  p.lineTo(x0 + 5.0f * dX, y0 + 3.0f * dY);
+  p.lineTo(x0 + 5.0f * dX, y0);
+  p.lineTo(x0 + 10.0f * dX, y0 + 5.0f * dY);
+  p.lineTo(x0 + 5.0f * dX, y0 + 10.0f * dY);
+  p.lineTo(x0 + 5.0f * dX, y0 + 7.0f * dY);
+  p.lineTo(x0, y0 + 7.0f * dY);
+  p.closeSubPath();
+  return p;
+}
+
 void ModulationToggle::paintButton(juce::Graphics& g,
                                    bool highlighted,
                                    bool down) {
@@ -48,6 +65,14 @@ void ModulationToggle::paintButton(juce::Graphics& g,
   auto destColor = getToggleState() ? UIColor::orangeLight : UIColor::bkgndGray;
   destStr.setColour(destColor);
   destStr.draw(g, destBounds);
+
+  const float arrowWidth = fBounds.getWidth() / 3.0f;
+  const float arrowHeight = fBounds.getHeight() / 3.2f;
+  auto arrowBounds = fBounds.withSizeKeepingCentre(arrowWidth, arrowHeight);
+  auto path = makeArrowPath(arrowBounds);
+  auto arrowColor = getToggleState() ? UIColor::greenLight : UIColor::bkgndGray;
+  g.setColour(arrowColor);
+  g.fillPath(path);
 }
 
 //=========================================================================
