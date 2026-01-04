@@ -34,6 +34,7 @@ DECLARE_COLOR(bkgndGray, 51, 51, 51)
 DECLARE_COLOR(shadowGray, 25, 25, 25)
 DECLARE_COLOR(borderGray, 102, 102, 102)
 DECLARE_COLOR(offWhite, 204, 204, 204)
+DECLARE_COLOR(dulledWhite, 165, 165, 165)
 
 }  // namespace UIColor
 

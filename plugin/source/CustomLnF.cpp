@@ -83,9 +83,55 @@ juce::Font HexLookAndFeel::getComboBoxFont(juce::ComboBox& box) {
 
 void HexLookAndFeel::positionComboBoxText(juce::ComboBox& box,
                                           juce::Label& label) {
-  label.setBounds(1, 1, box.getWidth() - 30, box.getHeight() - 2);
+  auto fBounds = box.getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 20.0f;
+  const float cushion = 3.0f * yScale;
+  fBounds.removeFromLeft(cushion);
+  fBounds.removeFromRight(yScale * 25.0f);
+  label.setBounds(fBounds.toNearestInt());
   label.setFont(getComboBoxFont(box));
 }
+//===========================================================================================
+void HexLookAndFeel::drawPopupMenuItem(juce::Graphics& g,
+                                       const juce::Rectangle<int>& area,
+                                       bool isSeparator,
+                                       bool isActive,
+                                       bool isHighlighted,
+                                       bool isTicked,
+                                       bool hasSubMenu,
+                                       const String& text,
+                                       const String& shortcutKeyText,
+                                       const juce::Drawable* icon,
+                                       const juce::Colour* textColour) {
+  juce::ignoreUnused(isSeparator, isActive, isTicked, hasSubMenu,
+                     shortcutKeyText, icon, textColour);
+  auto fBounds = area.toFloat();
+  g.setColour(UIColor::bkgndGray);
+  g.fillRect(fBounds);
+  const float yScale = fBounds.getHeight() / 20.0f;
+  const float strokeWeight = 0.5f * yScale;
+  auto borderColor = isHighlighted ? UIColor::offWhite : UIColor::borderGray;
+  g.setColour(borderColor);
+  g.drawRect(fBounds, strokeWeight);
+  AttString aStr(text);
+  fBounds.removeFromLeft(2.5f * yScale);
+  auto font = isHighlighted ? Fonts::getFont(Fonts::RobotoMediumItalic)
+                            : Fonts::getFont(Fonts::RobotoLightItalic);
+  auto txtColor = isHighlighted ? UIColor::dulledWhite : UIColor::offWhite;
+  aStr.setFont(font.withHeight(14.0f * yScale));
+  aStr.setColour(txtColor);
+  aStr.setJustification(juce::Justification::centredLeft);
+  aStr.draw(g, fBounds);
+}
+
+void HexLookAndFeel::drawPopupMenuBackground(juce::Graphics& g,
+                                             int width,
+                                             int height) {
+  irect_t bounds = {0, 0, width, height};
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(bounds);
+}
+
 //===========================================================================================
 juce::Font HexLookAndFeel::getLabelFont(juce::Label& label) {
   auto fBounds = label.getLocalBounds().toFloat();

@@ -4,7 +4,7 @@
 
 class HexLookAndFeel : public juce::LookAndFeel_V4 {
 public:
-  //! ComboBox
+  //! ComboBox----------------------------------------
   void drawComboBox(juce::Graphics& g,
                     int width,
                     int height,
@@ -17,10 +17,25 @@ public:
   juce::Label* createComboBoxTextBox(juce::ComboBox& box) override;
   juce::Font getComboBoxFont(juce::ComboBox& box) override;
   void positionComboBoxText(juce::ComboBox& box, juce::Label& label) override;
-  // Label
+  // Popup menu----------------------------------------
+  void drawPopupMenuItem(juce::Graphics& g,
+                         const juce::Rectangle<int>& area,
+                         bool isSeparator,
+                         bool isActive,
+                         bool isHighlighted,
+                         bool isTicked,
+                         bool hasSubMenu,
+                         const String& text,
+                         const String& shortcutKeyText,
+                         const juce::Drawable* icon,
+                         const juce::Colour* textColour) override;
+  void drawPopupMenuBackground(juce::Graphics& g,
+                               int width,
+                               int height) override;
+  // Label---------------------------------------------
   juce::Font getLabelFont(juce::Label& label) override;
   void drawLabel(juce::Graphics& g, juce::Label& label) override;
-  // Slider
+  // Slider--------------------------------------------
   void drawRotarySlider(juce::Graphics& g,
                         int x,
                         int y,
@@ -40,7 +55,7 @@ public:
                         float maxSliderPos,
                         const juce::Slider::SliderStyle,
                         juce::Slider&) override;
-  //! TextButton
+  //! TextButton----------------------------------------
   void drawButtonBackground(juce::Graphics& g,
                             juce::Button& b,
                             const juce::Colour& bColor,
