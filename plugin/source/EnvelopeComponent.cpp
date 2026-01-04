@@ -1,5 +1,7 @@
 //===================================================
 #include "GUI/EnvelopeComponent.h"
+#include "GUI/Color.h"
+#include "Identifiers.h"
 
 EnvelopeComponent::DAHDSRGraph::DAHDSRGraph(EnvelopeComponent* env)
     : pDelay(&env->delaySlider),
@@ -51,7 +53,7 @@ void EnvelopeComponent::DAHDSRGraph::sliderValueChanged(juce::Slider* slider) {
   }
 }
 void EnvelopeComponent::DAHDSRGraph::paint(juce::Graphics& g) {
-  g.fillAll(UXPalette::darkGray);
+  g.fillAll(UIColor::bkgndGray);
   auto area = getLocalBounds().toFloat();
   auto timeTotal = delayVal + attackVal + holdVal + decayVal + releaseVal;
   juce::Path trace;
@@ -70,7 +72,7 @@ void EnvelopeComponent::DAHDSRGraph::paint(juce::Graphics& g) {
                    false);
 
   auto stroke = juce::PathStrokeType(1.0f);
-  g.setColour(UXPalette::highlight);
+  g.setColour(UIColor::greenLight);
   g.strokePath(trace, stroke);
 }
 //==============================================================================

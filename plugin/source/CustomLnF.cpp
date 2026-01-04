@@ -17,6 +17,36 @@
 #include "juce_core/juce_core.h"
 
 constexpr float KnobTopAspectRatio = 24.0f / 35.0f;
+
+//===============================================
+
+static juce::Path getComboBoxButtonPath(int x,
+                                        int y,
+                                        int width,
+                                        int height,
+                                        bool isDown) {
+  irect_t iBounds = {x, y, width, height};
+  auto outerFBounds = iBounds.toFloat();
+  auto btnWidth = outerFBounds.getWidth() * 0.4f;
+  auto btnHeight = outerFBounds.getHeight() * 0.4f;
+  auto fBounds = outerFBounds.withSizeKeepingCentre(btnWidth, btnWidth);
+  juce::Path p;
+  const float dX = btnWidth / 8.0f;
+  const float dY = btnHeight / 8.0f;
+  const float x0 = fBounds.getX();
+  const float y0 = fBounds.getY();
+  p.startNewSubPath(x0, y0);
+  if (isDown) {
+    p.lineTo(x0 + 4.0f * dX, y0 + 8.0f * dY);
+    p.lineTo(x0 + 8.0f * dX, y0);
+  } else {
+    p.lineTo(x0 + 8.0f * dX, y0 + 4.0f * dY);
+    p.lineTo(x0, y0 + 8.0f * dY);
+  }
+  p.closeSubPath();
+  return p;
+}
+
 void HexLookAndFeel::drawComboBox(juce::Graphics& g,
                                   int width,
                                   int height,
@@ -26,36 +56,31 @@ void HexLookAndFeel::drawComboBox(juce::Graphics& g,
                                   int buttonW,
                                   int buttonH,
                                   juce::ComboBox& box) {
-  juce::ignoreUnused(box, isButtonDown);
-  auto stroke = juce::PathStrokeType(2.5f);
-  auto boxBounds = juce::Rectangle<int>(0, 0, width, height);
-  auto corner = (float)height / 8.0f;
-  g.setColour(UXPalette::lightGray);
-  g.fillRoundedRectangle(boxBounds.toFloat(), corner);
-  g.setColour(UXPalette::darkGray);
-  boxBounds = boxBounds.reduced((int)corner);
-  corner = (float)boxBounds.getHeight() / 8.0f;
-  g.fillRoundedRectangle(boxBounds.toFloat(), corner);
-  g.setColour(UXPalette::lightGray);
-  juce::Path button;
-  auto buttonBounds = juce::Rectangle<float>((float)buttonX, (float)buttonY,
-                                             (float)buttonW, (float)buttonH);
-  buttonBounds = buttonBounds.reduced((float)buttonW / 3.5f);
-  button.startNewSubPath(buttonBounds.getX(), buttonBounds.getY());
-  button.lineTo(buttonBounds.getRight(), buttonBounds.getY());
-  button.lineTo(buttonBounds.getCentreX(), buttonBounds.getBottom());
-  button.closeSubPath();
-
-  g.fillPath(button);
+  juce::ignoreUnused(isButtonDown);
+  const float yScale = (float)height / 20.0f;
+  irect_t iBounds = {0, 0, width, height};
+  auto fBounds = iBounds.toFloat();
+  const float radius = 2.0f * yScale;
+  const float strokeWeight = 0.25f * yScale;
+  g.setColour(UIColor::bkgndGray);
+  g.fillRoundedRectangle(fBounds, radius);
+  g.setColour(UIColor::offWhite);
+  g.drawRoundedRectangle(fBounds, radius, strokeWeight);
+  auto btnPath = getComboBoxButtonPath(buttonX, buttonY, buttonW, buttonH,
+                                       box.isPopupActive());
+  g.fillPath(btnPath);
 }
+
 juce::Label* HexLookAndFeel::createComboBoxTextBox(juce::ComboBox& box) {
   juce::ignoreUnused(box);
   return new juce::Label(juce::String(), juce::String());
 }
+
 juce::Font HexLookAndFeel::getComboBoxFont(juce::ComboBox& box) {
-  auto height = (float)box.getHeight() * 0.35f;
+  auto height = (float)box.getHeight() * 0.55f;
   return Fonts::getFont(Fonts::RobotoLightItalic, height);
 }
+
 void HexLookAndFeel::positionComboBoxText(juce::ComboBox& box,
                                           juce::Label& label) {
   label.setBounds(1, 1, box.getWidth() - 30, box.getHeight() - 2);
@@ -63,18 +88,20 @@ void HexLookAndFeel::positionComboBoxText(juce::ComboBox& box,
 }
 //===========================================================================================
 juce::Font HexLookAndFeel::getLabelFont(juce::Label& label) {
-  juce::ignoreUnused(label);
-  return Fonts::getFont(Fonts::RobotoLightItalic, 10.0f);
+  auto fBounds = label.getLocalBounds().toFloat();
+  return Fonts::getFont(Fonts::RobotoLightItalic, fBounds.getHeight() * 0.55f);
 }
 
 void HexLookAndFeel::drawLabel(juce::Graphics& g, juce::Label& label) {
   const juce::Font font(getLabelFont(label));
-  g.setFont(font);
-  g.setColour(juce::Colours::white);
-  auto textArea =
-      getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
-  g.drawFittedText(label.getText(), textArea, label.getJustificationType(), 1,
-                   label.getMinimumHorizontalScale());
+  auto fBounds = label.getLocalBounds().toFloat();
+  AttString aStr(label.getText());
+
+  aStr.setColour(UIColor::offWhite);
+  aStr.setJustification(label.getJustificationType());
+  aStr.setFont(font);
+  aStr.setWordWrap(AttString::none);
+  aStr.draw(g, fBounds.toFloat());
 }
 //===========================================================================================
 void HexLookAndFeel::drawRotarySlider(juce::Graphics& g,

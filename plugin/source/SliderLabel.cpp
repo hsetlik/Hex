@@ -1,25 +1,23 @@
-/*
-  ==============================================================================
-
-    SliderLabel.cpp
-    Created: 7 Jun 2021 7:19:58pm
-    Author:  Hayden Setlik
-
-  ==============================================================================
-*/
 
 #include "GUI/SliderLabel.h"
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
+#include "juce_graphics/juce_graphics.h"
 
 SliderLabel::SliderLabel(juce::Slider* s, int decPlaces)
     : linkedSlider(s), decimalPlaces(decPlaces) {
   linkedSlider->addListener(this);
   setEditable(true);
+  setJustificationType(juce::Justification::centred);
   auto str = juce::String(linkedSlider->getValue());
   if (str.length() > decimalPlaces)
     str = str.substring(0, decimalPlaces);
+  setMinimumHorizontalScale(0.01f);
   setText(str, juce::dontSendNotification);
+}
+
+SliderLabel::~SliderLabel() {
+  linkedSlider->removeListener(this);
 }
 
 void SliderLabel::sliderValueChanged(juce::Slider* s) {
@@ -46,18 +44,20 @@ void SliderLabel::componentMovedOrResized(juce::Component& component,
   auto borderSize = lf.getLabelBorderSize(*this);
 
   if (isAttachedOnLeft()) {
-    int width = (int)fmin((int)(f.getStringWidthFloat(getText()) * 3.5f) +
-                              borderSize.getLeftAndRight(),
-                          component.getX());
+    int width =
+        (int)fmin((int)(juce::TextLayout::getStringWidth(f, getText()) * 3.5f) +
+                      borderSize.getLeftAndRight(),
+                  component.getX());
 
     setBounds(component.getX() - width, component.getY(), width,
               component.getHeight());
   } else {
     auto height =
         borderSize.getTopAndBottom() + 2 + (int)(f.getHeight() * 1.5f);
-    auto stringWidth = f.getStringWidthFloat(currentValueString());
+    auto stringWidth =
+        juce::TextLayout::getStringWidth(f, currentValueString());
     auto width = (int)(stringWidth) + borderSize.getLeftAndRight();
-    auto centerX = component.getX() + (int)((float)component.getWidth() / 2.0f);
+    auto centerX = component.getBounds().getCentreX();
     auto x = centerX - (int)((float)width / 2.0f);
     setBounds(x, component.getBottom() + 1, width, height);
   }
@@ -72,17 +72,18 @@ void RotaryParamName::componentMovedOrResized(juce::Component& component,
   auto borderSize = lf.getLabelBorderSize(*this);
 
   if (isAttachedOnLeft()) {
-    int width = (int)fmin((int)(f.getStringWidthFloat(text) * 3.5f) +
-                              borderSize.getLeftAndRight(),
-                          component.getX());
+    int width =
+        (int)fmin((int)(juce::TextLayout::getStringWidth(f, getText()) * 3.5f) +
+                      borderSize.getLeftAndRight(),
+                  component.getX());
 
     setBounds(component.getX() - width, component.getY(), width,
               component.getHeight());
   } else {
     auto height =
         borderSize.getTopAndBottom() + 2 + (int)(f.getHeight() * 1.5f);
-    auto width =
-        (int)(f.getStringWidthFloat(text)) + borderSize.getLeftAndRight();
+    auto width = (int)(juce::TextLayout::getStringWidth(f, getText())) +
+                 borderSize.getLeftAndRight();
     auto dX = (component.getWidth() - width) / 2;
     auto gap = (int)((float)component.getHeight() * fLift);
     setBounds(component.getX() + dX, component.getY() - height - gap, width,
@@ -99,17 +100,18 @@ void VerticalParamName::componentMovedOrResized(juce::Component& component,
   auto borderSize = lf.getLabelBorderSize(*this);
 
   if (isAttachedOnLeft()) {
-    int width = (int)fmin((int)(f.getStringWidthFloat(text) * 3.5f) +
-                              borderSize.getLeftAndRight(),
-                          component.getX());
+    int width =
+        (int)fmin((int)(juce::TextLayout::getStringWidth(f, getText()) * 3.5f) +
+                      borderSize.getLeftAndRight(),
+                  component.getX());
 
     setBounds(component.getX() - width, component.getY(), width,
               component.getHeight());
   } else {
     auto height =
         borderSize.getTopAndBottom() + 2 + (int)(f.getHeight() * 1.5f);
-    auto width =
-        (int)(f.getStringWidthFloat(text)) + borderSize.getLeftAndRight();
+    auto width = (int)(juce::TextLayout::getStringWidth(f, getText())) +
+                 borderSize.getLeftAndRight();
     auto xCenter = component.getX() + (component.getWidth() / 2);
     setBounds(xCenter - (width / 2), component.getBottom(), width, height);
   }
@@ -140,7 +142,7 @@ void SliderValueDisplay::paint(juce::Graphics& g) {
   const String text = displayFunction(currentSliderValue);
   AttString aStr(text);
   aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
-                   .withHeight(fBounds.getHeight() * 0.6f));
+                   .withHeight(fBounds.getHeight() * 0.85f));
   aStr.setColour(UIColor::offWhite);
   aStr.setJustification(juce::Justification::centred);
   aStr.setWordWrap(AttString::none);

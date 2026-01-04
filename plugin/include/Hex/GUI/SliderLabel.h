@@ -13,6 +13,7 @@
 class SliderLabel : public juce::Label, public juce::Slider::Listener {
 public:
   SliderLabel(juce::Slider* s, int decimals = 5);
+  ~SliderLabel() override;
   juce::Slider* const linkedSlider;
   void textWasEdited() override {
     auto str = getText(true);
@@ -39,21 +40,10 @@ public:
     setText(text, juce::dontSendNotification);
     setEditable(false);
     setMinimumHorizontalScale(0.01f);
-    setLookAndFeel(&lnf);
-  }
-  virtual ~ParamName() { setLookAndFeel(nullptr); }
-  virtual void placeRelative(juce::Component& attach,
-                             int heightFraction,
-                             int gapFraction,
-                             bool isAbove) {
-    juce::ignoreUnused(attach, heightFraction, gapFraction, isAbove);
   }
 
 protected:
   juce::String text;
-
-private:
-  HexLookAndFeel lnf;
 };
 
 class RotaryParamName : public ParamName
