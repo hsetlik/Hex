@@ -21,6 +21,7 @@ StereoFilter::StereoFilter(EnvelopeLUTGroup* luts, int voiceIdx)
       currentType(LoPass),
       lFilter(std::make_unique<LibLowPass>()),
       rFilter(std::make_unique<LibLowPass>()) {}
+
 void StereoFilter::setType(int filterType) {
   auto nType = (FilterType)filterType;
   if (currentType != nType) {
@@ -31,6 +32,8 @@ void StereoFilter::setType(int filterType) {
 
 void StereoFilter::handleAsyncUpdate() {
   switch (currentType) {
+    case None:
+      return;
     case LoPass: {
       lFilter.reset(new LibLowPass());
       rFilter.reset(new LibLowPass());

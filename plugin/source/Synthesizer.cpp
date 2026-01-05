@@ -266,7 +266,6 @@ void HexSynth::setDepth(float value) {
   }
 }
 void HexSynth::setFilterType(float value) {
-  const juce::ScopedLock sl(lock);
   auto tVal = (int)value;
   for (auto voice : hexVoices) {
     voice->voiceFilter.setType(tVal);

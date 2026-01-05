@@ -31,9 +31,10 @@ FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
 
   typeAttach.reset(new juce::AudioProcessorValueTreeState::ComboBoxAttachment(
       *linkedTree, ID::filterType.toString(), typeBox));
-  typeBox.addItem("Low Pass", 1);
-  typeBox.addItem("High Pass", 2);
-  typeBox.addItem("Band Pass", 3);
+  typeBox.addItem("None", 1);
+  typeBox.addItem("Low Pass", 2);
+  typeBox.addItem("High Pass", 3);
+  typeBox.addItem("Band Pass", 4);
   typeBox.setSelectedId(1);
 
   addAndMakeVisible(&typeBox);
@@ -49,12 +50,6 @@ FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
   addAndMakeVisible(&wetSlider);
   addAndMakeVisible(&depthSlider);
 
-  cutoffSlider.setLookAndFeel(&lnf);
-  resSlider.setLookAndFeel(&lnf);
-  wetSlider.setLookAndFeel(&lnf);
-  depthSlider.setLookAndFeel(&lnf);
-  typeBox.setLookAndFeel(&lnf);
-
   addAndMakeVisible(&cutoffName);
   addAndMakeVisible(&resName);
   addAndMakeVisible(&wetName);
@@ -66,13 +61,7 @@ FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
   depthName.attachToComponent(&depthSlider, false);
 }
 
-FilterPanel::~FilterPanel() {
-  cutoffSlider.setLookAndFeel(nullptr);
-  resSlider.setLookAndFeel(nullptr);
-  wetSlider.setLookAndFeel(nullptr);
-  depthSlider.setLookAndFeel(nullptr);
-  typeBox.setLookAndFeel(nullptr);
-}
+FilterPanel::~FilterPanel() {}
 
 void FilterPanel::resized() {
   auto bounds = getLocalBounds();

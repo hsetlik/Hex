@@ -48,7 +48,6 @@ private:
   pSliderAttach resAttach;
   pSliderAttach wetAttach;
   pSliderAttach depthAttach;
-  HexLookAndFeel lnf;
 };
 //========================================================
 class BottomBar : public Component {

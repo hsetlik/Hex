@@ -23,7 +23,7 @@
 #define RESONANCE_MAX 35.0f
 #define RESONANCE_DEFAULT 1.0f
 #define RESONANCE_CENTER 5.0f
-enum FilterType { LoPass, HiPass, BandPass };
+enum FilterType { None, LoPass, HiPass, BandPass };
 
 class FilterCore {
 public:
@@ -197,16 +197,24 @@ public:
   void handleAsyncUpdate() override;
   void setType(int filterType);
   float processLeft(float input) {
+    if (currentType == None)
+      return input;
     return MathUtil::fLerp(input, lFilter->process(input), wetLevel);
   }
   float processLeft(float input, float modValue) {
+    if (currentType == None)
+      return input;
     return MathUtil::fLerp(input, lFilter->processWithMod(input, modValue),
                            wetLevel);
   }
   float processRight(float input) {
+    if (currentType == None)
+      return input;
     return MathUtil::fLerp(input, rFilter->process(input), wetLevel);
   }
   float processRight(float input, float modValue) {
+    if (currentType == None)
+      return input;
     return MathUtil::fLerp(input, rFilter->processWithMod(input, modValue),
                            wetLevel);
   }

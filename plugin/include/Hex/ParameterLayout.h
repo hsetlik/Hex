@@ -94,6 +94,7 @@ public:
         juce::ParameterID{ID::filterEnvDepth.toString(), 1}, depthName, 0.0f,
         1.0f, 0.5f));
     juce::StringArray filterTypes;
+    filterTypes.add("None");
     filterTypes.add("Low Pass");
     filterTypes.add("High Pass");
     filterTypes.add("Band Pass");
