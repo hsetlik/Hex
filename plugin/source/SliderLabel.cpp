@@ -142,9 +142,9 @@ void SliderValueDisplay::paint(juce::Graphics& g) {
   const String text = displayFunction(currentSliderValue);
   AttString aStr(text);
   aStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic)
-                   .withHeight(fBounds.getHeight() * 0.85f));
+                   .withHeight(fBounds.getHeight() * 0.65f));
   aStr.setColour(UIColor::offWhite);
-  aStr.setJustification(juce::Justification::centred);
+  aStr.setJustification(juce::Justification::centredLeft);
   aStr.setWordWrap(AttString::none);
   juce::TextLayout layout;
   layout.createLayout(aStr, fBounds.getWidth());

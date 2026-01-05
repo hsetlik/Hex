@@ -230,14 +230,14 @@ void HexLookAndFeel::drawButtonBackground(juce::Graphics& g,
                                           bool isHighlighted,
                                           bool isDown) {
   juce::ignoreUnused(bColor, isHighlighted, isDown);
-  auto bBounds = b.getLocalBounds();
-  auto corner = bBounds.getHeight() / 8;
-  g.setColour(UXPalette::lightGray);
-  g.fillRoundedRectangle(bBounds.toFloat(), (float)corner);
-  bBounds = bBounds.reduced(corner);
-  corner = bBounds.getHeight() / 8;
-  g.setColour(UXPalette::darkGray);
-  g.fillRoundedRectangle(bBounds.toFloat(), (float)corner);
+  auto fBounds = b.getLocalBounds().toFloat();
+  const float yScale = fBounds.getHeight() / 20.0f;
+  const float radius = 2.0f * yScale;
+  const float strokeWeight = 0.25f * yScale;
+  g.setColour(UIColor::bkgndGray);
+  g.fillRoundedRectangle(fBounds, radius);
+  g.setColour(UIColor::offWhite);
+  g.drawRoundedRectangle(fBounds, radius, strokeWeight);
 }
 
 void HexLookAndFeel::drawButtonText(juce::Graphics& g,
@@ -246,34 +246,27 @@ void HexLookAndFeel::drawButtonText(juce::Graphics& g,
                                     bool isDown) {
   juce::ignoreUnused(isHighlighted, isDown);
   auto fBounds = b.getLocalBounds().toFloat();
-  auto textHeight = (int)(fBounds.getHeight() * 0.8f);
+  auto textHeight = (int)(fBounds.getHeight());
   auto font = getTextButtonFont(b, textHeight);
-  g.setColour(juce::Colours::white);
-  g.setFont(font);
-  auto iBounds = b.getLocalBounds();
-  auto iX = iBounds.getX();
-  auto iY = iBounds.getY();
-  auto iWidth = iBounds.getWidth();
-  auto dX = iWidth / 11;
-  auto textBox = juce::Rectangle<int>(iX + dX, iY, 8 * dX, iBounds.getHeight());
-  g.drawFittedText(b.getButtonText(), textBox, juce::Justification::centred, 1);
+  AttString aStr(b.getButtonText());
+  aStr.setJustification(juce::Justification::centred);
+  aStr.setFont(font);
+  aStr.setColour(UIColor::offWhite);
+  aStr.draw(g, fBounds);
 }
 
 int HexLookAndFeel::getTextButtonWidthToFitText(juce::TextButton& b,
                                                 int height) {
   auto font = getTextButtonFont(b, height);
   auto str = b.getButtonText();
-  auto fBounds = b.getLocalBounds().toFloat();
   juce::AttributedString aStr(str);
   aStr.setFont(font);
-  juce::TextLayout layout;
-  layout.createLayout(aStr, fBounds.getWidth());
-  auto textWidth = layout.getWidth();
-  auto dX = (float)textWidth / 8.0f;
-  return (int)(10 * dX);
+  auto fWidth = juce::TextLayout::getStringWidth(aStr);
+  return (int)(fWidth * 1.08f);
 }
 
 juce::Font HexLookAndFeel::getTextButtonFont(juce::TextButton& b, int height) {
   juce::ignoreUnused(b);
-  return Fonts::getFont(Fonts::RobotoLightItalic, (float)height * 0.85f);
+  const float minHeight = std::min(18.0f, (float)height * 0.6f);
+  return Fonts::getFont(Fonts::RobotoLightItalic, minHeight);
 }
