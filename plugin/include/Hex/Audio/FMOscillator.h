@@ -68,9 +68,9 @@ private:
   float phaseDelta;
   int tablesAdded;
   int bottomIndex;
-  float bSample;
-  float tSample;
-  float skew;
+  // float bSample;
+  // float tSample;
+  // float skew;
 };
 
 class NoiseOsc {

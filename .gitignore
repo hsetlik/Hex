@@ -4,3 +4,4 @@
 /Installers/build
 /Installers/Output
 /design/*.ai
+.cache
