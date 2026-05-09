@@ -32,8 +32,8 @@ HexAudioProcessorEditor::HexAudioProcessorEditor(HexAudioProcessor& p)
     auto uArea = display->userArea;
     float fWidth = uArea.getWidth();
     float fHeight = uArea.getHeight();
-    maxWidth = (int)(fWidth * 0.85f);
-    maxHeight = (int)(fHeight * 0.85f);
+    maxWidth = (int)(fWidth * 0.95f);
+    maxHeight = (int)(fHeight * 0.95f);
     minWidth = (int)(fWidth * 0.45f);
     minHeight = (int)(fHeight * 0.45f);
   }

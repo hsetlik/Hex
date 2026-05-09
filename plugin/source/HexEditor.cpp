@@ -160,7 +160,10 @@ HexEditor::~HexEditor() {
 }
 
 void HexEditor::resized() {
-  auto gridWidth = (float)getWidth() / 4.5f;
+  const float xScale = (float)getWidth() / 1800.0f;
+  const float yScale = (float)getHeight() / 1080.0f;
+  const float dWidth = (float)getWidth() / 4.5f;
+  auto gridWidth = dWidth;
   auto bounds = getLocalBounds();
   auto kBounds = bounds.removeFromBottom(100);
   kbdBar.setBounds(kBounds);
