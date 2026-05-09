@@ -91,7 +91,7 @@ void PatchComboBox::existingPatchLoaded(const String& name) {
 //========================================
 
 PatchLoader::PatchLoader(HexState* s)
-    : cb(s), saveBtn("Save Patch"), loadBtn("Load Patch") {
+    : cb(s), saveBtn("Save"), loadBtn("Load") {
   addAndMakeVisible(&cb);
   addAndMakeVisible(&saveBtn);
   addAndMakeVisible(&loadBtn);
@@ -117,14 +117,13 @@ PatchBrowserParent* PatchLoader::getBrowserParent() {
 
 void PatchLoader::resized() {
   auto fBounds = getLocalBounds().toFloat();
-  const float cbHeight = 45.0f;
-  auto cbBox = fBounds.removeFromTop(cbHeight).reduced(2.0f).toNearestInt();
-  cb.setBounds(cbBox);
-  const float btnWidth = fBounds.getWidth() / 2.0f;
-  saveBtn.setBounds(
-      fBounds.removeFromLeft(btnWidth).reduced(2.0f).toNearestInt());
-
-  loadBtn.setBounds(fBounds.reduced(2.0f).toNearestInt());
+  const float xScale = fBounds.getWidth() / 358.0f;
+  const float yScale = fBounds.getHeight() / 22.0f;
+  auto loadBnds = fBounds.removeFromRight(40.0f * xScale);
+  auto saveBnds = fBounds.removeFromRight(40.0f * xScale);
+  loadBtn.setBounds(loadBnds.toNearestInt());
+  saveBtn.setBounds(saveBnds.toNearestInt());
+  cb.setBounds(fBounds.toNearestInt());
 }
 
 //========================================

@@ -122,7 +122,7 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
       graph(params, buffer),
       fPanel(tree, params),
       kbdBar(linkedTree, kbdState),
-      loader(tree),
+      upperBar(tree),
       saveDialog(tree),
       loadDialog(tree) {
   setLookAndFeel(&lnf);
@@ -135,8 +135,8 @@ HexEditor::HexEditor(HexAudioProcessor* proc,
   nonModalComps.push_back(&fPanel);
   addAndMakeVisible(&kbdBar);
   nonModalComps.push_back(&kbdBar);
-  addAndMakeVisible(&loader);
-  nonModalComps.push_back(&loader);
+  addAndMakeVisible(&upperBar);
+  nonModalComps.push_back(&upperBar);
   for (int i = 0; i < NUM_OPERATORS; ++i) {
     addAndMakeVisible(
         opComponents.add(new OperatorComponent(i, linkedTree, params)));
@@ -167,10 +167,11 @@ void HexEditor::resized() {
   auto bounds = getLocalBounds();
   auto kBounds = bounds.removeFromBottom(100);
   kbdBar.setBounds(kBounds);
+  //TODO: place the upper bar here
+  auto upperBarBounds = bounds.removeFromTop((int)(100.0f * yScale));
+  upperBar.setBounds(upperBarBounds);
   auto rightColumn = bounds.removeFromRight((int)gridWidth);
-  auto loaderHeight = rightColumn.getWidth() / 3;
-  auto loaderBounds = rightColumn.removeFromTop(loaderHeight);
-  loader.setBounds(loaderBounds);
+
   modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
   int gHeight = (int)(gridWidth * 0.65f);
   auto gBounds = rightColumn.removeFromTop((int)gHeight);

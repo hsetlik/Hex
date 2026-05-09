@@ -104,6 +104,8 @@ PRIVATE
   source/ParameterLayout.cpp
   ${INCLUDE_DIR}/GUI/PatchBrowser.h
   source/PatchBrowser.cpp
+  ${INCLUDE_DIR}/GUI/UpperBar.h
+  source/UpperBar.cpp
   ${INCLUDE_DIR}/FileSystem.h
   source/FileSystem.cpp
   ${INCLUDE_DIR}/PluginEditor.h
