@@ -1,0 +1,14 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Standalone App",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/plugin/Hex_artefacts/Debug/Standalone/Hex.app/Contents/MacOS/Hex",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build Standalone"
+        }
+    ]
+}

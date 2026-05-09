@@ -23,9 +23,23 @@ HexAudioProcessorEditor::HexAudioProcessorEditor(HexAudioProcessor& p)
   // editor's size to whatever you need it to be.
   addAndMakeVisible(&mainEditor);
   addAndMakeVisible(&tWindow);
+  int maxWidth = 2000;
+  int maxHeight = 1800;
+  int minWidth = 800;
+  int minHeight = 600;
+  auto* display = juce::Desktop::getInstance().getDisplays().getPrimaryDisplay();
+  if(display != nullptr){
+    auto uArea = display->userArea;
+    float fWidth = uArea.getWidth();
+    float fHeight = uArea.getHeight();
+    maxWidth = (int)(fWidth * 0.85f);
+    maxHeight = (int)(fHeight * 0.85f);
+    minWidth = (int)(fWidth * 0.45f);
+    minHeight = (int)(fHeight * 0.45f);
+  }
   setResizable(true, true);
-  setResizeLimits(360, 216, 1800, 1080);
-  setSize(1800, 1080);
+  setResizeLimits(minWidth, minHeight, maxWidth, maxHeight);
+  setSize(maxWidth, maxHeight);
 }
 
 HexAudioProcessorEditor::~HexAudioProcessorEditor() {}
