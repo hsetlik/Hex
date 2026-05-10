@@ -170,14 +170,15 @@ void HexEditor::resized() {
   //TODO: place the upper bar here
   auto upperBarBounds = bounds.removeFromTop((int)(100.0f * yScale));
   upperBar.setBounds(upperBarBounds);
-  auto rightColumn = bounds.removeFromRight((int)gridWidth);
+  auto rightColumn = bounds.removeFromRight((int)gridWidth).toFloat();
+  resizedRightColumn(rightColumn);
 
-  modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
-  int gHeight = (int)(gridWidth * 0.65f);
-  auto gBounds = rightColumn.removeFromTop((int)gHeight);
-  auto cushion = gBounds.getWidth() / 15;
-  graph.setBounds(gBounds.reduced(cushion));
-  fPanel.setBounds(rightColumn.reduced(cushion));
+  // modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
+  // int gHeight = (int)(gridWidth * 0.65f);
+  // auto gBounds = rightColumn.removeFromTop((int)gHeight);
+  // auto cushion = gBounds.getWidth() / 15;
+  // graph.setBounds(gBounds.reduced(cushion));
+  // fPanel.setBounds(rightColumn.reduced(cushion));
 
   auto lfoBounds = bounds.removeFromBottom(bounds.getHeight() / 5);
   auto lfoWidth = lfoBounds.getWidth() / NUM_LFOS;
@@ -200,6 +201,22 @@ void HexEditor::resized() {
   auto saveBounds = getLocalBounds().reduced((int)xCushion, (int)yCushion);
   saveDialog.setBounds(saveBounds);
   loadDialog.setBounds(saveBounds);
+}
+
+
+void HexEditor::resizedRightColumn(frect_t& bounds){
+  float xScale = bounds.getWidth() / 446.0f;
+  float yScale = bounds.getHeight() / 980.0f;
+  const float minScale = std::fmin(xScale, yScale);
+  auto gridBounds = bounds.removeFromTop(minScale * 280.0f);
+  modGrid.setBounds(gridBounds.toNearestInt());
+
+  auto graphBounds = bounds.removeFromTop(195.0f * yScale);
+  graphBounds = graphBounds.withSizeKeepingCentre(420.0f * xScale, 178.0f * yScale);
+  graph.setBounds(graphBounds.toNearestInt());
+
+  auto filterBounds = bounds.withSizeKeepingCentre(400.0f * xScale, 475.0f * yScale);
+  fPanel.setBounds(filterBounds.toNearestInt());
 }
 
 void HexEditor::paint(juce::Graphics& g) {

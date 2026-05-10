@@ -17,6 +17,7 @@
 #include "LfoComponent.h"
 #include "UpperBar.h"
 #include "../PluginProcessor.h"
+#include "Identifiers.h"
 #include "juce_audio_basics/juce_audio_basics.h"
 #include "juce_audio_utils/juce_audio_utils.h"
 
@@ -98,6 +99,8 @@ private:
   // component is active
   std::vector<Component*> nonModalComps;
   void setNonModalsEnabled(bool enabled);
+  // resizing helper function
+  void resizedRightColumn(frect_t& bounds);
 };
 
 //========================================================
