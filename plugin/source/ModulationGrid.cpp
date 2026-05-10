@@ -12,6 +12,7 @@
 #include "GUI/Color.h"
 #include "GUI/Fonts.h"
 #include "Identifiers.h"
+#include "juce_graphics/juce_graphics.h"
 
 ModulationToggle::ModulationToggle(apvts* tree, int source, int dest)
     : juce::Button("ModToggle"), srcID(source), destID(dest) {
@@ -88,11 +89,16 @@ ModulationGrid::ModulationGrid(apvts* tree) : linkedTree(tree) {
 
 void ModulationGrid::resized() {
   auto fBounds = getLocalBounds().toFloat();
-  auto innerBounds = fBounds.reduced(fBounds.getWidth() / 8.0f);
-  auto x0 = innerBounds.getX();
-  auto y0 = innerBounds.getY();
-  auto dX = innerBounds.getWidth() / NUM_OPERATORS;
-  auto dY = innerBounds.getWidth() / NUM_OPERATORS;
+  const float xScale = fBounds.getWidth() / 446.0f;
+  const float yScale = fBounds.getHeight() / 276.0f;
+  const float minScale = std::fmin(xScale, yScale);
+  fBounds = fBounds.withSizeKeepingCentre(minScale * 276.0f, minScale * 276.0f);
+  fBounds.removeFromTop(26.0f * minScale);
+  fBounds.removeFromLeft(26.0f * minScale);
+  auto x0 = fBounds.getX();
+  auto y0 = fBounds.getY();
+  auto dX = fBounds.getWidth() / NUM_OPERATORS;
+  auto dY = fBounds.getWidth() / NUM_OPERATORS;
   for (int src = 0; src < NUM_OPERATORS; ++src) {
     for (int dst = 0; dst < NUM_OPERATORS; ++dst) {
       frect_t fBox = {x0 + (float)src * dX, y0 + (float)dst * dY, dX, dY};
@@ -104,30 +110,63 @@ void ModulationGrid::resized() {
 
 void ModulationGrid::paint(juce::Graphics& g) {
   auto fBounds = getLocalBounds().toFloat();
-  const float barWidth = fBounds.getWidth() / 8.0f;
-  auto topBounds = fBounds.removeFromTop(barWidth);
-  topBounds.removeFromLeft(barWidth);
-  AttString topStr("Modulator");
-  auto font = Fonts::getFont(Fonts::RobotoBlackItalic, 0.9f * barWidth);
-  topStr.setFont(font);
-  topStr.setColour(UXPalette::darkRed);
-  topStr.setJustification(juce::Justification::centred);
-  topStr.draw(g, topBounds);
+  const float xScale = fBounds.getWidth() / 446.0f;
+  const float yScale = fBounds.getHeight() / 276.0f;
+  const float minScale = std::fmin(xScale, yScale);
+  fBounds = fBounds.withSizeKeepingCentre(minScale * 276.0f, minScale * 276.0f);
+  auto carrierBounds = fBounds.removeFromTop(26.0f * minScale);
+  auto tempBounds = fBounds.removeFromLeft(26.0f * minScale);
+  AttString carStr("CARRRIER");
+  auto font = Fonts::getFont(Fonts::KenyanReg, 27.0f * minScale);
+  carStr.setFont(font);
+  carStr.setColour(UIColor::orangeLight);
+  carStr.setJustification(juce::Justification::centred);
+  carStr.draw(g, carrierBounds);
 
+  frect_t modulatorBounds;
+  modulatorBounds.setCentre(tempBounds.getCentreX(), tempBounds.getCentreY());
+  modulatorBounds = modulatorBounds.withSizeKeepingCentre(tempBounds.getHeight(), tempBounds.getWidth());
   juce::GlyphArrangement ga;
-  ga.addFittedText(font, "Carrier", topBounds.getX(), topBounds.getY(),
-                   topBounds.getWidth(), topBounds.getHeight(),
-                   juce::Justification::centredLeft, 1);
-  juce::Path p;
-  ga.createPath(p);
-  auto pBounds = p.getBounds().toFloat();
+  ga.addFittedText(font, "MODULATOR", 
+    modulatorBounds.getX(), 
+    modulatorBounds.getY(), 
+    modulatorBounds.getWidth(), 
+    modulatorBounds.getHeight(), 
+    juce::Justification::centred, 
+    1);
+  juce::Path path;
+  ga.createPath(path);
+  path.applyTransform(juce::AffineTransform::rotation(
+        -juce::MathConstants<float>::halfPi,
+        modulatorBounds.getCentreX(),
+        modulatorBounds.getCentreY()
+    ));
+  g.setColour(UIColor::greenLight);
+  g.fillPath(path);
+  // const float barWidth = fBounds.getWidth() / 8.0f;
+  // auto topBounds = fBounds.removeFromTop(barWidth);
+  // topBounds.removeFromLeft(barWidth);
+  // AttString topStr("Modulator");
+  // auto font = Fonts::getFont(Fonts::RobotoBlackItalic, 0.9f * barWidth);
+  // topStr.setFont(font);
+  // topStr.setColour(UXPalette::darkRed);
+  // topStr.setJustification(juce::Justification::centred);
+  // topStr.draw(g, topBounds);
 
-  auto transform = juce::AffineTransform()
-                       .rotated(-juce::MathConstants<float>::halfPi,
-                                pBounds.getX(), pBounds.getBottom())
-                       .translated(-(barWidth / 6.0f),
-                                   pBounds.getWidth() + (barWidth * 2.0f));
-  p.applyTransform(transform);
-  g.setColour(UXPalette::lightBlue);
-  g.fillPath(p);
+  // juce::GlyphArrangement ga;
+  // ga.addFittedText(font, "Carrier", topBounds.getX(), topBounds.getY(),
+  //                  topBounds.getWidth(), topBounds.getHeight(),
+  //                  juce::Justification::centredLeft, 1);
+  // juce::Path p;
+  // ga.createPath(p);
+  // auto pBounds = p.getBounds().toFloat();
+
+  // auto transform = juce::AffineTransform()
+  //                      .rotated(-juce::MathConstants<float>::halfPi,
+  //                               pBounds.getX(), pBounds.getBottom())
+  //                      .translated(-(barWidth / 6.0f),
+  //                                  pBounds.getWidth() + (barWidth * 2.0f));
+  // p.applyTransform(transform);
+  // g.setColour(UXPalette::lightBlue);
+  // g.fillPath(p);
 }
