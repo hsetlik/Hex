@@ -80,14 +80,22 @@ void RotaryParamName::componentMovedOrResized(juce::Component& component,
     setBounds(component.getX() - width, component.getY(), width,
               component.getHeight());
   } else {
-    auto height =
-        borderSize.getTopAndBottom() + 2 + (int)(f.getHeight() * 1.5f);
-    auto width = (int)(juce::TextLayout::getStringWidth(f, getText())) +
+    float fHeight = ((float)component.getHeight() * 0.5f * vScale) - (float)borderSize.getTopAndBottom();
+    auto height = (int)fHeight;
+    auto width = (int)(juce::TextLayout::getStringWidth(f.withHeight(fHeight), getText())) +
                  borderSize.getLeftAndRight();
-    auto dX = (component.getWidth() - width) / 2;
     auto gap = (int)((float)component.getHeight() * fLift);
-    setBounds(component.getX() + dX, component.getY() - height - gap, width,
+    setBounds(component.getBounds().getCentreX() - (width / 2), component.getY() - height - gap, width,
               height);
+  }
+}
+
+
+void RotaryParamName::setVerticalScale(float scale) {
+  vScale = scale;
+  auto* parent = getParentComponent();
+  if(parent != nullptr){
+    parent->resized();
   }
 }
 

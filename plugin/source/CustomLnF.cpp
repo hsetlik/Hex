@@ -133,6 +133,7 @@ void HexLookAndFeel::drawPopupMenuBackground(juce::Graphics& g,
 }
 
 //===========================================================================================
+
 juce::Font HexLookAndFeel::getLabelFont(juce::Label& label) {
   auto fBounds = label.getLocalBounds().toFloat();
   return Fonts::getFont(Fonts::RobotoLightItalic, fBounds.getHeight() * 0.55f);

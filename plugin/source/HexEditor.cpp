@@ -10,9 +10,11 @@
 
 #include "GUI/HexEditor.h"
 #include "GUI/Color.h"
+#include "GUI/Fonts.h"
 #include "Identifiers.h"
 #include "juce_core/juce_core.h"
 #include "GUI/ComponentUtil.h"
+#include "juce_graphics/juce_graphics.h"
 FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
     : linkedTree(&tree->mainTree),
       envComp(0, linkedTree, graph, true),
@@ -55,6 +57,10 @@ FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
   addAndMakeVisible(&wetName);
   addAndMakeVisible(&depthName);
 
+  cutoffName.setJustificationType(juce::Justification::centred);
+  resName.setJustificationType(juce::Justification::centred);
+  wetName.setJustificationType(juce::Justification::centred);
+  depthName.setJustificationType(juce::Justification::centred);
   cutoffName.attachToComponent(&cutoffSlider, false);
   resName.attachToComponent(&resSlider, false);
   wetName.attachToComponent(&wetSlider, false);
@@ -64,25 +70,56 @@ FilterPanel::FilterPanel(HexState* tree, GraphParamSet* graph)
 FilterPanel::~FilterPanel() {}
 
 void FilterPanel::resized() {
-  auto bounds = getLocalBounds();
-  auto sWidth = bounds.getWidth() / 4;
-  auto upperBounds = bounds.removeFromTop(sWidth);
-  auto midBounds = bounds.removeFromTop(sWidth);
-  auto cushion = midBounds.getHeight() / 4;
-  typeBox.setBounds(midBounds.reduced(cushion));
-  cushion /= 2;
-  cutoffSlider.setBounds(
-      upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
-  resSlider.setBounds(
-      upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
-  wetSlider.setBounds(
-      upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
-  depthSlider.setBounds(upperBounds.reduced(cushion).withY(2 * cushion));
-  envComp.setBounds(bounds.reduced(4));
+  // auto bounds = getLocalBounds();
+  // auto sWidth = bounds.getWidth() / 4;
+  // auto upperBounds = bounds.removeFromTop(sWidth);
+  // auto midBounds = bounds.removeFromTop(sWidth);
+  // auto cushion = midBounds.getHeight() / 4;
+  // typeBox.setBounds(midBounds.reduced(cushion));
+  // cushion /= 2;
+  // cutoffSlider.setBounds(
+  //     upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
+  // resSlider.setBounds(
+  //     upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
+  // wetSlider.setBounds(
+  //     upperBounds.removeFromLeft(sWidth).reduced(cushion).withY(2 * cushion));
+  // depthSlider.setBounds(upperBounds.reduced(cushion).withY(2 * cushion));
+  //envComp.setBounds(bounds.reduced(4));
+
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 446.0f;
+  const float yScale = fBounds.getHeight() / 435.0f;
+  const float minScale = std::min(xScale, yScale);
+  // positions for the knobs and type box
+  frect_t cutoffBounds = {27.0f * xScale, 56.0f * yScale, 40.0f * minScale, 40.0f * minScale};
+  frect_t resBounds = {107.0f * xScale, 56.0f * yScale, 40.0f * minScale, 40.0f * minScale};
+  frect_t depthBounds = {187.0f * xScale, 56.0f * yScale, 40.0f * minScale, 40.0f * minScale};
+  frect_t wetBounds = {267.0f * xScale, 56.0f * yScale, 40.0f * minScale, 40.0f * minScale};
+  frect_t typeBounds = {317.0f * xScale, 62.0f * yScale, 105.0f * xScale, 20.0f * yScale};
+  cutoffSlider.setBounds(cutoffBounds.toNearestInt());
+  resSlider.setBounds(resBounds.toNearestInt());
+  depthSlider.setBounds(depthBounds.toNearestInt());
+  wetSlider.setBounds(wetBounds.toNearestInt());
+  typeBox.setBounds(typeBounds.toNearestInt());
+  // position the envelope component
+  frect_t envBounds = {20.0f * xScale, 106.0f * yScale, 400.0f * xScale, 328.0f * yScale};
+  envComp.setBounds(envBounds.toNearestInt());
 }
 
 void FilterPanel::paint(juce::Graphics& g) {
-  juce::ignoreUnused(g);
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 446.0f;
+  const float yScale = fBounds.getHeight() / 435.0f;
+  g.setColour(UIColor::shadowGray);
+  g.fillRect(fBounds);
+
+  frect_t txtBounds = {191.0f * xScale, 5.0f * yScale, 45.0f * xScale, 24.0f * yScale};
+  auto font = Fonts::getFont(Fonts::KenyanReg, 24.0f * yScale);
+  AttString aStr("Filter");
+  aStr.setFont(font);
+  aStr.setJustification(juce::Justification::centred);
+  aStr.setColour(UIColor::orangeLight);
+  aStr.draw(g, txtBounds);
 }
 //==============================================================================
 
@@ -167,18 +204,11 @@ void HexEditor::resized() {
   auto bounds = getLocalBounds();
   auto kBounds = bounds.removeFromBottom(100);
   kbdBar.setBounds(kBounds);
-  //TODO: place the upper bar here
+
   auto upperBarBounds = bounds.removeFromTop((int)(100.0f * yScale));
   upperBar.setBounds(upperBarBounds);
   auto rightColumn = bounds.removeFromRight((int)gridWidth).toFloat();
   resizedRightColumn(rightColumn);
-
-  // modGrid.setBounds(rightColumn.removeFromTop((int)gridWidth));
-  // int gHeight = (int)(gridWidth * 0.65f);
-  // auto gBounds = rightColumn.removeFromTop((int)gHeight);
-  // auto cushion = gBounds.getWidth() / 15;
-  // graph.setBounds(gBounds.reduced(cushion));
-  // fPanel.setBounds(rightColumn.reduced(cushion));
 
   auto lfoBounds = bounds.removeFromBottom(bounds.getHeight() / 5);
   auto lfoWidth = lfoBounds.getWidth() / NUM_LFOS;
@@ -205,23 +235,44 @@ void HexEditor::resized() {
 
 
 void HexEditor::resizedRightColumn(frect_t& bounds){
-  float xScale = bounds.getWidth() / 446.0f;
-  float yScale = bounds.getHeight() / 980.0f;
-  const float minScale = std::fmin(xScale, yScale);
-  auto gridBounds = bounds.removeFromTop(minScale * 280.0f);
-  modGrid.setBounds(gridBounds.toNearestInt());
+  const float x0 = bounds.getX();
+  const float y0 = bounds.getY();
+  const float xScale = bounds.getWidth() / 446.0f;
+  const float yScale = bounds.getHeight() / 980.0f;
+  frect_t gridOuter = {x0, y0, 446.0f * xScale, 324.0f * yScale};
+  modGrid.setBounds(gridOuter.toNearestInt());
 
-  auto graphBounds = bounds.removeFromTop(195.0f * yScale);
-  graphBounds = graphBounds.withSizeKeepingCentre(420.0f * xScale, 178.0f * yScale);
+  frect_t graphBounds = {x0 + 14.0f * xScale, y0 + 334.0f * yScale, 420.0f * xScale, 190.0f * yScale};
   graph.setBounds(graphBounds.toNearestInt());
 
-  auto filterBounds = bounds.withSizeKeepingCentre(400.0f * xScale, 475.0f * yScale);
-  fPanel.setBounds(filterBounds.toNearestInt());
+  frect_t filtBounds = {x0, y0 + 545.0f * yScale, 446.0f * xScale, 435.0f * yScale};
+  fPanel.setBounds(filtBounds.toNearestInt());
+  // const float minScale = std::fmin(xScale, yScale);
+  // auto gridBounds = bounds.removeFromTop(minScale * 280.0f);
+  // modGrid.setBounds(gridBounds.toNearestInt());
+
+  // auto graphBounds = bounds.removeFromTop(195.0f * yScale);
+  // graphBounds = graphBounds.withSizeKeepingCentre(420.0f * xScale, 178.0f * yScale);
+  // graph.setBounds(graphBounds.toNearestInt());
+
+  // auto filterBounds = bounds.withSizeKeepingCentre(400.0f * xScale, 475.0f * yScale);
+  // fPanel.setBounds(filterBounds.toNearestInt());
 }
 
 void HexEditor::paint(juce::Graphics& g) {
-  g.setColour(UXPalette::lightGray);
+  g.setColour(UIColor::shadowGray);
   g.fillAll();
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = (float)getWidth() / 1800.0f;
+  const float yScale = (float)getHeight() / 1080.0f;
+  auto graphBounds = graph.getBoundsInParent().toFloat();
+  const float barY1 = graphBounds.getY() - (8.0f * yScale);
+  frect_t bar1Bounds = {graphBounds.getX(), barY1, graphBounds.getWidth(), 4.0f * yScale};
+  g.setColour(UIColor::borderGray);
+  g.fillRoundedRectangle(bar1Bounds, 2.0f * yScale);
+  const float barY2 = graphBounds.getBottom() + (4.0f * yScale);
+  frect_t bar2Bounds = {graphBounds.getX(), barY2, graphBounds.getWidth(), 4.0f * yScale};
+  g.fillRoundedRectangle(bar2Bounds, 2.0f * yScale);
 }
 
 //------------------------------------------------------

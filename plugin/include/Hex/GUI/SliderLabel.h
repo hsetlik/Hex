@@ -52,13 +52,15 @@ class RotaryParamName : public ParamName
 public:
   RotaryParamName(juce::String name) : ParamName(name), fLift(0.05f) {
     setJustificationType(juce::Justification::centredBottom);
+    setBorderSize(juce::BorderSize(0, 0, 0, 0));
   }
   void componentMovedOrResized(juce::Component& comp,
                                bool wasMoved,
                                bool wasResized) override;
   void setLift(float value) { fLift = value; }
-
+  void setVerticalScale(float scale);
 private:
+  float vScale = 1.2f;
   float fLift;
 };
 
