@@ -113,8 +113,8 @@ void FilterPanel::paint(juce::Graphics& g) {
   g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);
 
-  frect_t txtBounds = {191.0f * xScale, 5.0f * yScale, 45.0f * xScale, 24.0f * yScale};
-  auto font = Fonts::getFont(Fonts::KenyanReg, 24.0f * yScale);
+  frect_t txtBounds = {191.0f * xScale, 3.0f * yScale, 48.0f * xScale, 26.0f * yScale};
+  auto font = Fonts::getFont(Fonts::KenyanReg, 26.0f * yScale);
   AttString aStr("Filter");
   aStr.setFont(font);
   aStr.setJustification(juce::Justification::centred);
@@ -130,6 +130,7 @@ BottomBar::BottomBar(apvts* tree, juce::MidiKeyboardState& kbdState)
   addAndMakeVisible(velName);
   addAndMakeVisible(kbdComp);
   velName.attachToComponent(&velSlider, false);
+  velName.setVerticalScale(0.6f);
   SliderUtil::setRotaryNoBox(velSlider);
   velAttach.reset(
       new sliderAttach(*tree, ID::velocityTracking.toString(), velSlider));

@@ -235,37 +235,55 @@ void LfoComponent::prepare() {
 void LfoComponent::paint(juce::Graphics& g) {
   // 1. draw border and background
   auto fBounds = getLocalBounds().toFloat();
-  g.setColour(UXPalette::darkGray);
+  const float xScale = fBounds.getWidth() / 310.0f;
+  const float yScale = fBounds.getHeight() / 180.0f;
+  g.setColour(UIColor::shadowGray);
   g.fillRect(fBounds);
-  fBounds = fBounds.reduced(LFO_INSET);
-  g.setColour(UXPalette::lightGray);
-  g.fillRect(fBounds);
-  // 2. draw the text
-  auto upperBox = fBounds.removeFromTop(25.0f);
-  auto textBox = upperBox.removeFromLeft(100.0f);
-  textBox.removeFromLeft(3.5f);
-  const String text = "LFO " + String(lfoIndex + 1);
-  AttString nameStr(text);
-  nameStr.setJustification(juce::Justification::centredLeft);
-  nameStr.setFont(Fonts::getFont(Fonts::RobotoBlackItalic, 22.0f));
-  nameStr.setColour(juce::Colours::white);
-  nameStr.draw(g, textBox);
+  auto innerBounds = fBounds.withSizeKeepingCentre(308.0f * xScale, 178.0f * yScale);
+  g.setColour(UIColor::bkgndGray);
+  g.fillRect(innerBounds);
+  // 2. draw LFO name text
+  AttString nameStr("LFO " + String(lfoIndex + 1));
+  nameStr.setFont(Fonts::getFont(Fonts::KenyanBoldItalic, 36.0f * yScale));
+  nameStr.setJustification(juce::Justification:: centredLeft);
+  nameStr.setColour(UIColor::orangeLight);
+  frect_t nameBounds = {6.0f * xScale, 5.0f * yScale, 67.0f * xScale, 31.0f * yScale};
+  nameStr.draw(g, nameBounds);
+  // 3. draw labels for target and sync controls
+  frect_t targetBounds = {7.0f * xScale, 51.0f * yScale, 68.0f * xScale, 15.0f * yScale};
+  AttString targetStr("LFO Target");
+  targetStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic, 14.0f * yScale));
+  targetStr.setJustification(juce::Justification::centredLeft);
+  targetStr.setColour(UIColor::offWhite);
+  targetStr.draw(g, targetBounds);
+  frect_t syncBounds = {7.0f * xScale, 103.0f * yScale, 83.0f * xScale, 15.0f * yScale};
+  AttString syncStr("Beat Sync/Hz");
+  syncStr.setFont(Fonts::getFont(Fonts::RobotoLightItalic, 14.0f * yScale));
+  syncStr.setJustification(juce::Justification::centredLeft);
+  syncStr.setColour(UIColor::offWhite);
+  syncStr.draw(g, syncBounds);
+  // 4. draw divider bar
+  frect_t divBounds = {6.0f * xScale, 38.0f * yScale, 299.0f * xScale, 4.0f * yScale};
+  g.setColour(UIColor::borderGray);
+  g.fillRoundedRectangle(divBounds, 2.0f * yScale);
 }
+
 void LfoComponent::resized() {
-  auto fBounds = getLocalBounds().toFloat().reduced(LFO_INSET);
-  const float dX = fBounds.getWidth() / 16.0f;
-  const float dY = fBounds.getHeight() / 16.0f;
-  const float sWidth = std::min(dX, dY);
-  frect_t rateBox = {dX, 4.2f * dY, 4.0f * sWidth, 4.0f * sWidth};
-  frect_t depthBounds = {dX, 10.3f * dY, 4.0f * sWidth, 4.0f * sWidth};
-  frect_t bpmBounds = {6.0f * dX, 4.0f * dY, 3.0f * dX, 1.5f * dY};
-  frect_t targetBounds = {6.0f * dX, 6.0f * dY, 8.0f * dX, 2.0f * dY};
-  frect_t waveBounds = {6.0f * dX, 8.2f * dY, 10.0f * dX, 3.0f * dY};
-  rateSlider.setBounds(rateBox.reduced(2.0f).toNearestInt());
-  depthSlider.setBounds(depthBounds.reduced(2.0f).toNearestInt());
-  bpmToggle.setBounds(bpmBounds.toNearestInt());
+  auto fBounds = getLocalBounds().toFloat();
+  const float xScale = fBounds.getWidth() / 310.0f;
+  const float yScale = fBounds.getHeight() / 180.0f;
+  frect_t selectorBounds = {155.0f * xScale, 4.0f * yScale, 150.0f * xScale, 30.0f * yScale};
+  waveSelect.setBounds(selectorBounds.toNearestInt());
+  frect_t targetBounds = {5.0f * xScale, 73.0f * yScale, 105.0f * xScale, 20.0f * yScale};
   targetBox.setBounds(targetBounds.toNearestInt());
-  waveSelect.setBounds(waveBounds.toNearestInt());
+  frect_t rateBounds = {155.0f * xScale, 78.0f * yScale, 40.0f * xScale, 40.0f * yScale};
+  rateSlider.setBounds(rateBounds.toNearestInt());
+  frect_t depthBounds = {245.0f * xScale, 78.0f * yScale, 40.0f * xScale, 40.0f * yScale};
+  depthSlider.setBounds(depthBounds.toNearestInt());
+  frect_t syncBounds = {6.0f * xScale, 123.0f * yScale, 45.0f * xScale, 20.0f * yScale};
+  bpmToggle.setBounds(syncBounds.toNearestInt());
+
+
 }
 
 void LfoComponent::timerCallback() {

@@ -89,6 +89,8 @@ private:
   juce::String lastStr;
 };
 
+//=============================================================================
+
 class LfoComponent : public juce::Component,
                      public juce::Button::Listener,
                      public juce::Timer {

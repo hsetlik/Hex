@@ -80,11 +80,13 @@ void RotaryParamName::componentMovedOrResized(juce::Component& component,
     setBounds(component.getX() - width, component.getY(), width,
               component.getHeight());
   } else {
-    float fHeight = ((float)component.getHeight() * 0.5f * vScale) - (float)borderSize.getTopAndBottom();
+
+    const float minSideLength = (float)std::min(component.getWidth(), component.getHeight());
+    float fHeight = (minSideLength * 0.5f * vScale) - (float)borderSize.getTopAndBottom();
     auto height = (int)fHeight;
     auto width = (int)(juce::TextLayout::getStringWidth(f.withHeight(fHeight), getText())) +
                  borderSize.getLeftAndRight();
-    auto gap = (int)((float)component.getHeight() * fLift);
+    auto gap = (int)(minSideLength * fLift);
     setBounds(component.getBounds().getCentreX() - (width / 2), component.getY() - height - gap, width,
               height);
   }

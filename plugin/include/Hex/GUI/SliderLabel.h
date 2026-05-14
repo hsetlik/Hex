@@ -50,7 +50,7 @@ class RotaryParamName : public ParamName
 //! Parameter
 {
 public:
-  RotaryParamName(juce::String name) : ParamName(name), fLift(0.05f) {
+  RotaryParamName(juce::String name) : ParamName(name), fLift(0.1f) {
     setJustificationType(juce::Justification::centredBottom);
     setBorderSize(juce::BorderSize(0, 0, 0, 0));
   }
@@ -60,7 +60,7 @@ public:
   void setLift(float value) { fLift = value; }
   void setVerticalScale(float scale);
 private:
-  float vScale = 1.2f;
+  float vScale = 1.4f;
   float fLift;
 };
 

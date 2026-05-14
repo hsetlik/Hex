@@ -69,7 +69,7 @@ OperatorComponent::OperatorComponent(int idx,
   addAndMakeVisible(&modName);
   addAndMakeVisible(&panName);
   addAndMakeVisible(&levelName);
-  levelName.setVerticalScale(0.75f);
+  //levelName.setVerticalScale(0.75f);
 
   outButton.setClickingTogglesState(true);
   addAndMakeVisible(&outButton);
