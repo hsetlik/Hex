@@ -19,20 +19,6 @@
 #include "juce_core/juce_core.h"
 typedef std::array<std::array<float, NUM_OPERATORS>, NUM_VOICES> fVoiceOp;
 
-class HexSound : public juce::SynthesiserSound {
-public:
-  bool appliesToNote(
-      int /*midiNoteNumber*/)  // just plays this sound for any midi note
-  {
-    return true;
-  }
-  bool appliesToChannel(
-      int /*midiChannel*/)  // plays the sound on both channels
-  {
-    return true;
-  }
-};
-
 class GraphParamSet {
 public:
   GraphParamSet() : lastTriggeredVoice(0), voicesInUse(0) {
@@ -51,7 +37,7 @@ public:
   std::atomic<float> voiceFundamentals[NUM_VOICES];
 };
 
-class HexVoice : public juce::SynthesiserVoice {
+class HexVoice {
 public:
   HexVoice(apvts* tree,
            GraphParamSet* gParams,
@@ -63,44 +49,50 @@ public:
   RingBuffer<float>* const linkedBuffer;
   const int voiceIndex;
   void prepareBuffer(int blockSize) { internalBuffer.setSize(2, blockSize); }
-  bool canPlaySound(juce::SynthesiserSound* sound) override {
-    return dynamic_cast<HexSound*>(sound) != nullptr;
-  }
   void setSampleRate(double newRate, int blockSize = 512) {
     juce::ignoreUnused(blockSize);
-    setCurrentPlaybackSampleRate(newRate);
     voiceFilter.setSampleRate(newRate);
     for (auto op : operators)
       op->setSampleRate(newRate);
     for (auto lfo : lfos)
       lfo->setSampleRate(newRate);
   }
-  void startNote(int midiNoteNumber,
-                 float velocity,
-                 juce::SynthesiserSound* sound,
-                 int currentPitchWheelPosition) override;
-  void nStartNote(int midiNoteNumber, float velocity, int pitchWheelPos);
-  void stopNote(float velocity, bool allowTailOff) override;
+  // void startNote(int midiNoteNumber,
+  //                float velocity,
+  //                juce::SynthesiserSound* sound,
+  //                int currentPitchWheelPosition) override;
+  void nStartNote(int midiChannel, int midiNoteNumber, float velocity, int pitchWheelPos);
+  //void stopNote(float velocity, bool allowTailOff) override;
+  void nStopNote(float velocity, bool tailOff);
+  void pitchWheelMoved(int pitchWheelPos);
   //=============================================
   void updateGrid(RoutingGrid& newGrid) { grid = newGrid; }
   //=============================================
-  void pitchWheelMoved(int) override {}
+  //void pitchWheelMoved(int) override {}
   //=============================================
-  void controllerMoved(int, int) override {}
+  //void controllerMoved(int, int) override {}
   //===============================================
-  void aftertouchChanged(int) override {}
+  //void aftertouchChanged(int) override {}
   //==============================================
-  void channelPressureChanged(int) override {}
+  //void channelPressureChanged(int) override {}
   //===============================================
-  void renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
-                       int startSample,
-                       int numSamples) override;
+  // void renderNextBlock(juce::AudioBuffer<float>& outputBuffer,
+  //                      int startSample,
+  //                      int numSamples) override;
+  void processBlock(juce::AudioBuffer<float>& outputBuffer, int startSample, int numSamples);
   juce::OwnedArray<FMOperator> operators;
   juce::OwnedArray<HexLfo> lfos;
   StereoFilter voiceFilter;
   //! function to make sure each operator has the appropriate offset before
   //! calculating samples
   void tickModulation();
+  int getCurrentNote() const {
+    return currentMidiNote;
+  }
+
+  int getCurrentMidiChannel() const {
+    return currentMidiChannel;
+  }
 
   //===============================================
   void setRatio(int idx, float value) { operators[idx]->setRatio(value); }
@@ -122,7 +114,7 @@ public:
     }
     voiceFilter.env.killQuick();
   }
-  bool isVoiceCleared() { return voiceCleared; }
+  bool isVoiceCleared() const { return voiceCleared; }
   float filterMod() {
     for (int i = 0; i < NUM_LFOS; ++i) {
       if (lfoTargets[i] == NUM_OPERATORS + 1)
@@ -137,32 +129,51 @@ public:
     }
     return 0.0f;
   }
+  bool isKeyDown() const {
+    return keyDown;
+  }
+  bool isSustainDown() const {
+    return sustainDown;
+  }
+  bool isSostenutoDown() const {
+    return sostenutoDown;
+  }
+
   bool justKilled;
   int lfoTargets[NUM_LFOS];
   float lfoDepths[NUM_LFOS];
   float lfoValues[NUM_LFOS];
 
 private:
-  AsyncDebugPrinter debugPrinter;
+  friend class HexSynth;
+  uint64_t noteStartTime = 0;
+  bool keyDown = false;
+  bool sustainDown = false;
+  bool sostenutoDown = false;
   juce::AudioBuffer<float> internalBuffer;
   float sumL;
   float sumR;
   double fundamental;
+  int currentMidiNote = -1;
+  int currentMidiChannel = -1;
   RoutingGrid grid;
   bool voiceCleared;
-  float magnitude;
-  float lastMagnitude;
+  //float magnitude;
+  //float lastMagnitude;
   float filterValue;
 };
 
-class HexSynth : public juce::Synthesiser {
+
+//==================================================================================================
+
+class HexSynth {
 public:
   HexSynth(apvts* tree);
-  ~HexSynth() override {}
+  ~HexSynth() {}
   apvts* const linkedTree;
   void setSampleRate(double newRate, int blockSize = 512) {
-    setCurrentPlaybackSampleRate(newRate);
-    for (auto voice : hexVoices) {
+    currentSampleRate = newRate;
+    for (auto voice : voices) {
       voice->setSampleRate(newRate, blockSize);
     }
   }
@@ -176,11 +187,14 @@ public:
   //              int midiNoteNumber,
   //              float velocity,
   //              bool allowTailOff) override;
-  void renderVoices(juce::AudioBuffer<float>& buffer,
-                    int startSample,
-                    int numSamples) override;
-
+  // void renderVoices(juce::AudioBuffer<float>& buffer,
+  //                   int startSample,
+  //                   int numSamples) override;
+  void nProcessBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiBuf, int startSample, int numSamples);
+  void nNoteOn(int midiChannel, int midiNum, float velocity);
+  void nNoteOff(int midiChannel, int midiNum, float velocity, bool allowTailOff);
   //===============================================
+  // call these in each sample block
   void updateRoutingForBlock();
   void updateEnvelopesForBlock();
   void updateOscillatorsForBlock();
@@ -211,7 +225,7 @@ public:
     graphBuffer.setSize(2, RING_BUFFER_READ_SIZE * 10);
   }
   void prepareVoiceBuffers(int blockSize) {
-    for (auto v : hexVoices) {
+    for (auto v : voices) {
       v->prepareBuffer(blockSize);
     }
   }
@@ -219,11 +233,29 @@ public:
   RingBuffer<float> graphBuffer;
 
 private:
+// CriticalSections for various stuff
+  juce::CriticalSection lock;
+// internal functionality similar to the juce::Synthesiser class
+  void handleMidiMessage(const juce::MidiMessage& msg);
+  void handleControlChange(int midiChannel, int controllerId, int controllerValue);
+  void processVoices(juce::AudioBuffer<float>& buffer, int startSample, int numSamples);
+  void silenceAllNotes(int midiChannel, bool allowTailOff);
+  HexVoice* getFreeVoice(int midiChannel, int midiNote, bool shouldSteal) const;
+  HexVoice* findVoiceToSteal(int midiChannel, int midiNote) const;
+  HexVoice* getVoicePlayingNote(int midiChannel, int midiNote) const;
+// data
+  double currentSampleRate = 44100.0;
   RoutingGrid grid;
   EnvelopeLUTGroup envelopeData;
-  std::vector<HexVoice*> hexVoices;
-  AsyncDebugPrinter printer;
-  float magnitude;
-  float lastMagnitude;
+  juce::OwnedArray<HexVoice> voices;
+  std::array<int, 16> pitchWheelValues;
+  std::array<bool, 16> sustainPedalsDown;
+  std::array<BitField128, 16> keysDown;
+  uint64_t noteStartCounter = 0;
+  //AsyncDebugPrinter printer;
+  //float magnitude;
+  //float lastMagnitude;
+  
   long numJumps;
+  bool stealingEnabled;
 };

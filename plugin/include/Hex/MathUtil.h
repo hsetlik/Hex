@@ -29,9 +29,19 @@ inline double dLerp(double lower, double upper, double t) {
 inline float hypot(float dX, float dY) {
   return std::sqrt(std::pow(dX, 2.0f) + std::pow(dY, 2.0f));
 }
-inline double midiToET(int midiNum) {
-  return 440.0f * std::pow(SEMITONE_RATIO, (float)midiNum - 69);
+inline float pitchBendToSemitones(int bendValue){
+  return ((float)bendValue - 8192.0f) / 8192.0f;
 }
+
+inline double midiToET(int midiNum, int pitchBend=8192) {
+  return 440.0f * std::pow(SEMITONE_RATIO, (float)midiNum - 69.0f + pitchBendToSemitones(pitchBend));
+}
+
+
+
+
+
+
 inline void fft(int N, float* ar, float* ai)
 /*
  in-place complex fft

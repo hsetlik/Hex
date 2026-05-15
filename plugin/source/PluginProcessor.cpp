@@ -96,7 +96,6 @@ void HexAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock) {
   SampleRate::set(sampleRate);
   synth.setSampleRate(sampleRate, samplesPerBlock);
   synth.prepareRingBuffer(samplesPerBlock);
-  // synth.prepareRingBuffer (samplesPerBlock);
 }
 
 void HexAudioProcessor::releaseResources() {
@@ -136,7 +135,7 @@ void HexAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
   masterKbdState.processNextMidiBuffer(midiMessages, 0, buffer.getNumSamples(),
                                        true);
   buffer.clear();
-  synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+  synth.nProcessBlock(buffer, midiMessages, 0, buffer.getNumSamples());
   synth.updateRoutingForBlock();
   synth.updateOscillatorsForBlock();
   synth.updateEnvelopesForBlock();
